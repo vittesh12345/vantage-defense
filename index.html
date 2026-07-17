@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vantage — Autonomy for the Contested Domain</title>
-<meta name="description" content="Vantage builds autonomous sensing and decision systems that give operators the advantage across land, sea, air, space, and cyber." />
+<title>Vantage — Assured Space Intelligence</title>
+<meta name="description" content="Today's operators know where satellites are. Vantage understands what they're doing: maneuver detection, intent inference, and surveillance-and-shadowing warning from public orbital data — with sealed, tamper-evident evidence behind every release." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -56,9 +56,7 @@
   header.scrolled{border-color:var(--line);background:rgba(5,7,10,.82)}
   nav{display:flex;align-items:center;justify-content:space-between;height:68px}
   .brand{display:flex;align-items:center;gap:11px;font-family:var(--font-d);font-weight:700;font-size:19px;letter-spacing:.04em}
-  .brand .mark{
-    width:26px;height:26px;position:relative;flex:0 0 auto;
-  }
+  .brand .mark{width:26px;height:26px;position:relative;flex:0 0 auto}
   .brand .mark svg{display:block}
   .navlinks{display:flex;gap:34px;align-items:center}
   .navlinks a{font-size:14px;color:var(--muted);transition:color .2s}
@@ -75,7 +73,7 @@
   .nav-toggle{display:none;background:none;border:none;color:var(--txt);cursor:pointer}
 
   /* ---------- HERO ---------- */
-  .hero{position:relative;padding:180px 0 120px;overflow:hidden}
+  .hero{position:relative;padding:180px 0 110px;overflow:hidden}
   .grid-bg{
     position:absolute;inset:0;z-index:0;
     background-image:
@@ -88,57 +86,60 @@
   }
   .glow{
     position:absolute;top:-10%;left:50%;transform:translateX(-50%);
-    width:720px;height:720px;z-index:0;
+    width:720px;height:720px;z-index:0;max-width:100%;
     background:radial-gradient(circle,rgba(77,163,255,.14),transparent 62%);
     filter:blur(20px);pointer-events:none;
   }
   .hero .wrap{position:relative;z-index:2}
   .hero h1{
     font-family:var(--font-d);font-weight:700;
-    font-size:clamp(38px,6vw,74px);line-height:1.03;letter-spacing:-.02em;
-    margin:26px 0 22px;max-width:16ch;
+    font-size:clamp(38px,6vw,72px);line-height:1.03;letter-spacing:-.02em;
+    margin:26px 0 22px;max-width:17ch;
   }
   .hero h1 .hl{
     background:linear-gradient(120deg,var(--accent),var(--accent-2));
     -webkit-background-clip:text;background-clip:text;color:transparent;
   }
-  .hero p.lede{font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:60ch;margin-bottom:38px}
+  .hero p.lede{font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:62ch;margin-bottom:38px}
   .hero-cta{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
   .hero-stats{
     display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
-    margin-top:88px;border:1px solid var(--line);background:var(--line);
+    margin-top:80px;border:1px solid var(--line);background:var(--line);
   }
-  .hero-stats .cell{background:var(--bg);padding:26px 22px}
-  .hero-stats .num{font-family:var(--font-d);font-size:30px;font-weight:600;color:var(--txt)}
+  .hero-stats .cell{background:var(--bg);padding:24px 22px}
+  .hero-stats .num{font-family:var(--font-d);font-size:29px;font-weight:600;color:var(--txt)}
   .hero-stats .lbl{font-size:12.5px;color:var(--dim);letter-spacing:.03em;margin-top:4px}
 
-  /* ---------- MARQUEE ---------- */
-  .trust{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:26px 0;background:var(--bg-2)}
+  /* ---------- TRUST ---------- */
+  .trust{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:24px 0;background:var(--bg-2)}
   .trust .row{display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap}
   .trust .label{font-family:var(--font-d);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
-  .trust .logos{display:flex;gap:38px;flex-wrap:wrap;align-items:center}
-  .trust .logos span{font-family:var(--font-d);font-weight:600;font-size:15px;color:var(--muted);opacity:.72;letter-spacing:.04em}
+  .trust .logos{display:flex;gap:34px;flex-wrap:wrap;align-items:center}
+  .trust .logos span{font-family:var(--font-d);font-weight:600;font-size:14px;color:var(--muted);opacity:.72;letter-spacing:.04em}
 
   /* ---------- SECTION SHELL ---------- */
   section{position:relative}
-  .sec{padding:110px 0}
-  .sec-head{max-width:64ch;margin-bottom:56px}
+  .sec{padding:104px 0}
+  .sec-head{max-width:66ch;margin-bottom:52px}
   .sec-head h2{font-family:var(--font-d);font-weight:600;font-size:clamp(28px,3.6vw,44px);line-height:1.1;letter-spacing:-.015em;margin:18px 0 16px}
   .sec-head p{color:var(--muted);font-size:16.5px}
 
   /* ---------- CAPABILITIES ---------- */
   .cap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
-  .cap{background:var(--panel);padding:34px 30px;transition:background .25s;position:relative;overflow:hidden}
+  .cap{background:var(--panel);padding:32px 28px;transition:background .25s;position:relative;overflow:hidden}
   .cap:hover{background:#0f1620}
-  .cap .ico{width:40px;height:40px;color:var(--accent);margin-bottom:20px}
-  .cap h3{font-family:var(--font-d);font-weight:600;font-size:19px;margin-bottom:10px}
+  .cap .ico{width:38px;height:38px;color:var(--accent);margin-bottom:18px}
+  .cap h3{font-family:var(--font-d);font-weight:600;font-size:18.5px;margin-bottom:9px}
   .cap p{color:var(--muted);font-size:14.5px}
   .cap .idx{position:absolute;top:22px;right:26px;font-family:var(--font-d);font-size:12px;color:var(--dim)}
+  .cap .tag{margin-top:14px;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--bg-2);padding:4px 9px;border-radius:2px;font-family:var(--font-d);font-size:10.5px;color:var(--dim)}
+  .cap .tag b{color:var(--accent-2);font-weight:600}
 
-  /* ---------- PLATFORM ---------- */
+  /* ---------- PLATFORM / SPOTLIGHT ---------- */
   .platform{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .plat-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:center}
-  .plat-list{list-style:none;margin-top:30px;display:flex;flex-direction:column;gap:2px}
+  .plat-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:60px;align-items:center}
+  .plat-grid.rev{grid-template-columns:.9fr 1.1fr}
+  .plat-list{list-style:none;margin-top:28px;display:flex;flex-direction:column;gap:2px}
   .plat-list li{display:flex;gap:18px;padding:20px 0;border-top:1px solid var(--line)}
   .plat-list li:last-child{border-bottom:1px solid var(--line)}
   .plat-list .n{font-family:var(--font-d);color:var(--accent);font-size:14px;flex:0 0 auto;width:34px}
@@ -151,7 +152,7 @@
   .term-bar{display:flex;align-items:center;gap:7px;padding:12px 15px;border-bottom:1px solid var(--line);background:#0b1017}
   .term-bar .dot{width:11px;height:11px;border-radius:50%;background:#2a3340}
   .term-bar .t{margin-left:10px;font-family:var(--font-d);font-size:12px;color:var(--dim)}
-  .term-body{padding:20px;font-family:var(--font-d);font-size:12.8px;line-height:1.85;color:#b9c6d3}
+  .term-body{padding:20px;font-family:var(--font-d);font-size:12.8px;line-height:1.85;color:#b9c6d3;overflow-x:auto}
   .term-body .c1{color:var(--accent-2)}
   .term-body .c2{color:var(--accent)}
   .term-body .c3{color:var(--warn)}
@@ -159,20 +160,22 @@
   .term-body .blink{animation:blink 1.1s steps(1) infinite}
   @keyframes blink{50%{opacity:0}}
 
-  /* ---------- DOMAINS ---------- */
-  .dom-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
-  .dom{background:var(--panel);padding:30px 22px;text-align:center;transition:.25s}
+  /* ---------- SEGMENTS ---------- */
+  .dom-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+  .dom{background:var(--panel);padding:28px 22px;transition:.25s;display:flex;flex-direction:column}
   .dom:hover{background:#0f1620;transform:translateY(-2px)}
-  .dom .ico{width:34px;height:34px;color:var(--accent);margin:0 auto 16px}
-  .dom h4{font-family:var(--font-d);font-weight:600;font-size:15px;margin-bottom:6px}
-  .dom p{font-size:12.5px;color:var(--dim)}
+  .dom .ico{width:32px;height:32px;color:var(--accent);margin-bottom:16px}
+  .dom h4{font-family:var(--font-d);font-weight:600;font-size:15.5px;margin-bottom:7px}
+  .dom p{font-size:13px;color:var(--muted)}
+  .dom .lead{display:inline-block;margin-bottom:10px;font-family:var(--font-d);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-2)}
+  .dom .more{margin-top:auto;padding-top:14px;font-family:var(--font-d);font-size:11.5px;color:var(--accent)}
 
   /* ---------- CTA BAND ---------- */
-  .cta{position:relative;overflow:hidden;text-align:center;padding:120px 0}
+  .cta{position:relative;overflow:hidden;text-align:center;padding:116px 0}
   .cta .glow2{position:absolute;inset:0;background:radial-gradient(ellipse 50% 60% at 50% 50%,rgba(77,163,255,.12),transparent 70%);z-index:0}
   .cta .wrap{position:relative;z-index:2}
-  .cta h2{font-family:var(--font-d);font-weight:700;font-size:clamp(30px,4.4vw,52px);letter-spacing:-.02em;margin-bottom:20px;max-width:20ch;margin-left:auto;margin-right:auto}
-  .cta p{color:var(--muted);font-size:17px;max-width:52ch;margin:0 auto 34px}
+  .cta h2{font-family:var(--font-d);font-weight:700;font-size:clamp(30px,4.4vw,50px);letter-spacing:-.02em;margin-bottom:20px;max-width:22ch;margin-left:auto;margin-right:auto}
+  .cta p{color:var(--muted);font-size:17px;max-width:54ch;margin:0 auto 32px}
 
   /* ---------- FOOTER ---------- */
   footer{border-top:1px solid var(--line);background:var(--bg-2);padding:64px 0 34px}
@@ -187,19 +190,21 @@
 
   .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
   .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.term-body .blink{animation:none}}
 
   @media(max-width:900px){
     .navlinks{display:none}
     .nav-toggle{display:block}
     .hero-stats{grid-template-columns:repeat(2,1fr)}
     .cap-grid{grid-template-columns:1fr 1fr}
-    .plat-grid{grid-template-columns:1fr;gap:40px}
+    .plat-grid,.plat-grid.rev{grid-template-columns:1fr;gap:40px}
     .dom-grid{grid-template-columns:repeat(2,1fr)}
     .foot-top{grid-template-columns:1fr 1fr}
   }
   @media(max-width:560px){
     .hero-stats,.cap-grid,.dom-grid,.foot-top{grid-template-columns:1fr}
     .hero{padding:140px 0 80px}
+    .sec{padding:76px 0}
   }
 </style>
 </head>
@@ -222,10 +227,11 @@
       <div class="navlinks">
         <a href="#capabilities">Capabilities</a>
         <a href="#platform">Platform</a>
-        <a href="#domains">Domains</a>
+        <a href="#orbital-compute">Orbital Compute</a>
+        <a href="#segments">Who It's For</a>
         <a href="#mission">Mission</a>
       </div>
-      <a href="#contact" class="btn btn-solid">Request a Briefing</a>
+      <a href="mailto:contact@vantage.industries" class="btn btn-solid">Request a Briefing</a>
       <button class="nav-toggle" aria-label="menu">
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
@@ -240,19 +246,19 @@
     <div class="grid-bg"></div>
     <div class="glow"></div>
     <div class="wrap">
-      <span class="eyebrow reveal">Autonomy for the contested domain</span>
-      <h1 class="reveal">Decision advantage at the <span class="hl">speed of the threat.</span></h1>
-      <p class="lede reveal">Vantage builds autonomous sensing, fusion, and decision systems that turn overwhelming data into clear, accountable action — across land, sea, air, space, and cyber. Software-defined. Field-proven. Mission-first.</p>
+      <span class="eyebrow reveal">The intelligence layer for space defense</span>
+      <h1 class="reveal">Know why it moved — <span class="hl">and prove every call.</span></h1>
+      <p class="lede reveal">Today's space operators know where satellites are. Vantage helps them understand what those satellites are doing — and what they're likely trying to accomplish. It detects maneuvers from public orbital data, infers the intent behind them, and flags surveillance, shadowing, and other threat-consistent behavior while it's still developing — with a written rationale on every assessment and sealed, verifiable evidence behind every release. No telescopes. No radar.</p>
       <div class="hero-cta reveal">
-        <a href="#contact" class="btn btn-solid">Request a Briefing →</a>
+        <a href="mailto:contact@vantage.industries" class="btn btn-solid">Request a Briefing →</a>
         <a href="#platform" class="btn">Explore the Platform</a>
       </div>
 
       <div class="hero-stats reveal">
-        <div class="cell"><div class="num">24/7</div><div class="lbl">Persistent autonomous watch</div></div>
-        <div class="cell"><div class="num">&lt;200ms</div><div class="lbl">Sensor-to-decision latency</div></div>
-        <div class="cell"><div class="num">5</div><div class="lbl">Operational domains</div></div>
-        <div class="cell"><div class="num">100%</div><div class="lbl">Auditable AI decisioning</div></div>
+        <div class="cell"><div class="num">84%</div><div class="lbl">Maneuvers caught · 0 false alarms — sealed bench</div></div>
+        <div class="cell"><div class="num">162,634</div><div class="lbl">Real ESA close-approach reports trained on</div></div>
+        <div class="cell"><div class="num">100%</div><div class="lbl">On seeded shadowing tests</div></div>
+        <div class="cell"><div class="num">PASS</div><div class="lbl">Models graded against our own sealed gate</div></div>
       </div>
     </div>
   </section>
@@ -263,11 +269,11 @@
       <div class="row">
         <span class="label">Built for the operators who can't afford to miss</span>
         <div class="logos">
-          <span>JOINT&nbsp;FORCES</span>
-          <span>ALLIED&nbsp;COMMAND</span>
-          <span>SPACE&nbsp;OPS</span>
-          <span>MARITIME&nbsp;ISR</span>
-          <span>NATIONAL&nbsp;SECURITY</span>
+          <span>DEFENSE&nbsp;&amp;&nbsp;INTELLIGENCE</span>
+          <span>ORBITAL&nbsp;COMPUTE</span>
+          <span>SATELLITE&nbsp;OPERATORS</span>
+          <span>LAUNCH&nbsp;&amp;&nbsp;COMPLIANCE</span>
+          <span>ALLIED&nbsp;SPACE&nbsp;OPS</span>
         </div>
       </div>
     </div>
@@ -278,39 +284,45 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="eyebrow">Capabilities</span>
-        <h2>One autonomy stack. Every stage of the kill chain.</h2>
-        <p>Vantage collapses sensing, fusion, and decision-making into a single edge-to-cloud stack that runs where the mission is — disconnected, denied, or contested.</p>
+        <h2>Six questions an analyst actually asks. One picture of behavior.</h2>
+        <p>Every capability exists to answer a question about behavior — not to expose more orbital data. One stack, runs where the mission is, including fully offline on your own servers.</p>
       </div>
       <div class="cap-grid">
         <div class="cap reveal"><span class="idx">01</span>
           <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="3.5"/></svg>
-          <h3>Multi-Sensor Fusion</h3>
-          <p>Ingest RF, EO/IR, radar, SIGINT, and orbital tracks into a single, deconflicted picture of truth — updated in real time.</p>
+          <h3>Maneuver Detection</h3>
+          <p>What happened? Detects a satellite's burns from public element-set histories by removing the drift physics explains and flagging what's left.</p>
+          <span class="tag">▸ <b>84% caught · 0 false alarms (sealed bench)</b></span>
         </div>
         <div class="cap reveal"><span class="idx">02</span>
           <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2l3 6 6 .9-4.5 4.3L18 20l-6-3.2L6 20l1.5-6.8L3 8.9 9 8z"/></svg>
           <h3>Intent Classification</h3>
-          <p>On-device models score behavior and classify intent — station-keeping, maneuver, rendezvous, or anomaly — with confidence and rationale.</p>
+          <p>Why did it move? Names the reason for a burn — station-keeping, raising, lowering, rendezvous, collision-avoidance — with a confidence band and a written rationale.</p>
+          <span class="tag">▸ <b>rationale on every call</b></span>
         </div>
         <div class="cap reveal"><span class="idx">03</span>
           <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
-          <h3>Anomaly &amp; Threat Detection</h3>
-          <p>Pattern-of-life baselining flags the deviations that matter and suppresses the noise that doesn't — before they become incidents.</p>
+          <h3>Collision Risk</h3>
+          <p>Should I care? Scores conjunction risk with a model calibrated on real ESA close-approach reports — a screening prior that ranks which conjunctions deserve an analyst's attention.</p>
+          <span class="tag">▸ <b>ROC-AUC 0.963 · Brier 0.010</b></span>
         </div>
         <div class="cap reveal"><span class="idx">04</span>
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h8M8 17h5"/></svg>
-          <h3>Command Console</h3>
-          <p>A dark, data-dense operational picture that ranks events by severity and puts the decision one click from the operator.</p>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7z"/><circle cx="12" cy="11.5" r="2"/></svg>
+          <h3>Proximity / RPO Watch</h3>
+          <p>Is that approach deliberate? Tells a shadower apart from an incidental pass or a benign formation — the discrimination that matters near a high-value asset.</p>
+          <span class="tag">▸ <b>100% on seeded shadowing</b></span>
         </div>
         <div class="cap reveal"><span class="idx">05</span>
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2a9 9 0 019 9c0 5-9 11-9 11S3 16 3 11a9 9 0 019-9z"/><circle cx="12" cy="11" r="2.5"/></svg>
-          <h3>Edge Autonomy</h3>
-          <p>Runs at the tactical edge with zero cloud dependency — resilient to denied, degraded, and disconnected environments.</p>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0"/><path d="M3 17c2-4 4-4 6 0s4 4 6 0 4-4 6 0" opacity=".5"/></svg>
+          <h3>Pattern-of-Life</h3>
+          <p>Is this normal for this object? Baselines each satellite against its own routine and flags out-of-character behavior — dormant-then-active, the classic early warning.</p>
+          <span class="tag">▸ <b>per-object baseline</b></span>
         </div>
         <div class="cap reveal"><span class="idx">06</span>
           <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>
-          <h3>Accountable AI</h3>
-          <p>Every inference is logged, explainable, and append-only — built for compliance, audit, and human-on-the-loop control.</p>
+          <h3>Sealed Assurance</h3>
+          <p>What's the evidence? Grades every model against a versioned policy floor and seals the metrics into tamper-evident evidence. Receipts, not claims.</p>
+          <span class="tag">▸ <b>verdict PASS · NIST AI RMF</b></span>
         </div>
       </div>
     </div>
@@ -323,74 +335,121 @@
         <div>
           <div class="sec-head reveal" style="margin-bottom:0">
             <span class="eyebrow">The Platform</span>
-            <h2>From raw sensor feed to accountable action.</h2>
-            <p>Vantage OS is the software backbone that unifies your sensors, models, and operators into one closed loop — deployable in weeks, not years.</p>
+            <h2>From a new element set to an assessed event.</h2>
+            <p>Everyone can see <em>that</em> a satellite moved — the tracking data is public. Vantage is the layer that tells you <em>why</em>, and hands you the evidence to stand behind it.</p>
           </div>
           <ul class="plat-list reveal">
-            <li><span class="n">01</span><div><h4>Ingest</h4><p>Open, schema-driven connectors normalize any sensor or catalog into a common data fabric.</p></div></li>
-            <li><span class="n">02</span><div><h4>Fuse</h4><p>Correlate tracks across domains and time to build a single, deconflicted operational truth.</p></div></li>
-            <li><span class="n">03</span><div><h4>Reason</h4><p>Autonomous models detect, classify, and forecast — surfacing only what demands a decision.</p></div></li>
-            <li><span class="n">04</span><div><h4>Act</h4><p>Route severity-ranked alerts and courses of action to the operator, with full audit trail.</p></div></li>
+            <li><span class="n">01</span><div><h4>Ingest</h4><p>Open connectors normalize public catalogs and element-set histories into one data fabric — no proprietary sensor required.</p></div></li>
+            <li><span class="n">02</span><div><h4>Detect</h4><p>Physics subtracts what nature does — Earth's bulge, atmospheric drag. What's left is somebody's engine: detected, measured, timestamped.</p></div></li>
+            <li><span class="n">03</span><div><h4>Assess</h4><p>Models name the intent, score the threat, and check the behavior against the object's own pattern of life — with confidence and a written rationale.</p></div></li>
+            <li><span class="n">04</span><div><h4>Report</h4><p>The event lands in the feed with its evidence attached — reasoning an analyst, or an auditor, can check, from models graded against a sealed assurance gate.</p></div></li>
           </ul>
         </div>
         <div class="terminal reveal">
-          <div class="term-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="t">vantage-os · live feed</span></div>
+          <div class="term-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="t">vantage · live watch</span></div>
           <div class="term-body">
-<span class="c4">// autonomous watch · sector 7</span><br>
-<span class="c2">[ 04:12:07 ]</span> ingest ......... <span class="c1">1,024 tracks</span><br>
-<span class="c2">[ 04:12:07 ]</span> fusion ......... <span class="c1">OK</span> · deconflicted<br>
-<span class="c2">[ 04:12:08 ]</span> reason ......... running 6 models<br>
+<span class="c4">// continuous watch · LEO</span><br>
+<span class="c2">[ 04:12:07 ]</span> ingest ......... <span class="c1">1,039 objects</span><br>
+<span class="c2">[ 04:12:07 ]</span> subtract J2 + drag ... <span class="c1">OK</span><br>
+<span class="c2">[ 04:12:08 ]</span> reason ......... 6 models<br>
 <span class="c3">[ ALERT ]</span> OBJ-4471 maneuver detected<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="c4">intent</span> ...... proximity ops<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="c4">confidence</span> .. 0.91<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="c4">severity</span> .... <span class="c3">HIGH</span><br>
-<span class="c2">[ 04:12:08 ]</span> route → operator console<br>
-<span class="c1">&gt;</span> decision recommended <span class="blink">▊</span>
+<span class="c2">[ 04:12:08 ]</span> route → mission feed<br>
+<span class="c1">&gt;</span> evidence logged · assurance: PASS <span class="blink">▊</span>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- DOMAINS -->
-  <section class="sec" id="domains">
+  <!-- ORBITAL COMPUTE -->
+  <section class="sec" id="orbital-compute">
+    <div class="wrap">
+      <div class="plat-grid rev">
+        <div class="terminal reveal">
+          <div class="term-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="t">vantage · orbital-compute watch</span></div>
+          <div class="term-body">
+<span class="c4">// protecting an AI compute constellation</span><br>
+<span class="c2">[ node ]</span> STARFORGE COMPUTE-01 <span class="c4">· 575 km</span><br>
+<span class="c2">[ node ]</span> STARFORGE COMPUTE-02..04 <span class="c1">nominal</span><br>
+<span class="c4">formation ....... </span><span class="c1">benign</span> <span class="c4">(held by orbital mechanics)</span><br>
+<span class="c3">[ THREAT ]</span> RUS-INSPECTOR-11039<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c4">→ shadowing</span> COMPUTE-01<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c4">min range</span> .. 3.0 km · co-moving<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c4">score</span> ...... <span class="c3">0.81 HIGH</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c4">signals</span> .... one-sided, persistent, low Δv<br>
+<span class="c1">&gt;</span> operator notified <span class="blink">▊</span>
+          </div>
+        </div>
+        <div>
+          <div class="sec-head reveal" style="margin-bottom:0">
+            <span class="eyebrow">Orbital compute · AI infrastructure</span>
+            <h2>Someone is parking next to your data center.</h2>
+            <p>Compute is going to orbit. The first AI data centers are already flying, and operators have filed for constellations of tens of thousands of nodes — each some of the most valuable hardware ever launched, run by teams new to space operations.</p>
+          </div>
+          <ul class="plat-list reveal">
+            <li><span class="n">›</span><div><h4>Is that approach deliberate?</h4><p>Vantage flags a shadower and tells it apart from a benign co-orbiting node — 100% on seeded scenarios — the discrimination that keeps a false-alarm feed from burning your on-call rotation.</p></div></li>
+            <li><span class="n">›</span><div><h4>Should we spend an avoidance burn?</h4><p>Collision screening calibrated on 162,634 real close-approach reports — held to the tightest calibration floors of any Vantage policy pack, because that number feeds a real propellant decision.</p></div></li>
+            <li><span class="n">›</span><div><h4>Will the FCC license the constellation?</h4><p>The debris-mitigation and 5-year-deorbit exhibits every filing needs — generated in minutes, matched against NASA's official tool.</p></div></li>
+          </ul>
+          <div class="hero-cta reveal" style="margin-top:26px">
+            <a href="mailto:contact@vantage.industries?subject=Orbital%20infrastructure" class="btn btn-solid">Talk to us about orbital infrastructure →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEGMENTS -->
+  <section class="sec platform" id="segments">
     <div class="wrap">
       <div class="sec-head reveal">
-        <span class="eyebrow">Operational Domains</span>
-        <h2>Wherever the mission is, Vantage is already watching.</h2>
+        <span class="eyebrow">Who it's for</span>
+        <h2>Every mission. One standard of evidence.</h2>
+        <p>Each mission gets its own acceptance policy — floors on recall, false alarms, and calibration tuned to which failure is unforgivable — and every release ships the sealed evidence that it passed.</p>
       </div>
       <div class="dom-grid">
         <div class="dom reveal">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M3 20h18M5 20V9l7-5 7 5v11M9 20v-5h6v5"/></svg>
-          <h4>Land</h4><p>Ground ISR &amp; force protection</p>
-        </div>
-        <div class="dom reveal">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M3 15c2 1.5 4 1.5 6 0s4-1.5 6 0 4 1.5 6 0M4 15V8l8-4 8 4v7"/></svg>
-          <h4>Sea</h4><p>Maritime domain awareness</p>
-        </div>
-        <div class="dom reveal">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M21 12l-9 3-9-3 9-9zM12 15v6"/></svg>
-          <h4>Air</h4><p>Airspace monitoring &amp; C2</p>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>
+          <span class="lead">Defense &amp; intelligence</span>
+          <h4>Behavioral watch on non-cooperative satellites.</h4>
+          <p>Who moved, why, and whether anything is shadowing a protected asset — on your own servers, even air-gapped, with sealed TEVV evidence for accreditation.</p>
+          <a class="more" href="mailto:contact@vantage.industries?subject=Protected-asset%20watch">Protected-asset watch →</a>
         </div>
         <div class="dom reveal">
           <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><ellipse cx="12" cy="12" rx="9" ry="3.6"/><ellipse cx="12" cy="12" rx="3.6" ry="9"/><circle cx="12" cy="12" r="1.6"/></svg>
-          <h4>Space</h4><p>Space situational awareness</p>
+          <span class="lead">Orbital compute · AI infra</span>
+          <h4>Protection for orbital AI data centers.</h4>
+          <p>Shadower watch and avoidance-grade collision screening around the most valuable hardware in LEO — plus the FCC debris paperwork the constellation license needs.</p>
+          <a class="more" href="#orbital-compute">Orbital infrastructure →</a>
         </div>
         <div class="dom reveal">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9l3 3-3 3M13 15h4"/></svg>
-          <h4>Cyber</h4><p>Network threat autonomy</p>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h8M8 17h5"/></svg>
+          <span class="lead">Commercial operators</span>
+          <h4>Routine-break &amp; proximity alerts.</h4>
+          <p>Alerts when something breaks routine near your fleet or starts shadowing one — the behavior named in operator terms, with a permanent evidence log.</p>
+          <a class="more" href="mailto:contact@vantage.industries?subject=Fleet%20watch">Talk to us →</a>
+        </div>
+        <div class="dom reveal">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>
+          <span class="lead">Launch &amp; compliance</span>
+          <h4>FCC debris paperwork in minutes.</h4>
+          <p>The 5-year-deorbit and casualty-risk exhibits every FCC filing needs — generated in minutes, same pass/fail verdict as NASA's official tool on all 8 orbits tested.</p>
+          <a class="more" href="mailto:contact@vantage.industries?subject=FCC%20compliance">Get your exhibits →</a>
         </div>
       </div>
     </div>
   </section>
 
   <!-- MISSION -->
-  <section class="sec platform" id="mission">
+  <section class="sec" id="mission">
     <div class="wrap">
-      <div class="sec-head reveal" style="max-width:70ch">
+      <div class="sec-head reveal" style="max-width:72ch">
         <span class="eyebrow">Mission</span>
-        <h2>Deterrence is built in software now.</h2>
-        <p style="font-size:19px;color:var(--txt)">The next conflict will be won by whoever turns sensing into decision fastest — and can prove every call they made. Vantage exists to make sure that side is ours and our allies'. We build the autonomous systems that keep human judgment in command while machines carry the load. Fast enough to matter. Accountable enough to trust.</p>
+        <h2>Building the intelligence layer for autonomous space defense.</h2>
+        <p style="font-size:19px;color:var(--txt)">Space is becoming strategic infrastructure — defense assets today, orbital compute platforms and servicing vehicles tomorrow — and the systems protecting it will increasingly act on their own. Software that acts needs software that understands. The contest won't be won by whoever tracks objects best, but by whoever understands behavior best — and can prove every call they made. That's why assurance is the product: Vantage grades its own models against a versioned, explicit gate and hands you sealed, tamper-evident evidence of the result. Fast enough to matter. Accountable enough to trust.</p>
       </div>
     </div>
   </section>
@@ -400,10 +459,10 @@
     <div class="glow2"></div>
     <div class="wrap">
       <span class="eyebrow reveal" style="justify-content:center;display:inline-flex">Request a briefing</span>
-      <h2 class="reveal">See what decision advantage looks like in your theater.</h2>
-      <p class="reveal">Book a technical briefing with the Vantage team. We'll walk your mission set and show a live autonomy loop end-to-end.</p>
+      <h2 class="reveal">See what assured space intelligence looks like for your mission.</h2>
+      <p class="reveal">Book a technical briefing with the Vantage team. We'll walk your mission set and run a live detection-to-evidence loop end-to-end.</p>
       <div class="hero-cta reveal" style="justify-content:center">
-        <a href="mailto:contact@vantage.defense" class="btn btn-solid">contact@vantage.defense</a>
+        <a href="mailto:contact@vantage.industries" class="btn btn-solid">contact@vantage.industries</a>
         <a href="#capabilities" class="btn">View Capabilities</a>
       </div>
     </div>
@@ -426,29 +485,29 @@
           </span>
           VANTAGE
         </a>
-        <p>Autonomous sensing and decision systems for the contested domain.</p>
+        <p>The intelligence layer for space defense: understand what a satellite is doing — and what it's trying to accomplish — from public orbital data, with sealed evidence behind every release. Runs on your own servers, even offline.</p>
       </div>
       <div class="foot-col">
         <h5>Platform</h5>
         <a href="#capabilities">Capabilities</a>
-        <a href="#platform">Vantage OS</a>
-        <a href="#domains">Domains</a>
+        <a href="#platform">How it works</a>
+        <a href="#orbital-compute">Orbital compute</a>
       </div>
       <div class="foot-col">
-        <h5>Company</h5>
-        <a href="#mission">Mission</a>
-        <a href="#contact">Careers</a>
-        <a href="#contact">Press</a>
+        <h5>Missions</h5>
+        <a href="#segments">Defense &amp; intelligence</a>
+        <a href="#segments">Orbital compute · AI infra</a>
+        <a href="#segments">Launch &amp; compliance</a>
       </div>
       <div class="foot-col">
         <h5>Contact</h5>
-        <a href="#contact">Request a Briefing</a>
-        <a href="mailto:contact@vantage.defense">contact@vantage.defense</a>
+        <a href="mailto:contact@vantage.industries">Request a briefing</a>
+        <a href="mailto:contact@vantage.industries">contact@vantage.industries</a>
       </div>
     </div>
     <div class="foot-bot">
-      <p>© 2026 Vantage Defense Systems. All rights reserved.</p>
-      <span class="badge">ITAR-AWARE · HUMAN-ON-THE-LOOP</span>
+      <p>© 2026 Vantage · Assured Space Intelligence</p>
+      <span class="badge">SEALED EVIDENCE · HUMAN-ON-THE-LOOP</span>
     </div>
   </div>
 </footer>
@@ -457,7 +516,8 @@
   const hdr=document.getElementById('hdr');
   addEventListener('scroll',()=>hdr.classList.toggle('scrolled',scrollY>10));
   const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
-  document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%4*70)+'ms';io.observe(el)});
+  document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%4*70)+'ms';io.observe(el);const r=el.getBoundingClientRect();if(r.top<innerHeight&&r.bottom>0)el.classList.add('in')});
+  setTimeout(()=>document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in')),1400);
 </script>
 </body>
 </html>
