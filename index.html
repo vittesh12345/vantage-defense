@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -82,9 +82,6 @@
   /* Primary CTA stays ghost (per decision) — set apart only by a brighter resting border + white label, never a fill */
   .btn-solid{background:transparent;color:var(--color-white);border-color:rgba(255,255,255,.24)}
   .btn-solid:hover{background:transparent;border-color:var(--color-white);color:var(--color-white)}
-  /* Text-link CTA — secondary action, no button chrome (matches the .more idiom) */
-  .btn-link{border:none;border-radius:0;padding:var(--spacing-12) 0;color:var(--color-bone-white)}
-  .btn-link:hover{color:var(--color-white)}
   .nav-toggle{display:none;min-width:44px;min-height:44px;background:none;border:1px solid var(--color-graphite-hairline);border-radius:var(--radius-md);color:var(--color-bone-white);cursor:pointer;padding:var(--spacing-8)}
 
   /* ---------- HERO ---------- */
@@ -120,8 +117,29 @@
   .statement-line .dim{color:var(--color-ash-gray)}
   .statement-line em{font-style:italic}
 
+  /* ---------- CAPABILITIES ---------- */
+  .cap-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:1px;background:var(--color-graphite-hairline);border:1px solid var(--color-graphite-hairline);border-radius:var(--radius-card);overflow:hidden}
+  .cap{background:var(--color-void-black);padding:var(--card-padding);position:relative;overflow:hidden}
+  .cap-feature{grid-row:span 2;display:flex;flex-direction:column;justify-content:center;padding:var(--spacing-48)}
+  .cap-compact{padding:var(--spacing-24) var(--card-padding)}
+  .cap .ico{width:38px;height:38px;color:var(--color-bone-white);margin-bottom:var(--spacing-16)}
+  .cap h3{font-family:var(--font-inter);font-weight:var(--font-weight-semibold);color:var(--color-white);font-size:18.5px;letter-spacing:-.01em;margin-bottom:9px}
+  .cap-feature h3{font-size:24px}
+  .cap p{color:var(--color-ash-gray);font-size:var(--text-body-sm);max-width:62ch}
+  .cap .idx{position:absolute;top:var(--spacing-20);right:var(--spacing-24);font-family:var(--font-commit-mono);font-size:12px;color:var(--color-ash-gray)}
+  .cap .tag{align-self:flex-start;margin-top:var(--spacing-12);display:inline-flex;align-items:center;gap:var(--spacing-8);border:1px solid var(--color-graphite-hairline);background:transparent;padding:var(--spacing-4) var(--spacing-8);border-radius:var(--radius-md);font-family:var(--font-commit-mono);font-size:11px;color:var(--color-ash-gray)}
+  .cap .tag b{color:var(--color-bone-white);font-weight:var(--font-weight-semibold)}
+
   /* ---------- PLATFORM / SPOTLIGHT ---------- */
   .platform{background:var(--color-void-black);border-top:1px solid var(--color-graphite-hairline);border-bottom:1px solid var(--color-graphite-hairline)}
+  .plat-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:var(--spacing-64);align-items:center}
+  .plat-grid.rev{grid-template-columns:.9fr 1.1fr}
+  .plat-list{list-style:none;margin-top:var(--spacing-28);display:flex;flex-direction:column;gap:2px}
+  .plat-list li{display:flex;gap:var(--spacing-16);padding:var(--spacing-20) 0;border-top:1px solid var(--color-graphite-hairline)}
+  .plat-list li:last-child{border-bottom:1px solid var(--color-graphite-hairline)}
+  .plat-list .n{font-family:var(--font-commit-mono);color:var(--color-ash-gray);font-size:14px;flex:0 0 auto;width:var(--spacing-32)}
+  .plat-list h4{font-family:var(--font-inter);font-weight:var(--font-weight-semibold);color:var(--color-white);font-size:16.5px;margin-bottom:4px}
+  .plat-list p{color:var(--color-ash-gray);font-size:14px}
   .terminal{
     background:var(--color-void-black);border:1px solid var(--color-graphite-hairline);border-radius:var(--radius-card);overflow:hidden;
   }
@@ -137,54 +155,45 @@
   @keyframes blink{50%{opacity:0}}
 
   /* Real product screenshot, framed as the mission console (replaces the stylized log) */
-  .demo-shot{display:block;text-decoration:none;max-width:900px;margin:var(--spacing-64) auto 0;transition:border-color var(--motion-fast) var(--motion-ease-out)}
+  .demo-shot{display:block;text-decoration:none;max-width:1040px;margin:var(--spacing-40) auto 0;transition:border-color var(--motion-fast) var(--motion-ease-out)}
   .demo-shot:hover,.demo-shot:focus-visible{border-color:var(--color-iron)}
   .demo-shot img{display:block;width:100%;height:auto}
   .term-open{margin-left:auto;font-family:var(--font-commit-mono);font-size:12px;color:var(--color-ash-gray);transition:color var(--motion-fast) var(--motion-ease-out)}
   .demo-shot:hover .term-open,.demo-shot:focus-visible .term-open{color:var(--color-white)}
 
   /* ---------- SEGMENTS ---------- */
-  .dom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--color-graphite-hairline);border:1px solid var(--color-graphite-hairline);border-radius:var(--radius-card);overflow:hidden}
+  .dom-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--color-graphite-hairline);border:1px solid var(--color-graphite-hairline);border-radius:var(--radius-card);overflow:hidden}
   .dom{background:var(--color-void-black);padding:var(--card-padding);display:flex;flex-direction:column}
   .dom .ico{width:34px;height:34px;color:var(--color-bone-white);margin-bottom:var(--spacing-16)}
-  .dom h3,.dom h4{font-family:var(--font-inter);font-weight:var(--font-weight-semibold);color:var(--color-white);font-size:19px;letter-spacing:-.01em;margin-bottom:10px}
+  .dom h4{font-family:var(--font-inter);font-weight:var(--font-weight-semibold);color:var(--color-white);font-size:19px;letter-spacing:-.01em;margin-bottom:10px}
   .dom p{font-size:var(--text-body-sm);color:var(--color-ash-gray)}
   .dom .lead{display:inline-block;margin-bottom:12px;font-family:var(--font-commit-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-ash-gray)}
-  .dom .proof{margin-top:auto;padding-top:var(--spacing-16);border-top:1px solid var(--color-graphite-hairline);font-family:var(--font-commit-mono);font-size:12px;color:var(--color-ash-gray)}
-  .dom .proof b{color:var(--color-bone-white);font-weight:var(--font-weight-semibold)}
   .dom .more{margin-top:auto;padding-top:var(--spacing-20);font-family:var(--font-inter);font-size:13px;color:var(--color-bone-white);transition:color var(--motion-fast) var(--motion-ease-out)}
   .dom .more:hover{color:var(--color-white)}
 
-  /* ---------- WHO IT'S FOR — accordion (hooks visible, elaborate on expand) ---------- */
-  .seg-list{border-top:1px solid var(--color-graphite-hairline)}
-  .seg{border-bottom:1px solid var(--color-graphite-hairline)}
-  .seg-head{width:100%;display:flex;align-items:flex-start;gap:var(--spacing-24);padding:var(--spacing-24) 0;background:transparent;border:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
-  .seg-labels{flex:1 1 auto;display:flex;flex-direction:column;gap:var(--spacing-8)}
-  .seg-label{font-family:var(--font-commit-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-ash-gray)}
-  .seg-hook{font-family:var(--font-inter);font-weight:var(--font-weight-semibold);color:var(--color-white);font-size:clamp(18px,2vw,22px);letter-spacing:-.01em;line-height:1.25;transition:color var(--motion-fast) var(--motion-ease-out)}
-  .seg-head:hover .seg-hook{color:var(--color-white)}
-  .seg-toggle{position:relative;flex:0 0 auto;width:16px;height:16px;margin-top:5px}
-  .seg-toggle::before,.seg-toggle::after{content:"";position:absolute;background:var(--color-ash-gray);transition:transform var(--motion-fast) var(--motion-ease-out),background var(--motion-fast) var(--motion-ease-out)}
-  .seg-toggle::before{top:50%;left:0;right:0;height:1px;transform:translateY(-50%)}
-  .seg-toggle::after{left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%)}
-  .seg.open .seg-toggle::after{transform:translateX(-50%) scaleY(0)}
-  .seg-head:hover .seg-toggle::before,.seg-head:hover .seg-toggle::after,.seg.open .seg-toggle::before{background:var(--color-bone-white)}
-  .seg-panel{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--motion-fast) var(--motion-ease-out)}
-  .seg.open .seg-panel{grid-template-rows:1fr}
-  .seg-panel-inner{overflow:hidden;min-height:0}
-  .seg-panel p{color:var(--color-ash-gray);font-size:var(--text-body-sm);line-height:1.6;max-width:74ch;padding-bottom:var(--spacing-16)}
-  .seg-cta{display:inline-block;font-family:var(--font-inter);font-size:13px;color:var(--color-bone-white);padding-bottom:var(--spacing-24);transition:color var(--motion-fast) var(--motion-ease-out)}
-  .seg-cta:hover{color:var(--color-white)}
+  /* ---------- CAPABILITY SPEC STRIP (secondary, denser) ---------- */
+  .spec-strip{display:grid;grid-template-columns:.8fr 1.2fr;gap:1px;margin-top:var(--spacing-16);background:var(--color-graphite-hairline);border:1px solid var(--color-graphite-hairline);border-radius:var(--radius-card);overflow:hidden}
+  .spec-strip .item{background:var(--color-void-black);padding:var(--spacing-24) var(--card-padding)}
+  .spec-strip .k{display:block;font-family:var(--font-commit-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-ash-gray);margin-bottom:var(--spacing-12)}
+  .spec-strip p{font-size:var(--text-body-sm);color:var(--color-ash-gray);line-height:1.55}
+  .spec-strip .m{display:block;margin-top:var(--spacing-12);font-family:var(--font-commit-mono);font-size:12px;color:var(--color-bone-white)}
 
-  /* ---------- PLATFORM: heading + vertical pipeline (two-col), demo below ---------- */
-  .plat-top{display:grid;grid-template-columns:0.9fr 1.1fr;gap:var(--spacing-48);align-items:start}
-  .plat-top .sec-head{margin-bottom:0}
-  .pipeline{display:flex;flex-direction:column}
-  .pipeline .stage{display:flex;gap:var(--spacing-24);padding:var(--spacing-20) 0;align-items:baseline}
-  .pipeline .stage:first-child{padding-top:0}
-  .pipeline .stage + .stage{border-top:1px solid var(--color-graphite-hairline)}
-  .pipeline .sn{flex:0 0 104px;font-family:var(--font-commit-mono);font-size:13px;color:var(--color-bone-white)}
-  .pipeline p{color:var(--color-ash-gray);font-size:var(--text-body-sm);line-height:1.5}
+  /* ---------- ASSURANCE CALLOUT (differentiator) ---------- */
+  .assurance{display:grid;grid-template-columns:.85fr 1.15fr;gap:var(--spacing-40);align-items:center;margin-top:var(--spacing-32);border:1px solid var(--color-graphite-hairline);border-radius:var(--radius-panel);padding:var(--spacing-48) var(--card-padding)}
+  .assurance .kicker{font-family:var(--font-commit-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--color-ash-gray)}
+  .assurance h3{font-family:var(--font-inter);font-weight:var(--font-weight-medium);color:var(--color-white);font-size:clamp(24px,3vw,34px);letter-spacing:-.02em;line-height:1.15;margin:var(--spacing-12) 0}
+  .assurance .kicker2{font-family:var(--font-commit-mono);font-size:13px;color:var(--color-bone-white)}
+  .assurance p{color:var(--color-ash-gray);font-size:var(--text-body-sm);margin-bottom:16px}
+  .assurance .metrics{font-family:var(--font-commit-mono);font-size:12px;line-height:1.9;color:var(--color-bone-white);border-top:1px solid var(--color-graphite-hairline);padding-top:var(--spacing-12)}
+  .assurance .metrics .ok{color:var(--color-pulse-green)}
+  .assurance .metrics .vi{color:var(--color-iris-violet)}
+
+  /* ---------- PLATFORM PIPELINE (horizontal, dense) ---------- */
+  .pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:var(--spacing-40);background:var(--color-graphite-hairline);border:1px solid var(--color-graphite-hairline);border-radius:var(--radius-card);overflow:hidden}
+  .pipeline .stage{background:var(--color-void-black);padding:var(--spacing-24);display:flex;flex-direction:column;gap:var(--spacing-8)}
+  .pipeline .sn{font-family:var(--font-commit-mono);font-size:12px;letter-spacing:.06em;color:var(--color-ash-gray)}
+  .pipeline h4{font-family:var(--font-inter);font-weight:var(--font-weight-semibold);color:var(--color-white);font-size:16px;letter-spacing:-.01em}
+  .pipeline p{color:var(--color-ash-gray);font-size:13px;line-height:1.5}
 
   /* ---------- CTA BAND ---------- */
   .cta{position:relative;overflow:hidden;text-align:center;padding:var(--spacing-96) 0}
@@ -208,6 +217,8 @@
   .mission-copy{max-width:60ch}
   .mission-copy p{font-size:19px;color:var(--color-bone-white)}
   .mission-copy p + p{margin-top:var(--spacing-20)}
+  .orbital-head{margin-bottom:0}
+  .orbital-cta{margin-top:var(--spacing-24)}
   .footer-brand{font-size:18px}
 
   .reveal{opacity:0;transform:translateY(22px);transition:opacity var(--motion-reveal) var(--motion-ease-out),transform var(--motion-reveal) var(--motion-ease-out)}
@@ -216,7 +227,6 @@
     html{scroll-behavior:auto}
     .reveal{opacity:1;transform:none;transition:none}
     .term-body .blink{animation:none}
-    .seg-panel,.seg-toggle::before,.seg-toggle::after{transition:none}
   }
 
   @media(max-width:900px){
@@ -225,12 +235,18 @@
     .navlinks{display:none;position:absolute;top:68px;left:0;right:0;padding:var(--spacing-12) var(--spacing-28) var(--spacing-20);background:rgba(0,0,0,.96);border-bottom:1px solid var(--color-graphite-hairline);flex-direction:column;align-items:stretch;gap:0}
     header.menu-open .navlinks{display:flex}
     .navlinks a{padding:var(--spacing-12) 0;border-top:1px solid var(--color-graphite-hairline)}
-    .plat-top{grid-template-columns:1fr;gap:var(--spacing-40)}
+    .cap-grid{grid-template-columns:1fr}
+    .cap-feature{grid-row:auto;padding:var(--card-padding)}
+    .cap-compact{padding:var(--card-padding)}
+    .plat-grid,.plat-grid.rev{grid-template-columns:1fr;gap:var(--spacing-40)}
+    .pipeline{grid-template-columns:1fr 1fr}
+    .spec-strip{grid-template-columns:1fr}
+    .assurance{grid-template-columns:1fr;gap:var(--spacing-24)}
     .dom-grid{grid-template-columns:1fr}
     .foot-top{grid-template-columns:1fr 1fr}
   }
   @media(max-width:560px){
-    .hero-stats,.foot-top{grid-template-columns:1fr}
+    .hero-stats,.cap-grid,.pipeline,.foot-top{grid-template-columns:1fr}
     .nav-cta{display:none}
     .wrap{padding-left:var(--spacing-20);padding-right:var(--spacing-20)}
     .navlinks{padding-left:var(--spacing-20);padding-right:var(--spacing-20)}
@@ -259,6 +275,8 @@
       <div class="navlinks" id="primary-nav">
         <a href="#capabilities">Capabilities</a>
         <a href="#platform">Platform</a>
+        <a href="demo/">Live Demo</a>
+        <a href="#orbital-compute">Orbital Compute</a>
         <a href="#segments">Who It's For</a>
         <a href="#mission">Mission</a>
       </div>
@@ -280,7 +298,7 @@
       <p class="lede reveal">Vantage reads satellite behavior from public orbital data. It detects maneuvers, infers intent, and flags shadowing. Every call includes a written rationale and sealed evidence. No telescopes or radar.</p>
       <div class="hero-cta reveal">
         <a href="mailto:contact@vantage.industries" class="btn btn-solid">Request a Briefing →</a>
-        <a href="demo/" class="btn btn-link">See the live demo →</a>
+        <a href="demo/" class="btn">See the live demo →</a>
       </div>
 
       <div class="hero-stats reveal">
@@ -304,26 +322,49 @@
       <div class="sec-head reveal">
         <span class="eyebrow">Capabilities</span>
         <h2>What it did, why, and whether it's a threat.</h2>
-        <p>Vantage answers behavioral questions, not positional ones — one stack, running where the mission is, even fully offline on your own hardware.</p>
+        <p>Vantage answers behavioral questions, not positional ones — one stack covering maneuver, intent, and proximity threat, running where the mission is, including fully offline on your own hardware.</p>
       </div>
-      <div class="dom-grid">
-        <div class="dom reveal">
-          <span class="lead">What it did</span>
+      <div class="cap-grid">
+        <div class="cap cap-feature reveal"><span class="idx">01</span>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="3.5"/></svg>
           <h3>Maneuver Detection</h3>
           <p>Subtracts the drift physics explains — J2 oblateness, atmospheric drag — from each object's public element-set history. The residual Δv is somebody's engine: detected, measured, timestamped.</p>
-          <span class="proof"><b>84%</b> caught · <b>0</b> false alarms</span>
+          <span class="tag">▸ <b>84% caught · 0 false alarms · sealed bench</b></span>
         </div>
-        <div class="dom reveal">
-          <span class="lead">Why</span>
+        <div class="cap cap-compact reveal"><span class="idx">02</span>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false"><path d="M12 2l3 6 6 .9-4.5 4.3L18 20l-6-3.2L6 20l1.5-6.8L3 8.9 9 8z"/></svg>
           <h3>Intent Classification</h3>
-          <p>Names the reason for a burn — station-keeping, orbit raise or lower, rendezvous, collision-avoidance — with a confidence band and a rule-based rationale. No black box to trust.</p>
-          <span class="proof"><b>auditable</b> · every call</span>
+          <p>Names the reason for a burn — station-keeping, orbit raise or lower, rendezvous, collision-avoidance — with a confidence band and a rule-based, fully auditable rationale on every call. No black box to trust.</p>
+          <span class="tag">▸ <b>written rationale · every call</b></span>
         </div>
-        <div class="dom reveal">
-          <span class="lead">Whether it's a threat</span>
+        <div class="cap cap-compact reveal"><span class="idx">03</span>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false"><path d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7z"/><circle cx="12" cy="11.5" r="2"/></svg>
           <h3>Proximity / RPO Watch</h3>
           <p>Separates a deliberate shadower from an incidental pass or a benign co-orbiting formation. One-sidedness is the discriminator: one party burns fuel to hold station next to another that never agreed.</p>
-          <span class="proof"><b>100%</b> on seeded shadowing</span>
+          <span class="tag">▸ <b>100% on seeded shadowing</b></span>
+        </div>
+      </div>
+      <div class="spec-strip reveal">
+        <div class="item">
+          <span class="k">Collision risk · screening prior</span>
+          <p>Conjunction screening calibrated against 162,634 ESA close-approach reports. A labeled screening prior — public element sets carry no covariance — that ranks which conjunctions deserve an analyst, not an operational probability of collision.</p>
+          <span class="m">ROC-AUC 0.963 · Brier 0.010</span>
+        </div>
+        <div class="item">
+          <span class="k">Pattern-of-life · per-object baseline</span>
+          <p>Baselines each object against its own history — activity class, maneuver cadence, burn size — and scores new behavior against the prior that existed before it. Dormant-then-active is the classic early warning.</p>
+          <span class="m">1,039 baselines · scored pre-event</span>
+        </div>
+      </div>
+      <div class="assurance reveal">
+        <div>
+          <span class="kicker">Sealed assurance</span>
+          <h3>Assurance is the product.</h3>
+          <span class="kicker2">Receipts, not claims.</span>
+        </div>
+        <div>
+          <p>Every model behind the feed is graded against explicit, versioned acceptance floors — detection recall, false-alarm rate, collision calibration, shadower recall — on every release, then sealed into a tamper-evident bundle. Change one number and the seal breaks.</p>
+          <div class="metrics">policy vantage-ssa-v1 · <span class="ok">14 PASS · 0 FAIL</span> · 1 SKIP (disclosed) · 2 MONITOR<br>sealed <span class="vi">sha256:732c19…</span></div>
         </div>
       </div>
     </div>
@@ -332,23 +373,58 @@
   <!-- PLATFORM -->
   <section class="sec platform" id="platform">
     <div class="wrap">
-      <div class="plat-top">
-        <div class="sec-head reveal">
-          <span class="eyebrow">The Platform</span>
-          <h2>From a new element set to an assessed event.</h2>
-          <p>The <em>why</em> comes off a pipeline that runs end-to-end in seconds: it turns a public catalog into an assessed event and attaches its own evidence to every result.</p>
-        </div>
-        <div class="pipeline reveal">
-          <div class="stage"><span class="sn">01 · Ingest</span><p>Public catalogs in — CelesTrak, Space-Track, five-year histories. No proprietary sensor.</p></div>
-          <div class="stage"><span class="sn">02 · Detect</span><p>Subtract physics; the residual Δv is thrust, measured and timestamped.</p></div>
-          <div class="stage"><span class="sn">03 · Assess</span><p>Six models name intent and score proximity, conjunction, and pattern-of-life.</p></div>
-          <div class="stage"><span class="sn">04 · Report</span><p>The assessed event lands in the mission feed, evidence attached.</p></div>
-        </div>
+      <div class="sec-head reveal">
+        <span class="eyebrow">The Platform</span>
+        <h2>From a new element set to an assessed event.</h2>
+        <p>The <em>why</em> comes off a pipeline that runs end-to-end in seconds: it turns a public catalog into an assessed event and attaches its own evidence to every result.</p>
+      </div>
+      <div class="pipeline reveal">
+        <div class="stage"><span class="sn">01 · Ingest</span><h4>Public catalogs in</h4><p>Open connectors normalize public catalogs (CelesTrak, Space-Track) and five-year element-set histories into one data fabric. No proprietary sensor required.</p></div>
+        <div class="stage"><span class="sn">02 · Detect</span><h4>Subtract physics</h4><p>Remove J2 oblateness and atmospheric drag; the residual is thrust — detected, measured, timestamped. 519 maneuvers on a 1,039-object catalog in 6.0 s.</p></div>
+        <div class="stage"><span class="sn">03 · Assess</span><h4>Name the behavior</h4><p>Six models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life — confidence plus written rationale.</p></div>
+        <div class="stage"><span class="sn">04 · Report</span><h4>Evidence attached</h4><p>The event lands in the mission feed with its evidence attached, from models graded against a sealed assurance gate a reviewer can re-check.</p></div>
       </div>
       <a class="terminal demo-shot reveal" href="demo/">
         <div class="term-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="t">vantage.industries/demo</span><span class="term-open">Open live demo ↗</span></div>
         <img src="assets/demo-console.png" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage mission console: a live LEO feed flags a foreign inspector maneuvering to shadow an orbital AI data center, with the evidence panel showing the signals behind the call, the one-sidedness discriminator, and a sealed assurance PASS." />
       </a>
+    </div>
+  </section>
+
+  <!-- ORBITAL COMPUTE -->
+  <section class="sec" id="orbital-compute">
+    <div class="wrap">
+      <div class="plat-grid rev">
+        <div class="terminal reveal">
+          <div class="term-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="t">vantage · orbital-compute watch</span></div>
+          <div class="term-body">
+<span class="c4">// protecting an AI compute constellation</span><br>
+<span class="c2">[ node ]</span> STARFORGE COMPUTE-01 <span class="c4">· 575 km</span><br>
+<span class="c2">[ node ]</span> STARFORGE COMPUTE-02..04 <span class="c1">nominal</span><br>
+<span class="c4">formation ....... </span><span class="c1">benign</span> <span class="c4">(held by orbital mechanics)</span><br>
+<span class="c3">[ THREAT ]</span> RUS-INSPECTOR-11039<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c4">→ shadowing</span> COMPUTE-01<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c4">min range</span> .. 3.0 km · co-moving<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c4">score</span> ...... <span class="c3">0.81 HIGH</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="c4">signals</span> .... one-sided, persistent, low Δv<br>
+<span class="c1">&gt;</span> operator notified <span class="blink">▊</span>
+          </div>
+        </div>
+        <div>
+          <div class="sec-head orbital-head reveal">
+            <span class="eyebrow">Orbital compute · AI infrastructure</span>
+            <h2>Someone is parking next to your data center.</h2>
+            <p>Orbital compute nodes combine high-value hardware, limited propellant, and long replacement timelines. Operators need to distinguish a deliberate approach from ordinary formation geometry before committing to a response.</p>
+          </div>
+          <ul class="plat-list reveal">
+            <li><span class="n">›</span><div><h4>Is that approach deliberate?</h4><p>Vantage flags a shadower and tells it apart from a benign co-orbiting node (100% on seeded scenarios), the discrimination that keeps a false-alarm feed from burning your on-call rotation.</p></div></li>
+            <li><span class="n">›</span><div><h4>Should we spend an avoidance burn?</h4><p>Collision screening calibrated against 162,634 ESA close-approach reports ranks which conjunctions need analyst review before an operator commits propellant.</p></div></li>
+          </ul>
+          <div class="hero-cta orbital-cta reveal">
+            <a href="mailto:contact@vantage.industries?subject=Orbital%20infrastructure" class="btn btn-solid">Talk to us about orbital infrastructure →</a>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -360,51 +436,20 @@
         <h2>Every mission. One standard of evidence.</h2>
         <p>Each mission gets its own acceptance policy: floors on recall, false alarms, and calibration tuned to which failure is unforgivable. Every release ships the sealed evidence that it passed.</p>
       </div>
-      <div class="seg-list reveal">
-        <div class="seg open">
-          <button class="seg-head" type="button" id="seg-btn-1" aria-expanded="true" aria-controls="seg-panel-1">
-            <span class="seg-labels">
-              <span class="seg-label">Defense &amp; intelligence</span>
-              <span class="seg-hook">A satellite you don't control just maneuvered next to one you do.</span>
-            </span>
-            <span class="seg-toggle" aria-hidden="true"></span>
-          </button>
-          <div class="seg-panel" id="seg-panel-1" role="region" aria-labelledby="seg-btn-1">
-            <div class="seg-panel-inner">
-              <p>You have to call it — routine, or a threat worth acting on — and defend that call to leadership. Vantage names what the object did and why, tells a deliberate shadow from an incidental pass, and runs on your own servers, even air-gapped. Every alert carries a written rationale and sealed evidence an analyst can inspect.</p>
-              <a class="seg-cta" href="mailto:contact@vantage.industries?subject=Protected-asset%20watch">Protected-asset watch →</a>
-            </div>
-          </div>
+      <div class="dom-grid">
+        <div class="dom reveal">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true" focusable="false"><path d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>
+          <span class="lead">Defense &amp; intelligence</span>
+          <h4>A satellite you don't control just maneuvered next to one you do.</h4>
+          <p>You have to call it — routine, or a threat worth acting on — and defend that call to leadership. Vantage names what the object did and why, tells a deliberate shadow from an incidental pass, and runs on your own servers, even air-gapped. Every alert carries a written rationale and sealed evidence an analyst can inspect.</p>
+          <a class="more" href="mailto:contact@vantage.industries?subject=Protected-asset%20watch">Protected-asset watch →</a>
         </div>
-        <div class="seg">
-          <button class="seg-head" type="button" id="seg-btn-2" aria-expanded="false" aria-controls="seg-panel-2">
-            <span class="seg-labels">
-              <span class="seg-label">Satellite operators</span>
-              <span class="seg-hook">Something in your fleet just broke its own routine.</span>
-            </span>
-            <span class="seg-toggle" aria-hidden="true"></span>
-          </button>
-          <div class="seg-panel" id="seg-panel-2" role="region" aria-labelledby="seg-btn-2" inert>
-            <div class="seg-panel-inner">
-              <p>Was that a normal station-keep, the first sign a bus is failing, or someone parking alongside? Vantage baselines every satellite against its own pattern of life and flags what breaks it — named in operator terms, calibrated to keep false alarms off your on-call rotation. A permanent evidence log sits behind every notification.</p>
-              <a class="seg-cta" href="mailto:contact@vantage.industries?subject=Fleet%20watch">Fleet watch →</a>
-            </div>
-          </div>
-        </div>
-        <div class="seg">
-          <button class="seg-head" type="button" id="seg-btn-3" aria-expanded="false" aria-controls="seg-panel-3">
-            <span class="seg-labels">
-              <span class="seg-label">Orbital compute · AI infrastructure</span>
-              <span class="seg-hook">Someone is parking next to your data center.</span>
-            </span>
-            <span class="seg-toggle" aria-hidden="true"></span>
-          </button>
-          <div class="seg-panel" id="seg-panel-3" role="region" aria-labelledby="seg-btn-3" inert>
-            <div class="seg-panel-inner">
-              <p>High-value hardware, limited propellant, replacements years away — and formation flying makes a real approach look like ordinary geometry. Vantage tells a deliberate shadow from a benign co-orbiting node, and ranks which conjunctions are worth an avoidance burn before you spend propellant. Every call ships the evidence behind it.</p>
-              <a class="seg-cta" href="mailto:contact@vantage.industries?subject=Orbital%20infrastructure">Orbital infrastructure watch →</a>
-            </div>
-          </div>
+        <div class="dom reveal">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 14h8M8 17h5"/></svg>
+          <span class="lead">Satellite operators</span>
+          <h4>Something in your fleet just broke its own routine.</h4>
+          <p>Was that a normal station-keep, the first sign a bus is failing, or someone parking alongside? Vantage baselines every satellite against its own pattern of life and flags what breaks it — named in operator terms, calibrated to keep false alarms off your on-call rotation. A permanent evidence log sits behind every notification.</p>
+          <a class="more" href="mailto:contact@vantage.industries?subject=Fleet%20watch">Fleet watch →</a>
         </div>
       </div>
     </div>
@@ -460,12 +505,13 @@
         <a href="#capabilities">Capabilities</a>
         <a href="#platform">How it works</a>
         <a href="demo/">Live demo</a>
+        <a href="#orbital-compute">Orbital compute</a>
       </div>
       <div class="foot-col">
         <h5>Missions</h5>
         <a href="#segments">Defense &amp; intelligence</a>
         <a href="#segments">Satellite operators</a>
-        <a href="#segments">Orbital compute · AI infra</a>
+        <a href="#orbital-compute">Orbital compute · AI infra</a>
       </div>
       <div class="foot-col">
         <h5>Contact</h5>
@@ -500,18 +546,6 @@
   addEventListener('click',event=>{if(!hdr.contains(event.target))closeMenu()});
   addEventListener('resize',()=>{if(innerWidth>900)closeMenu()});
   addEventListener('scroll',()=>hdr.classList.toggle('scrolled',scrollY>10));
-  const segs=[...document.querySelectorAll('#segments .seg')];
-  segs.forEach(seg=>{
-    seg.querySelector('.seg-head').addEventListener('click',()=>{
-      const willOpen=!seg.classList.contains('open');
-      segs.forEach(s=>{
-        const on=(s===seg)&&willOpen;
-        s.classList.toggle('open',on);
-        s.querySelector('.seg-head').setAttribute('aria-expanded',String(on));
-        s.querySelector('.seg-panel').inert=!on;
-      });
-    });
-  });
   const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
   document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(i%4*70)+'ms';io.observe(el);const r=el.getBoundingClientRect();if(r.top<innerHeight&&r.bottom>0)el.classList.add('in')});
   setTimeout(()=>document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in')),1400);
