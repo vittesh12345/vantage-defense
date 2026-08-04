@@ -4,7 +4,7 @@
 
 **Theme:** dark only
 
-Vantage runs on a pure-black canvas (`#000000`) with content lifted onto three progressively lighter near-black surfaces. Hierarchy comes from scale, tracking, and surface level, never from drop shadows or fills. Inter carries prose at weights 500 and 600; IBM Plex Mono carries everything the engine says, which means every figure, label, timestamp, hash, and status readout. Buttons are ghost outlines without exception. Radii stop at 4px. The single decorative liberty in the system is color, and it is rationed: green, amber, and red appear only where they carry a real state.
+Vantage runs on a pure-black canvas (`#000000`) with content lifted onto three progressively lighter near-black surfaces. Hierarchy comes from scale, tracking, and surface level, never from drop shadows or fills. Space Grotesk carries prose at weights 500 and 600; IBM Plex Mono carries everything the engine says, which means every figure, label, timestamp, hash, and status readout. Buttons are ghost outlines without exception. Radii stop at 4px. The single decorative liberty in the system is color, and it is rationed: green, amber, and red appear only where they carry a real state.
 
 The reference point is a mission console, not an agency site. When a choice is between "expressive" and "legible under scrutiny," the system picks legible.
 
@@ -63,15 +63,21 @@ The previous palette carried `--color-signal-blue` and `--color-iris-violet`, ea
 
 ## Tokens: Typography
 
-### Inter: prose
+### Space Grotesk: prose
 `--font-sans` · weights 400 / 500 / 600. Only 500 and 600 have tokens (`--font-weight-medium` / `-semibold`); 400 is the body default and is never set explicitly, so it has none.
 
 Headings sit at 500 and sub-headings at 600. Display sizes carry `-0.03em` tracking; nothing above 20px is left at default tracking. Nothing is set in 700.
+
+It replaced Inter, which is the default face of nearly every scaffolded startup page and read as a template no matter what surrounded it. Space Grotesk is wider, has a larger x-height, and reads technical rather than institutional, which is the register this product wants. **It sets optically larger than Inter at the same px**, so the display sizes and the negative tracking were re-checked against it rather than inherited; if the scale changes again, re-check line wrapping at 390px, where the hero headline is closest to breaking.
+
+Overtly sci-fi faces (Orbitron, Michroma, Rajdhani) were rejected on purpose. They read as game HUD or crypto project and work directly against a product whose pitch is auditable evidence for defense buyers. Futurism here comes from proportion, not from styling.
 
 ### IBM Plex Mono: machine voice
 `--font-mono` · weights 400 / 500 / 600
 
 Everything the system *reports* is mono: figures, eyebrows, section labels, tags, timestamps, the assurance readout, hashes, diagram labels, the contact address. Prose is never mono. This split is the strongest single carrier of the brand.
+
+**Not Space Mono**, the superfamily sibling of the prose face. Space Mono is slab-ish and very wide, which hurts precisely where this system leans on mono hardest: dense timestamps, hashes and the gate readout. Keeping two unrelated families also widens the visible gap between prose and machine voice, which is the point of the split.
 
 ### Type scale
 
@@ -147,7 +153,7 @@ Two earlier failures this rule is written to prevent, both of which had shipped:
 ## Components
 
 ### Ghost button
-Transparent fill, 1px `--rule-edge` border, `--radius-sm`, `min-height: 44px`, 12px/20px padding, Inter 14px. Hover raises the border and label to `--text-primary`. `.btn-primary` differs only by a brighter resting border (`rgba(255,255,255,.42)`) and a white label. **There is no filled button anywhere in the system**; priority is carried by border and label brightness.
+Transparent fill, 1px `--rule-edge` border, `--radius-sm`, `min-height: 44px`, 12px/20px padding, Space Grotesk 14px. Hover raises the border and label to `--text-primary`. `.btn-primary` differs only by a brighter resting border (`rgba(255,255,255,.42)`) and a white label. **There is no filled button anywhere in the system**; priority is carried by border and label brightness.
 
 ### Eyebrow
 Mono 12px, uppercase, `0.2em` tracking, `--text-faint`, preceded by a 26px `--rule-edge` rule. This is the canonical section label: whatever the eyebrow says is what the nav link and the footer link say.
@@ -195,7 +201,7 @@ Label in mono 11px uppercase above the control. Control on `--surface-panel` wit
 
 ### Do
 - Alternate section surfaces and give every section boundary a full-bleed `--rule-edge` rule. Both, every time.
-- Put every figure, label, hash, and status readout in IBM Plex Mono, and all prose in Inter. The split is the brand.
+- Put every figure, label, hash, and status readout in IBM Plex Mono, and all prose in Space Grotesk. The split is the brand.
 - Use `--status-nominal`, `--status-watch`, and `--status-threat` only where that exact state is being reported.
 - Let type and index numbers carry a list. Reach for a card grid at most once per page.
 - Give a diagram a caption that says it is a schematic, and give a product screenshot the same frame so the two stay accountable to each other.
@@ -257,7 +263,7 @@ The page deliberately changes primitive from section to section: asymmetric hero
 
 The system covers three pages, not two. `/demo/` is a **product surface**, not a marketing page, and that earns it exactly one exception: it keeps its own shell, a sticky status bar in place of the fixed site header and no footer. Everything inside that shell is drawn from the same tokens as the rest of the site, and it links `tokens.css` and `site.css` like every other page.
 
-It used to be a second design system in the same repository: a private `:root` with a blue-black `#080b11` canvas, Space Grotesk and IBM Plex Sans instead of Inter, a `#57a0c4` accent, 6px radii, a glowing status dot, and a filled primary button. It imported neither stylesheet. Since it is the page a buyer clicks into from the landing page, it read as a different company's product.
+It used to be a second design system in the same repository: a private `:root` with a blue-black `#080b11` canvas, Space Grotesk and IBM Plex Sans against the rest of the site's Inter, a `#57a0c4` accent, 6px radii, a glowing status dot, and a filled primary button. It imported neither stylesheet. Since it is the page a buyer clicks into from the landing page, it read as a different company's product.
 
 Two decisions worth keeping:
 
@@ -279,7 +285,7 @@ The contact page applies the same principle to its form: the working, script-fre
 /* Rules */       #3d4552 (inside) · #525a66 (structure)
 /* Text */        #ffffff · #e8eaec · #a1a4a5 · #878c95      (worst pairing 4.61:1)
 /* Status */      #3ad389 nominal · #ffca16 watch · #ff6b5f threat
-/* Type */        Inter 400/500/600 · IBM Plex Mono 400/500/600
+/* Type */        Space Grotesk 400/500/600 · IBM Plex Mono 400/500/600
 /* Sections */    96 · 64 · 128, alternating canvas/band, never both the same twice
 /* Radius */      2px · 4px
 /* Primary action */ ghost outline, rgba(255,255,255,.42) border, white label: never filled

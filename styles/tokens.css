@@ -49,7 +49,18 @@
   --status-threat:  #ff6b5f;   /* high severity, shadowing, threat            */
 
   /* --- Type ---------------------------------------------------------------- */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Space Grotesk carries prose. It replaced Inter, which is the default face
+     of almost every scaffolded startup page and read as a template regardless
+     of what surrounded it. Grotesk is wider and has a larger x-height, so it
+     sets optically larger than Inter at the same px: the display sizes and
+     tracking below were re-tuned for it, not inherited.
+
+     The mono is deliberately NOT Space Mono, its superfamily sibling. Space
+     Mono is slab-ish and very wide, which hurts exactly where this system uses
+     mono most: dense timestamps, hashes and gate readouts. IBM Plex Mono stays,
+     and the wider gap between the two families sharpens the prose-vs-machine
+     split that the brand rests on. */
+  --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   /* 400 is the body default and is never set explicitly, so it has no token. */
