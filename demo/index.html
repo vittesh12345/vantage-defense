@@ -5,13 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Vantage · Live Demo</title>
 <meta name="description" content="An interactive replay of Vantage catching a foreign inspector shadowing an orbital AI data center: maneuver detection, intent, proximity-threat screening, and sealed assurance, from real engine output on the seeded scenario." />
+<meta name="theme-color" content="#080b11" />
+<link rel="canonical" href="https://vantage.industries/demo/" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Vantage" />
+<meta property="og:title" content="Vantage · Live Demo" />
+<meta property="og:description" content="An interactive replay of Vantage catching a foreign inspector shadowing an orbital AI data center: maneuver detection, intent, proximity-threat screening, and sealed assurance." />
+<meta property="og:url" content="https://vantage.industries/demo/" />
+<meta property="og:image" content="https://vantage.industries/assets/demo-console.png" />
+<meta property="og:image:width" content="1584" />
+<meta property="og:image:height" content="928" />
+<meta property="og:image:alt" content="The Vantage mission console: a live LEO feed flagging a foreign inspector that maneuvered to shadow an orbital AI data center, with the evidence panel open beside it." />
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Vantage · Live Demo" />
+<meta name="twitter:description" content="An interactive replay of Vantage catching a foreign inspector shadowing an orbital AI data center: maneuver detection, intent, proximity-threat screening, and sealed assurance." />
+<meta name="twitter:image" content="https://vantage.industries/assets/demo-console.png" />
+<meta name="twitter:image:alt" content="The Vantage mission console: a live LEO feed flagging a foreign inspector that maneuvered to shadow an orbital AI data center, with the evidence panel open beside it." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#080b11; --panel:#0d121b; --panel2:#131a26; --border:#1d2532;
-    --muted:#5e7088; --fg:#c2cedd; --bright:#e6edf6;
+    /* --muted carries every timestamp, sub-line and panel title on this page,
+       all of them under 18.66px, so it has to clear 4.5:1 on all three
+       surfaces. Same hue and saturation as before, lifted in lightness:
+       5.73:1 on --bg, 5.46:1 on --panel, 5.08:1 on --panel2. */
+    --muted:#7a8ca3; --fg:#c2cedd; --bright:#e6edf6;
     --accent:#57a0c4; --ok:#57b98a; --warn:#cf9a45; --crit:#d65f6b;
     --font-d:'Space Grotesk',system-ui,sans-serif;
     --font-m:'IBM Plex Mono',ui-monospace,monospace;
@@ -42,8 +65,20 @@
   .panel-h .ttl{font-family:var(--font-m);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
   .panel-h .ctl{display:flex;gap:8px}
   .chip-btn{font-family:var(--font-m);font-size:10.5px;color:var(--fg);background:transparent;border:1px solid var(--border);
-            border-radius:2px;padding:4px 10px;cursor:pointer;transition:.15s}
+            border-radius:2px;padding:7px 12px;cursor:pointer;transition:.15s}
   .chip-btn:hover{border-color:var(--accent);color:var(--accent)}
+  /* The escape hatch out of the timed replay. It is the one control a visitor
+     is most likely to want, so it reads as the primary action, not a chip. */
+  .chip-btn.lead{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:600;
+                 font-size:11.5px;letter-spacing:.04em;padding:7px 16px}
+  .chip-btn.lead:hover{background:var(--bright);border-color:var(--bright);color:var(--bg)}
+  .back-link{font-family:var(--font-m);font-size:11px;color:var(--muted);transition:.15s}
+  .back-link:hover{color:var(--bright)}
+  /* Touch input gets 44px targets on every control on the page. */
+  @media(pointer:coarse){
+    .chip-btn{min-height:44px;padding-left:16px;padding-right:16px}
+    .back-link,.brand,.about a{display:inline-flex;align-items:center;min-height:44px}
+  }
 
   /* feed */
   .feed{min-height:420px;max-height:70vh;overflow-y:auto;padding:8px}
@@ -82,7 +117,10 @@
   .sig .mark{color:var(--ok);font-family:var(--font-m);font-size:12px;flex:0 0 auto}
   .sig .name{font-family:var(--font-m);font-size:12px;color:var(--bright);flex:0 0 175px}
   .sig .why{color:var(--muted);font-size:12.5px}
-  .rationale{font-family:var(--font-m);font-size:12.5px;color:var(--fg);background:var(--bg);border:1px solid var(--border);
+  /* Applied to a <span>. Without display:block the border only draws at the
+     start of the first line fragment and the end of the last when the quote
+     wraps, and the padding lands on the wrong edges. */
+  .rationale{display:block;font-family:var(--font-m);font-size:12.5px;color:var(--fg);background:var(--bg);border:1px solid var(--border);
              border-radius:4px;padding:10px 12px;margin-top:6px;line-height:1.7}
   .note{margin-top:12px;font-size:12.5px;color:var(--muted)}
   .note b{color:var(--fg)}
@@ -99,7 +137,7 @@
 <body>
 
 <div class="top">
-  <a class="brand" href="https://vantage.industries/">
+  <a class="brand" href="../">
     <svg width="22" height="22" viewBox="0 0 100 100" fill="#e6edf6" aria-hidden="true">
       <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
       <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
@@ -109,6 +147,7 @@
     <span><span class="t1">VANTAGE</span><br><span class="t2">Mission Console</span></span>
   </a>
   <div class="top-right">
+    <a class="back-link" href="../">← Back to site</a>
     <span class="assure"><span class="dot"></span>assurance: PASS · policy v1</span>
     <span class="demo-badge">DEMO · SYNTHETIC SCENARIO</span>
   </div>
@@ -119,16 +158,16 @@
     <div class="panel-h">
       <span class="ttl">Mission Feed · LEO watch</span>
       <span class="ctl">
-        <button class="chip-btn" id="skip">Show all</button>
+        <button class="chip-btn lead" id="skip">Show all events</button>
         <button class="chip-btn" id="replay">Replay</button>
       </span>
     </div>
-    <div class="feed" id="feed"><span class="cursor" id="cur"></span></div>
+    <div class="feed" id="feed" role="log" aria-label="Mission feed, LEO watch"><span class="cursor" id="cur"></span></div>
   </div>
 
   <div class="panel">
     <div class="panel-h"><span class="ttl">Event Detail · Why?</span></div>
-    <div class="detail" id="detail">
+    <div class="detail" id="detail" role="region" aria-label="Event detail" aria-live="polite">
       <p class="hint">// select an event to see its evidence</p>
     </div>
   </div>
@@ -137,7 +176,7 @@
 <div class="about">
   <div class="inner">
     <span>This is a <b style="color:var(--fg)">replay of real engine output</b> from Vantage's seeded orbital-compute scenario: a commercial AI data-center constellation, and a foreign inspector that approaches and holds station next to it. Synthetic catalog; scores are screening priors an analyst adjudicates. Human-on-the-loop, always.</span>
-    <span class="fine"><a href="https://vantage.industries/">vantage.industries</a> · <a href="mailto:contact@vantage.industries">request a live briefing</a></span>
+    <span class="fine"><a href="../">vantage.industries</a> · <a href="../contact/">request a live briefing</a></span>
   </div>
 </div>
 
@@ -207,18 +246,40 @@ function renderDetail(d){
   detail.innerHTML = h;
 }
 
+// Strips the markup out of an event's copy so the row can carry a readable
+// accessible name instead of being an unlabelled focusable div.
+function plain(html){
+  const t = document.createElement('div');
+  t.innerHTML = html;
+  return (t.textContent || '').replace(/\s+/g,' ').trim();
+}
+
 function addEvent(e, select){
   const div = document.createElement('div');
   div.className = 'ev';
   div.setAttribute('tabindex','0');
+  div.setAttribute('role','button');
+  div.setAttribute('aria-pressed','false');
+  div.setAttribute('aria-controls','detail');
+  div.setAttribute('aria-label', `${e.t} · ${e.k} · ${plain(e.body)}. ${plain(e.sub)}. Show evidence.`);
   div.innerHTML = `<span class="ts">${e.t}</span><span class="kind ${e.cls}">${e.k}</span><span class="body">${e.body}<span class="sub">${e.sub}</span></span>`;
-  const pick = ()=>{ document.querySelectorAll('.ev').forEach(x=>x.classList.remove('sel')); div.classList.add('sel'); renderDetail(e.d); };
+  const pick = ()=>{
+    document.querySelectorAll('.ev').forEach(x=>{ x.classList.remove('sel'); x.setAttribute('aria-pressed','false'); });
+    div.classList.add('sel');
+    div.setAttribute('aria-pressed','true');
+    renderDetail(e.d);
+  };
   div.addEventListener('click', pick);
   div.addEventListener('keydown', ev=>{ if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();pick();} });
   feed.insertBefore(div, cur);
   feed.scrollTop = feed.scrollHeight;
   if(select) pick();
 }
+
+// Total replay is ~3.5 s. The original ran 10.3 s, which is a long time to
+// watch a half-drawn feed before the ASSURE event lands.
+const GAPS = [420,340,560,700,520,620,560];
+const LEAD_IN = 260;
 
 function play(instant){
   timers.forEach(clearTimeout); timers = [];
@@ -227,7 +288,7 @@ function play(instant){
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let delay = 0;
   EVENTS.forEach((e,i)=>{
-    const gap = (instant||reduced) ? 0 : (i===0?400:[900,700,1500,2000,1400,1800,1600][i-1]||1200);
+    const gap = (instant||reduced) ? 0 : (i===0 ? LEAD_IN : GAPS[i-1] || 500);
     delay += gap;
     timers.push(setTimeout(()=>addEvent(e, e.k==='THREAT'), delay));
   });

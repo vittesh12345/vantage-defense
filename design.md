@@ -1,357 +1,248 @@
-# Hyperstudio — Style Reference
-> blueprint scratched into obsidian. Type and hairline borders carve white space from pure black, with the occasional gold compass-mark to show the way.
+# Vantage: Style Reference
 
-**Theme:** dark
+> An instrument, not a brochure. Type and hairline rules carve structure out of pure black; a four-step surface ladder does the separating; three status colors are the only accents, and each one means exactly one thing.
 
-Hyperstudio runs on a near-black canvas where everything is carved out by light. The aesthetic is editorial-tech: a deep matte black background (#101010), crisp off-white type (#f3f3f3), hairline 1px borders (#212121), and the occasional warm gold or signal-green dot for punctuation. Typography does the heavy lifting — oversized 400-weight headlines with aggressive negative tracking create a quiet, confident voice, never shouting. Components are reduced to their skeleton: outlined buttons, ghost pills, thin dividers, no shadows, no fills beyond a single white pill for primary actions. The whole system feels like a wireframe rendered in light on obsidian — restrained, precise, and deliberate.
+**Theme:** dark only
 
-## Tokens — Colors
+Vantage runs on a pure-black canvas (`#000000`) with content lifted onto three progressively lighter near-black surfaces. Hierarchy comes from scale, tracking, and surface level, never from drop shadows or fills. Inter carries prose at weights 500 and 600; IBM Plex Mono carries everything the engine says, which means every figure, label, timestamp, hash, and status readout. Buttons are ghost outlines without exception. Radii stop at 4px. The single decorative liberty in the system is color, and it is rationed: green, amber, and red appear only where they carry a real state.
 
-| Name | Value | Token | Role |
-|------|-------|-------|------|
-| Obsidian | `#101010` | `--color-obsidian` | Page canvas, full-bleed dark background |
-| Carbon | `#080808` | `--color-carbon` | Deepest surface level, hero band, and overlay backgrounds |
-| Chalk | `#f3f3f3` | `--color-chalk` | Primary text, headings, and body copy on dark surfaces |
-| Smoke | `#9c9c9c` | `--color-smoke` | Secondary muted text, captions, helper labels |
-| Ash | `#c1c1c1` | `--color-ash` | Mid-weight borders, subtle dividers, tertiary text |
-| Graphite | `#212121` | `--color-graphite` | Primary 1px border color for cards, grids, and section dividers — the structural line work |
-| Iron | `#474747` | `--color-iron` | Secondary border and stroke detail |
-| Signal White | `#ffffff` | `--color-signal-white` | Filled pill buttons (LET'S CHAT, START NOW), inverted text on light surfaces, icon strokes — the single high-contrast action color |
-| Compass Gold | `#6f6759` | `--color-compass-gold` | Outlined icon strokes in service and portfolio sections — warm metallic against the cool dark |
-| Card Slate | `#3b3d45` | `--color-card-slate` | Card and panel border accent on elevated sections |
+The reference point is a mission console, not an agency site. When a choice is between "expressive" and "legible under scrutiny," the system picks legible.
 
-## Tokens — Typography
+---
 
-### Aeonik — Primary typeface for everything — display headlines, body, buttons, links. Weight 400 across all sizes is signature: no bold shouting, authority through scale and tracking alone. · `--font-aeonik`
-- **Substitute:** Inter, Satoshi, or General Sans
-- **Weights:** 400, 700
-- **Sizes:** 13px, 14px, 16px, 17px, 18px, 21px, 23px, 34px, 44px, 63px
-- **Line height:** 0.95–1.43 (tight at display sizes, breathing at body)
-- **Letter spacing:** -0.0110em at 63px, -0.0070em at 44px, default at body
-- **OpenType features:** `'ss01' on, 'cv11' on`
-- **Role:** Primary typeface for everything — display headlines, body, buttons, links. Weight 400 across all sizes is signature: no bold shouting, authority through scale and tracking alone.
+## Tokens: Surfaces
 
-### Input — Secondary typeface for meta text, labels, and small captions. Tighter tracking (-0.037em at 8px, -0.022em at 18px) gives it a utilitarian, almost monospace feel — used for status pills, section metadata, and fine print. · `--font-input`
-- **Substitute:** IBM Plex Mono, JetBrains Mono, or Space Mono
-- **Weights:** 400
-- **Sizes:** 8px, 13px, 14px, 16px, 17px, 18px
-- **Line height:** 1.20–1.54
-- **Letter spacing:** -0.0370em, -0.0220em
-- **Role:** Secondary typeface for meta text, labels, and small captions. Tighter tracking (-0.037em at 8px, -0.022em at 18px) gives it a utilitarian, almost monospace feel — used for status pills, section metadata, and fine print.
+A four-step ladder. Steps are sized in CIE L\* so each one is perceptible against its neighbor on a normally calibrated display; WCAG contrast ratios are meaningless at this end of the scale and are not used to size them. **Every level is used in more than one place.**
 
-### Type Scale
+| Level | Name | Value | L\* | Token | Used by |
+|-------|------|-------|-----|-------|---------|
+| 0 | Canvas | `#000000` | 0.0 | `--surface-canvas` | `body`, hero, capabilities, platform, who-it's-for, closing CTA |
+| 1 | Band | `#080a0d` | 2.7 | `--surface-band` | alternating sections (statement, assurance, orbital compute, mission), footer |
+| 2 | Panel | `#0e1116` | 5.0 | `--surface-panel` | assurance panel, mission cards, discriminator cases, framed figures, form inputs |
+| 3 | Chrome | `#151a21` | 9.1 | `--surface-chrome` | panel header bars, status chips, the footer badge, the contact address block |
 
-| Role | Size | Line Height | Letter Spacing | Token |
-|------|------|-------------|----------------|-------|
-| caption | 13px | 2.69 | — | `--text-caption` |
-| body | 16px | 1.25 | — | `--text-body` |
-| heading-xs | 18px | 1.31 | — | `--text-heading-xs` |
-| subheading | 21px | 0.95 | — | `--text-subheading` |
-| heading-sm | 23px | 1.07 | — | `--text-heading-sm` |
-| heading | 34px | 1.03 | — | `--text-heading` |
-| heading-lg | 44px | 1.07 | -0.31px | `--text-heading-lg` |
-| display | 63px | 1.05 | -0.69px | `--text-display` |
+## Tokens: Rules
 
-## Tokens — Spacing & Shapes
+Two weights, and only two. The previous single hairline measured 1.51:1 against the canvas and was effectively invisible.
 
-**Base unit:** 4px
+| Name | Value | On canvas | Token | Role |
+|------|-------|-----------|-------|------|
+| Hairline | `#343b44` | 1.86:1 | `--rule-hairline` | dividers *inside* a container: ledger rows, gate cells, panel header underline |
+| Edge | `#525a66` | 3.01:1 | `--rule-edge` | structural boundaries: section edges, panel perimeters, button borders, the rule a rail hangs from |
 
-**Density:** comfortable
+## Tokens: Text
 
-### Spacing Scale
+All four tiers clear WCAG AA (4.5:1) on **all four** surfaces. The worst pairing in the system is `--text-faint` on `--surface-chrome` at 4.53:1.
 
-| Name | Value | Token |
+| Name | Value | Min ratio | Token | Role |
+|------|-------|-----------|-------|------|
+| Primary | `#ffffff` | 14.5:1 | `--text-primary` | headings, key figures, active labels |
+| Body | `#e8eaec` | 14.5:1 | `--text-body` | body copy on panels, mission copy |
+| Muted | `#a1a4a5` | 6.96:1 | `--text-muted` | secondary copy, descriptions, footer links |
+| Faint | `#7d828b` | 4.53:1 | `--text-faint` | mono labels, eyebrows, timestamps, fine print |
+
+## Tokens: Status
+
+The only accent colors in the system. Each has one meaning and is applied wherever that state appears, never for decoration. There is no brand accent and no CTA color: a button is never colored.
+
+| Name | Value | Token | Means | Appears on |
+|------|-------|-------|-------|-----------|
+| Nominal | `#3ad389` | `--status-nominal` | pass, benign, nominal, held by physics | assurance verdict chip, `14 PASS`, the benign-formation case, the contact success chip |
+| Watch | `#ffca16` | `--status-watch` | monitor, warning, needs an analyst | `2 MONITOR`, the flagged Δv in the hero schematic |
+| Threat | `#ff6b5f` | `--status-threat` | high severity, shadowing, threat | the shadowing case, form validation errors |
+
+The previous palette carried `--color-signal-blue` and `--color-iris-violet`, each used once inside decorative terminal chrome. Both are cut. A sealed hash is not a status and is now typeset in mono body text.
+
+## Tokens: Typography
+
+### Inter: prose
+`--font-sans` · weights 400 / 500 / 600 (`--font-weight-regular` / `-medium` / `-semibold`)
+
+Headings sit at 500 and sub-headings at 600. Display sizes carry `-0.03em` tracking; nothing above 20px is left at default tracking. Nothing is set in 700.
+
+### IBM Plex Mono: machine voice
+`--font-mono` · weights 400 / 500 / 600
+
+Everything the system *reports* is mono: figures, eyebrows, section labels, tags, timestamps, the assurance readout, hashes, diagram labels, the contact address. Prose is never mono. This split is the strongest single carrier of the brand.
+
+### Type scale
+
+| Role | Token | Value |
 |------|-------|-------|
-| 4 | 4px | `--spacing-4` |
-| 8 | 8px | `--spacing-8` |
-| 12 | 12px | `--spacing-12` |
-| 16 | 16px | `--spacing-16` |
-| 20 | 20px | `--spacing-20` |
-| 24 | 24px | `--spacing-24` |
-| 40 | 40px | `--spacing-40` |
+| micro | `--text-micro` | 11px (mono labels, tags) |
+| caption | `--text-caption` | 12px (eyebrows, badges, fine print) |
+| body-sm | `--text-body-sm` | 14px |
+| body-md | `--text-body-md` | 16px |
+| body-lg | `--text-body-lg` | 19px (lede, mission copy) |
+| statement | `--text-statement` | `clamp(23px, 2.9vw, 34px)` |
+| h3 | `--text-h3` | `clamp(24px, 3vw, 34px)` |
+| h2 | `--text-h2` | `clamp(28px, 3.6vw, 44px)` |
+| h2-lg | `--text-h2-lg` | `clamp(30px, 4.4vw, 50px)` |
+| display | `--text-display` | `clamp(38px, 6vw, 72px)` |
 
-### Border Radius
+Tracking: `--tracking-display` `-0.03em`, `--tracking-tight` `-0.02em`, `--tracking-label` `0.2em` (uppercase mono eyebrows only).
 
-| Element | Value |
-|---------|-------|
-| tags | 4px |
-| cards | 8px |
-| icons | 99px |
-| buttons | 9999px (pills) |
+## Tokens: Space and shape
 
-### Layout
+**Base unit:** 4px. Scale: 4, 8, 12, 16, 20, 24, 28, 32, 40, 48, 64, 80, 96, 128, 144.
 
-- **Page max-width:** 1200px
-- **Section gap:** 120-210px
-- **Card padding:** 32-48px
-- **Element gap:** 20-24px
+| Token | Value | Role |
+|-------|-------|------|
+| `--page-max-width` | 1200px | content column |
+| `--header-height` | 68px | fixed nav |
+| `--anchor-offset` | 108px | `scroll-margin-top`: header height plus 40px clearance, so a jumped-to heading is not flush under the nav |
+| `--card-padding` | 32px | card and panel interiors |
+| `--section-pad` | 96px | standard section rhythm |
+| `--section-pad-tight` | 64px | compressed sections (statement, mission) |
+
+### Radius
+
+Two values. The system is architectural, not soft.
+
+| Token | Value | Applies to |
+|-------|-------|-----------|
+| `--radius-xs` | 2px | tags, status chips, badges |
+| `--radius-sm` | 4px | buttons, inputs, panels, cards, framed images |
+
+### Motion
+
+`--motion-fast` 150ms (hover and focus), `--motion-reveal` 600ms (scroll reveal), `--motion-ease-out` `cubic-bezier(0,0,0.2,1)`. Reveal stagger is 60ms per sibling, capped at five steps, and applies only within one visual group. All motion is disabled under `prefers-reduced-motion`.
+
+---
+
+## Section separation
+
+This is the system's load-bearing decision, so it is stated as a rule rather than left to each section:
+
+1. Every top-level `<section>` gets `.sec`, which applies `border-top: 1px solid var(--rule-edge)` full-bleed.
+2. Sections **alternate** between canvas and `.band`. No section may declare a background equal to the one behind it.
+3. Vertical padding alternates between `--section-pad` and `--section-pad-tight`, with `--spacing-128` reserved for the closing CTA, so the page has changes of pace rather than one uniform column.
+
+A surface change and a visible rule together, not a 1px hairline alone.
+
+---
 
 ## Components
 
-### White Pill Button (Primary Action)
-**Role:** Filled button for highest-priority CTAs like START NOW and LET'S CHAT
+### Ghost button
+Transparent fill, 1px `--rule-edge` border, `--radius-sm`, `min-height: 44px`, 12px/20px padding, Inter 14px. Hover raises the border and label to `--text-primary`. `.btn-primary` differs only by a brighter resting border (`rgba(255,255,255,.42)`) and a white label. **There is no filled button anywhere in the system**; priority is carried by border and label brightness.
 
-Solid white (#ffffff) fill, Obsidian (#101010) text, 9999px border-radius, 12px 24px padding, Aeonik 14px weight 400 uppercase. Small icon or arrow glyph right-aligned. No shadow — contrast alone creates elevation.
+### Eyebrow
+Mono 12px, uppercase, `0.2em` tracking, `--text-faint`, preceded by a 26px `--rule-edge` rule. This is the canonical section label: whatever the eyebrow says is what the nav link and the footer link say.
 
-### Ghost Outline Button (Secondary)
-**Role:** Secondary CTA placed beside primary actions
+### Status chip
+Mono 11px uppercase in `--surface-chrome` with a 6px dot in the status color and a matching 34%-alpha border, `--radius-xs`. Two variants ship, `.chip-nominal` and `.chip-threat`, because those are the two states the site currently reports as a chip. Watch state is carried by the gate readout and the hero schematic instead, so no third variant exists. Add one only alongside the markup that uses it.
 
-Transparent background, 1px white (#ffffff) border, white text, 8px radius (not fully pill), 10px 20px padding, Aeonik 14px weight 400 uppercase. Used for VIEW WORK and similar secondary flows.
+### Metric rail
+Three or four cells hanging off one `--rule-edge` top rule, divided by `--rule-hairline` vertical rules, with **no enclosing box**. Mono figure at 32px over a 14px muted label. Used for the hero statistics. Collapses to stacked rows with horizontal rules below 560px.
 
-### Status Badge (Pill)
-**Role:** Inline availability/scarcity indicator (e.g. '2/5 SPOTS LEFT FOR JULY')
+### Capability ledger
+Full-width rows on a shared rule: a mono index column, a prose column, and a right-aligned mono metric column. Rows divided by `--rule-hairline`, the set bounded top and bottom by `--rule-edge`. Not a card grid, and deliberately so: it replaced three stacked bordered grids. Rows without a headline figure show the mono sub-label alone.
 
-Dark card background (#1a1a1a), 1px Graphite (#212121) border, 4px radius, 8px 14px padding. Small Pulse Green (#98ff38) dot prefix. Text in Aeonik 12px weight 400, Smoke (#9c9c9c) color, uppercase tracking.
+### Framed figure
+`--surface-panel` body, `--rule-edge` perimeter, `--radius-sm`, with a `--surface-chrome` header bar in mono 12px. The only wrapper for a picture of the system: the hero schematic and the real product screenshot both use it, which is what keeps a diagram and a screenshot visually accountable to each other.
 
-### Service Card (2×2 Grid Cell)
-**Role:** Displays a single service offering in the services section
+### Assurance panel
+The page's focal moment. Framed figure chrome at full width, a chrome header carrying the policy name and the verdict chip, then a two-column body: the statement plus the four-cell gate readout on the left, the explanation plus the sealed hash on the right. The gate cells use `--status-nominal` for PASS and `--status-watch` for MONITOR; FAIL and SKIP stay faint because nothing fired.
 
-Transparent background, 1px Graphite (#212121) border on bottom and sides (no top border to merge with section divider). Compass Gold (#6f6759) outlined icon at top-left, 32px. Heading in Aeonik 14px weight 400 uppercase Chalk (#f3f3f3), body in Aeonik 14px weight 400 Smoke (#9c9c9c). 48px padding all sides.
+### Stage rail
+Four numbered stages along one `--rule-edge` rule, each marked by a 32px × 3px `--text-primary` tick sitting on the rule. No boxes. Used for the pipeline.
 
-### Portfolio Card
-**Role:** Showcases a client project thumbnail in the portfolio grid
+### Mission card
+The only bordered card grid on the page, which is what earns it. `--surface-panel`, `--rule-edge` border, `--radius-sm`, 32px padding, a domain mark at the top, a mono kicker, a heading, body copy, and a contact link pinned to the bottom with `margin-top: auto`.
 
-No background fill, 1px Graphite (#212121) border or divider line, 8px radius. Small outlined client icon centered, client name in Aeonik 16px weight 400 Chalk, category label in Input 13px uppercase Smoke. Tight vertical padding 24px.
+### Domain mark
+Line marks at 1.3px stroke in `--text-muted`, drawn from things that mean something in this domain: conjunction geometry with a marked minimum separation, a pattern-of-life cadence with one out-of-character spike. No crosshairs, shields, or stars.
 
-### Section Divider Line
-**Role:** Separates page sections horizontally
+### Explanatory schematic
+Inline SVG, hairline strokes, mono labels, status colors where a state is being shown. Always labelled as a schematic and never given console chrome that could read as product output. Two exist: the residual trace in the hero (physics subtracted, Δv marked in `--status-watch`) and the one-sidedness discriminator in orbital compute (benign vs shadowing, identical geometry, the only difference being the Δv).
 
-1px solid Graphite (#212121) stroke spanning full content width. The single most repeated visual element — it IS the page structure. No gradients, no fades, no decorative breaks.
+### Form field
+Label in mono 11px uppercase above the control. Control on `--surface-panel` with a `--rule-edge` border, `--radius-sm`, `min-height: 48px`. Invalid state sets `aria-invalid`, a `--status-threat` border, **and** a mono message prefixed with `!` referenced by `aria-describedby`, so the state is never carried by color alone.
 
-### Top Navigation Bar
-**Role:** Persistent site header with brand, nav links, and CTA
+### Footer
+`--surface-band` with a `--rule-edge` top rule. Four columns: brand statement, then link columns whose headings match the eyebrow of the section they point at. The contact address is plain selectable mono text, not a link.
 
-Transparent background floating over Obsidian canvas. Left: 'Hyperstudio' wordmark in Aeonik 18px weight 400 Chalk. Center-left: nav links (SERVICES, PORTFOLIO, PROCESS) in Aeonik 14px weight 400 uppercase Smoke with 24px gaps. Right: outlined 'LET'S CHAT' pill button. 1px Graphite bottom border.
-
-### Headline Display Block
-**Role:** Hero and section opener typography
-
-Aeonik 63px weight 400 Chalk (#f3f3f3), line-height 1.05, letter-spacing -0.69px. Centered or left-aligned. No color, no decoration — the size and tracking do all the work. Followed by a compact sub-headline in Aeonik 21px weight 400 Smoke.
-
-### Dot-Map World Graphic
-**Role:** Decorative hero visual — a pixelated globe rendered in white dots
-
-Full-width illustration of a world map composed of small white (#f3f3f3) circular dots on the Obsidian canvas. No stroke, no fill — just dot density defining continents. Serves as atmospheric proof of global reach without literal photography.
-
-### Manifesto Text Block
-**Role:** Centered narrative text in the 'Why Hyperstudio?' section
-
-Max-width 600px centered. Aeonik 23px weight 400 Chalk for the section title, Aeonik 16px weight 400 Smoke for body paragraphs, generous 24px line-height. Ghost outline 'READ MANIFESTO' button below.
-
-### Outlined Icon Set
-**Role:** All UI icons across the page
-
-1.5px stroke, no fill, Compass Gold (#6f6759) or Chalk (#f3f3f3) color, 24–32px size. Geometric and minimal — pen nib, open book, monitor, waveform. The gold tint against black gives them a compass-rose quality.
-
-### Footer / Bottom Bar
-**Role:** Closes the page with contact or site info
-
-1px Graphite top border, transparent background. Small Aeonik 14px Chalk text for email (hello@hyperstudio.org), Input 13px Smoke for secondary links. No background fill, no padding beyond 32px vertical.
+---
 
 ## Do's and Don'ts
 
 ### Do
-- Use weight 400 for all headings — never bold. Scale and tracking carry hierarchy, not weight.
-- Separate every section with a 1px #212121 hairline rule. No background color shifts between sections.
-- Use 9999px radius only on filled white pill buttons. Everything else stays at 4px or 8px.
-- Set display type at 63px Aeonik weight 400 with letter-spacing -0.69px. This is the voice of the system.
-- Use #6f6759 Compass Gold exclusively for icon strokes — never for text or backgrounds.
-- Apply a Pulse Green (#98ff38) dot only for live/active status indicators like availability counts.
-- Keep all body text in #9c9c9c Smoke. Never use pure #808080 — the slight warm tilt matters.
+- Alternate section surfaces and give every section boundary a full-bleed `--rule-edge` rule. Both, every time.
+- Put every figure, label, hash, and status readout in IBM Plex Mono, and all prose in Inter. The split is the brand.
+- Use `--status-nominal`, `--status-watch`, and `--status-threat` only where that exact state is being reported.
+- Let type and index numbers carry a list. Reach for a card grid at most once per page.
+- Give a diagram a caption that says it is a schematic, and give a product screenshot the same frame so the two stay accountable to each other.
+- Keep every interactive target at 44px minimum, and 44px on coarse pointers at every viewport width.
+- Check any new text color against all four surfaces before shipping it.
 
 ### Don't
-- Never add drop shadows. Elevation comes from hairline borders and color contrast alone.
-- Never use bold or semibold weight on display type. Weight 400 at 63px IS the headline.
-- Never use a colored fill behind text. The canvas stays Obsidian or Carbon throughout.
-- Never use fully rounded corners on cards. 8px maximum — the system is architectural, not soft.
-- Never place icons in any color other than Compass Gold or Chalk. No blue, no green, no multicolor.
-- Never use photography as hero or section content. Dot-maps, icons, and type are the only visuals.
-- Never break the 1200px content column. Full-bleed is reserved for the canvas and the dot-map graphic.
+- Never add drop shadows, gradients, glows, or glassmorphism. Separation comes from the surface ladder and the rule weights.
+- Never fill a button. Priority is border brightness and label color.
+- Never exceed 4px radius.
+- Never use a status color decoratively, and never introduce a fourth accent.
+- Never draw a fake console, terminal, or fabricated data readout. The site's thesis is receipts; a fabricated screenshot next to a real one undermines the real one.
+- Never use stock outline iconography. If a mark cannot be drawn from the domain, use none.
+- Never stack more than one bordered card grid in a page. Change the primitive instead.
+- Never write an em dash. Use a comma, a colon, a period, or restructure the sentence.
+- Never set a section background equal to the surface behind it.
 
-## Surfaces
-
-| Level | Name | Value | Purpose |
-|-------|------|-------|---------|
-| 0 | Obsidian Canvas | `#101010` | Base page background — the default state |
-| 1 | Carbon Depth | `#080808` | Hero band, card surface elevation, overlay depth |
-| 2 | Hairline Grid | `#212121` | 1px border lines that define cards, sections, and structure |
+---
 
 ## Elevation
 
-No drop shadows. Elevation is achieved through a single mechanism: hairline 1px Graphite (#212121) borders that trace the perimeter of every container. The only 'lift' on the page is a white-filled pill button — and that lift comes from color contrast, not shadow. This keeps the system flat, architectural, and fast.
+No shadows anywhere. Elevation is exactly two mechanisms, used together:
+
+1. **Surface level**: moving up the four-step ladder (canvas → band → panel → chrome).
+2. **Rule weight**: `--rule-edge` traces anything that is its own object; `--rule-hairline` divides the inside of one.
+
+A panel reads as raised because it is one step lighter than the section behind it *and* bounded by the heavier rule. Nothing else lifts.
+
+---
 
 ## Imagery
 
-Near-zero photography. The only imagery is the dot-matrix world map on the hero — white circular dots on black forming continents through density alone. No product shots, no team photos, no client logos as photography. Icons are the only recurring graphic motif: thin 1.5px outlined strokes in Compass Gold or Chalk, geometric and minimal (pen, book, monitor, waveform). The visual system treats whitespace and type as the primary content; imagery is decorative atmosphere, not explanatory.
+One photograph-class asset exists and it is a real screenshot of the product console (`assets/demo-console.png`, 1584×928). It is the page's most important visual and gets a full frame and a link into the live demo. Everything else is authored line work: two explanatory SVG schematics and two domain marks. No stock photography, no illustration, no decorative texture.
+
+The rule that governs this: **anything that looks like product output must be product output.** A schematic is drawn as a labelled diagram so it can never be mistaken for a screenshot.
+
+---
 
 ## Layout
 
-Full-bleed Obsidian canvas, content constrained to a 1200px max-width centered column. Hero is a centered headline stack with a dot-map world graphic spanning the full viewport width below. Sections are separated exclusively by 1px Graphite horizontal dividers — no alternating bands, no background shifts. The services section uses a 2×2 grid inside a bordered frame. The 'Why Hyperstudio?' block is a narrow centered column. Navigation is a transparent top bar with no sticky behavior visible. Spacing is generous — 120–210px between sections — creating a slow, editorial vertical rhythm rather than a dense product layout.
+Full-bleed surfaces with content constrained to a 1200px centered column (`--page-max-width`, 28px gutters, 20px below 560px). The fixed 68px header blurs the canvas behind it and gains a `--rule-edge` bottom border once scrolled.
 
-## Agent Prompt Guide
+The page deliberately changes primitive from section to section: asymmetric hero with a schematic, metric rail, full-width statement, capability ledger, focal assurance panel, stage rail plus product screenshot, side-by-side discriminator, two-card grid, editorial mission column, centered closing CTA. Nothing is repeated twice in a row.
 
-primary action: no distinct CTA color
-## Quick Color Reference
-- Canvas: #101010
-- Primary text: #f3f3f3
-- Muted text: #9c9c9c
-- Border: #212121
-- Icon stroke: #6f6759
-- Primary action (filled pill): #ffffff background with #101010 text
+### Breakpoints
 
-## Example Component Prompts
-1. **Hero headline block**: Obsidian (#101010) background. Headline at 63px Aeonik weight 400, color #f3f3f3, letter-spacing -0.69px, line-height 1.05. Below it a filled white pill button (#ffffff fill, #101010 text, 9999px radius, 12px 24px padding, Aeonik 14px uppercase) labeled 'START NOW ↗'.
+| Width | What changes |
+|-------|--------------|
+| ≤1040px | Horizontal nav collapses to the toggle menu |
+| ≤900px | Hero, assurance body, discriminator, question pair, mission cards, and footer go single-column; stage rail and ledger reflow |
+| ≤560px | Nav CTA is replaced by an in-menu contact link, gutters tighten to 20px, metric rail and stage rail stack, gate readout goes 2×2 |
+| `pointer: coarse` | All targets reach 44px regardless of viewport width |
 
-2. **Service grid cell**: Transparent background, 1px bottom border in #212121. Compass Gold (#6f6759) outlined icon at 32px top-left. Heading in Aeonik 14px weight 400 uppercase #f3f3f3, 16px margin-top. Body in Aeonik 14px #9c9c9c, 8px line-height increase.
+---
 
-3. **Status pill badge**: Background #1a1a1a, 1px #212121 border, 4px radius, 8px 14px padding. Pulse Green (#98ff38) 6px dot prefix. Text in Aeonik 12px uppercase #9c9c9c, letter-spacing 0.5px.
+## Progressive enhancement
 
-4. **Section divider**: Full-width 1px solid #212121 line, 0 margin top and bottom — the line IS the layout.
+The scroll reveal holds `.reveal` at `opacity: 0` and only scripting clears it, so **every page ships a `<noscript>` override in `<head>`** that forces `opacity: 1; transform: none`. Reveal is driven by one `IntersectionObserver` with a fallback that reveals everything if the API is missing; there is no timeout backstop.
 
-5. **Manifesto block**: Centered, max-width 600px. Title at 23px Aeonik weight 400 #f3f3f3. Body at 16px Aeonik weight 400 #9c9c9c, line-height 1.5. Ghost outline button below: transparent fill, 1px #ffffff border, 8px radius, #ffffff text, Aeonik 14px uppercase.
+The contact page applies the same principle to its form: the working, script-free path (address, copy button, mailto link) is the *default markup state*, and the form is revealed only when both scripting and a configured `data-endpoint` are present. A failed submission restores the fallback rather than stranding the visitor.
 
-## Similar Brands
+---
 
-- **Resn** — Same near-black canvas with large-weight-400 type and the world-is-our-canvas dot/illustration energy
-- **Active Theory** — Dark-mode studio site with oversized quiet headlines, minimal UI chrome, and editorial section spacing
-- **Locomotive (studio)** — Obsidian background, Aeonik-adjacent geometric sans, ghost-outline buttons, and the 'wireframe in light' visual philosophy
-- **Pentagram** — Editorial typography discipline — weight 400 at 63px, aggressive negative tracking, sections divided by hairline rules rather than color bands
-- **Ueno** — Dark agency site with single-color icon system, generous section gaps, and type as the dominant visual element
-
-## Quick Start
-
-### CSS Custom Properties
+## Quick reference
 
 ```css
-:root {
-  /* Colors */
-  --color-obsidian: #101010;
-  --color-carbon: #080808;
-  --color-chalk: #f3f3f3;
-  --color-smoke: #9c9c9c;
-  --color-ash: #c1c1c1;
-  --color-graphite: #212121;
-  --color-iron: #474747;
-  --color-signal-white: #ffffff;
-  --color-compass-gold: #6f6759;
-  --color-card-slate: #3b3d45;
-
-  /* Typography — Font Families */
-  --font-aeonik: 'Aeonik', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-input: 'Input', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-
-  /* Typography — Scale */
-  --text-caption: 13px;
-  --leading-caption: 2.69;
-  --text-body: 16px;
-  --leading-body: 1.25;
-  --text-heading-xs: 18px;
-  --leading-heading-xs: 1.31;
-  --text-subheading: 21px;
-  --leading-subheading: 0.95;
-  --text-heading-sm: 23px;
-  --leading-heading-sm: 1.07;
-  --text-heading: 34px;
-  --leading-heading: 1.03;
-  --text-heading-lg: 44px;
-  --leading-heading-lg: 1.07;
-  --tracking-heading-lg: -0.31px;
-  --text-display: 63px;
-  --leading-display: 1.05;
-  --tracking-display: -0.69px;
-
-  /* Typography — Weights */
-  --font-weight-regular: 400;
-  --font-weight-bold: 700;
-
-  /* Spacing */
-  --spacing-unit: 4px;
-  --spacing-4: 4px;
-  --spacing-8: 8px;
-  --spacing-12: 12px;
-  --spacing-16: 16px;
-  --spacing-20: 20px;
-  --spacing-24: 24px;
-  --spacing-40: 40px;
-
-  /* Layout */
-  --page-max-width: 1200px;
-  --section-gap: 120-210px;
-  --card-padding: 32-48px;
-  --element-gap: 20-24px;
-
-  /* Border Radius */
-  --radius-md: 4.5px;
-  --radius-lg: 8px;
-  --radius-2xl: 20px;
-  --radius-full: 99px;
-
-  /* Named Radii */
-  --radius-tags: 4px;
-  --radius-cards: 8px;
-  --radius-icons: 99px;
-  --radius-buttons: 9999px (pills);
-
-  /* Surfaces */
-  --surface-obsidian-canvas: #101010;
-  --surface-carbon-depth: #080808;
-  --surface-hairline-grid: #212121;
-}
+/* Surfaces */    #000000 · #080a0d · #0e1116 · #151a21
+/* Rules */       #343b44 (inside) · #525a66 (structure)
+/* Text */        #ffffff · #e8eaec · #a1a4a5 · #7d828b
+/* Status */      #3ad389 nominal · #ffca16 watch · #ff6b5f threat
+/* Type */        Inter 400/500/600 · IBM Plex Mono 400/500/600
+/* Radius */      2px · 4px
+/* Primary action */ ghost outline, rgba(255,255,255,.42) border, white label: never filled
 ```
 
-### Tailwind v4
-
-```css
-@theme {
-  /* Colors */
-  --color-obsidian: #101010;
-  --color-carbon: #080808;
-  --color-chalk: #f3f3f3;
-  --color-smoke: #9c9c9c;
-  --color-ash: #c1c1c1;
-  --color-graphite: #212121;
-  --color-iron: #474747;
-  --color-signal-white: #ffffff;
-  --color-compass-gold: #6f6759;
-  --color-card-slate: #3b3d45;
-
-  /* Typography */
-  --font-aeonik: 'Aeonik', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-input: 'Input', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-
-  /* Typography — Scale */
-  --text-caption: 13px;
-  --leading-caption: 2.69;
-  --text-body: 16px;
-  --leading-body: 1.25;
-  --text-heading-xs: 18px;
-  --leading-heading-xs: 1.31;
-  --text-subheading: 21px;
-  --leading-subheading: 0.95;
-  --text-heading-sm: 23px;
-  --leading-heading-sm: 1.07;
-  --text-heading: 34px;
-  --leading-heading: 1.03;
-  --text-heading-lg: 44px;
-  --leading-heading-lg: 1.07;
-  --tracking-heading-lg: -0.31px;
-  --text-display: 63px;
-  --leading-display: 1.05;
-  --tracking-display: -0.69px;
-
-  /* Spacing */
-  --spacing-4: 4px;
-  --spacing-8: 8px;
-  --spacing-12: 12px;
-  --spacing-16: 16px;
-  --spacing-20: 20px;
-  --spacing-24: 24px;
-  --spacing-40: 40px;
-
-  /* Border Radius */
-  --radius-md: 4.5px;
-  --radius-lg: 8px;
-  --radius-2xl: 20px;
-  --radius-full: 99px;
-}
-```
+Tokens live in `styles/tokens.css`. The shared shell (reset, sections, nav, buttons, chips, frames, footer, reveal) lives in `styles/site.css` and `scripts/site.js`. Page-specific composition stays in each page's own `<style>` block.
