@@ -50,29 +50,39 @@
     font-size:var(--text-display);line-height:1.03;letter-spacing:var(--tracking-display);
     margin:var(--spacing-24) 0;
   }
-  .hero p.lede{font-size:var(--text-body-lg);color:var(--text-muted);max-width:52ch;margin-bottom:var(--spacing-40)}
+  .hero p.lede{font-size:var(--text-body-lg);color:var(--text-body);max-width:52ch;margin-bottom:var(--spacing-40)}
 
   .fig-body{padding:var(--spacing-20) var(--spacing-16) var(--spacing-16)}
   .fig-body svg{display:block;width:100%;height:auto}
   .fig-note{padding:0 var(--spacing-16) var(--spacing-16);font-family:var(--font-mono);font-size:var(--text-micro);color:var(--text-faint);line-height:1.6}
 
+  /* ---------- HERO STATEMENT ----------
+     Absorbed from what used to be its own #why section. A single sentence did
+     not earn a section boundary, and it says the same thing the hero says, so
+     it now closes the hero instead of interrupting the page after it. No rule
+     of its own: the rail below already carries one, and two rules this close
+     together read as clutter. */
+  .hero-statement{margin-top:var(--spacing-80)}
+  .statement-line{font-weight:var(--font-weight-medium);color:var(--text-primary);font-size:var(--text-statement);line-height:1.3;letter-spacing:var(--tracking-tight);max-width:46ch}
+  .statement-line .dim{color:var(--text-muted)}
+  .statement-line em{font-style:italic}
+
   /* ---------- METRIC RAIL ----------
      Deliberately not a card grid: hairline-divided cells hanging off one
      structural rule, with the figures on a shared baseline. */
-  .rail{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule-edge);margin-top:var(--spacing-80)}
+  .rail{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule-edge);margin-top:var(--spacing-64)}
   .rail .cell{padding:var(--spacing-24) var(--spacing-28) 0 0}
   .rail .cell + .cell{border-left:1px solid var(--rule-hairline);padding-left:var(--spacing-28)}
   .rail .num{font-family:var(--font-mono);font-size:32px;font-weight:var(--font-weight-medium);color:var(--text-primary);line-height:1.1}
   .rail .lbl{font-size:var(--text-body-sm);color:var(--text-muted);margin-top:var(--spacing-8);max-width:30ch}
 
-  /* ---------- CATEGORY STATEMENT ---------- */
-  .statement-line{font-weight:var(--font-weight-medium);color:var(--text-primary);font-size:var(--text-statement);line-height:1.3;letter-spacing:var(--tracking-tight);max-width:34ch}
-  .statement-line .dim{color:var(--text-muted)}
-  .statement-line em{font-style:italic}
-
   /* ---------- CAPABILITY LEDGER ----------
      Full-width rows on a shared rule. Replaces what used to be three separate
-     bordered card grids stacked on top of each other. */
+     bordered card grids stacked on top of each other. Rows are uniform by
+     design: index, prose, metric. The one-sidedness discriminator used to be
+     embedded inside row 03, which made that row roughly three times the height
+     of every other and buried the product's sharpest idea inside a list item.
+     It now sits below the ledger as its own figure. */
   .ledger{list-style:none;border-top:1px solid var(--rule-edge);border-bottom:1px solid var(--rule-edge)}
   .ledger li{
     display:grid;grid-template-columns:var(--spacing-64) minmax(0,1fr) minmax(0,250px);
@@ -81,11 +91,10 @@
   .ledger li + li{border-top:1px solid var(--rule-hairline)}
   .ledger .idx{font-family:var(--font-mono);font-size:var(--text-body-sm);color:var(--text-faint);padding-top:5px}
   .ledger h3{font-weight:var(--font-weight-semibold);color:var(--text-primary);font-size:19px;letter-spacing:-.01em;margin-bottom:var(--spacing-8)}
-  .ledger p{color:var(--text-muted);font-size:var(--text-body-sm);max-width:64ch}
+  .ledger p{color:var(--text-body);font-size:var(--text-body-md);max-width:64ch}
   .ledger .metric{text-align:right}
   .ledger .metric .val{display:block;font-family:var(--font-mono);font-size:26px;color:var(--text-primary);line-height:1.2}
   .ledger .metric .key{display:block;font-family:var(--font-mono);font-size:var(--text-micro);color:var(--text-faint);line-height:1.65;margin-top:var(--spacing-8)}
-  .ledger .disc{margin:var(--spacing-24) 0 0;gap:var(--spacing-16)}
 
   /* ---------- ASSURANCE PANEL (the focal moment) ---------- */
   .assure{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);overflow:hidden}
@@ -106,8 +115,10 @@
   .seal b{color:var(--text-body);font-weight:var(--font-weight-medium)}
 
   /* ---------- PIPELINE RAIL ----------
-     Stages read as ticks along one continuous rule, not as four boxes. */
-  .stages{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule-edge);margin-bottom:var(--spacing-48)}
+     Stages read as ticks along one continuous rule, not as four boxes. Sits
+     below the screenshot now: the product is shown first, then the path that
+     produces it. */
+  .stages{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule-edge);margin-top:var(--spacing-64)}
   .stages .stage{position:relative;padding:var(--spacing-32) var(--spacing-24) 0 0}
   .stages .stage::before{content:"";position:absolute;top:-1px;left:0;width:var(--spacing-32);height:3px;background:var(--text-primary)}
   .stages .sn{font-family:var(--font-mono);font-size:var(--text-caption);letter-spacing:.06em;color:var(--text-faint)}
@@ -119,17 +130,19 @@
   .shot img{display:block;width:100%;height:auto}
   .shot:hover .grow,.shot:focus-visible .grow{color:var(--text-primary)}
 
-  /* ---------- ONE-SIDEDNESS DISCRIMINATOR ---------- */
-  .disc{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24);margin-bottom:var(--spacing-48)}
+  /* ---------- ONE-SIDEDNESS DISCRIMINATOR ----------
+     Promoted out of ledger row 03 to close the capabilities section. This is
+     the discriminator the whole proximity claim rests on, so it gets its own
+     figure. Labelled as a schematic and deliberately given no console chrome:
+     per the system rule, anything that looks like product output must be
+     product output. */
+  .disc-figure{margin-top:var(--spacing-64);padding-top:var(--spacing-40);border-top:1px solid var(--rule-edge)}
+  .disc-lead{display:inline-flex;align-items:center;gap:var(--spacing-8);font-family:var(--font-mono);font-size:var(--text-caption);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint);margin-bottom:var(--spacing-24)}
+  .disc{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24)}
   .disc-case{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);padding:var(--spacing-24)}
   .disc-case svg{display:block;width:100%;height:auto;margin:var(--spacing-20) 0}
   .disc-case p{color:var(--text-muted);font-size:var(--text-body-sm)}
-
-  /* ---------- QUESTION PAIR ---------- */
-  .qa{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-40)}
-  .qa .q{border-top:1px solid var(--rule-edge);padding-top:var(--spacing-24)}
-  .qa h4{font-weight:var(--font-weight-semibold);color:var(--text-primary);font-size:17px;margin-bottom:var(--spacing-8)}
-  .qa p{color:var(--text-muted);font-size:var(--text-body-sm)}
+  .disc-note{margin-top:var(--spacing-20);font-family:var(--font-mono);font-size:var(--text-micro);color:var(--text-faint);line-height:1.6;max-width:76ch}
 
   /* ---------- MISSION CARDS (the only card grid on the page) ---------- */
   .dom-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24)}
@@ -144,17 +157,18 @@
   .dom-feature{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:var(--spacing-48);align-items:center;padding:var(--spacing-48) var(--card-padding);margin-bottom:var(--spacing-24)}
   .dom-feature h3{font-weight:var(--font-weight-medium);color:var(--text-primary);font-size:var(--text-h3);letter-spacing:var(--tracking-tight);line-height:1.15}
   .dom-feature p{font-size:var(--text-body-md)}
-  .dom-feature .more{margin-top:var(--spacing-24);padding-top:0;min-height:0}
+  /* The feature variant only needs to drop the `margin-top:auto` push and the
+     top padding; it must not drop the 44px target with them. */
+  .dom-feature .more{margin-top:var(--spacing-24);padding-top:0;align-items:center}
 
-  /* ---------- MISSION STATEMENT ---------- */
-  .mission-copy{max-width:62ch}
-  .mission-copy p{font-size:var(--text-body-lg);color:var(--text-body)}
-  .mission-copy p + p{margin-top:var(--spacing-24)}
-
-  /* ---------- CLOSING CTA ---------- */
+  /* ---------- CLOSING CTA ----------
+     Also carries the mission, which used to be its own section of three
+     paragraphs. Its heading restated the hero eyebrow almost word for word,
+     so only the load-bearing sentence survives, as the lede here. */
   .cta{text-align:center}
-  .cta h2{font-weight:var(--font-weight-medium);color:var(--text-primary);font-size:var(--text-h2-lg);letter-spacing:var(--tracking-display);margin-bottom:var(--spacing-20);max-width:22ch;margin-left:auto;margin-right:auto}
+  .cta h2{font-weight:var(--font-weight-medium);color:var(--text-primary);font-size:var(--text-h2-lg);letter-spacing:var(--tracking-display);margin-bottom:var(--spacing-24);max-width:22ch;margin-left:auto;margin-right:auto}
   .cta p{color:var(--text-muted);font-size:17px;max-width:54ch;margin:0 auto var(--spacing-32)}
+  .cta .mission-line{color:var(--text-body);font-size:var(--text-body-lg);max-width:60ch;margin-bottom:var(--spacing-24)}
   .cta .eyebrow,.cta .cta-row{justify-content:center}
 
   @media(max-width:900px){
@@ -166,8 +180,7 @@
     .ledger li{grid-template-columns:var(--spacing-40) minmax(0,1fr);gap:var(--spacing-20)}
     .ledger .metric{grid-column:2;text-align:left}
     .ledger .metric .val{font-size:22px}
-    .disc,.qa,.dom-grid{grid-template-columns:1fr}
-    .qa{gap:var(--spacing-24)}
+    .disc,.dom-grid{grid-template-columns:1fr}
     .dom-feature{grid-template-columns:1fr;gap:var(--spacing-24);padding:var(--card-padding)}
   }
   @media(max-width:560px){
@@ -200,11 +213,11 @@
         VANTAGE
       </a>
       <div class="navlinks" id="primary-nav">
+        <a href="#platform">Platform</a>
         <a href="#capabilities">Capabilities</a>
         <a href="#assurance">Assurance</a>
-        <a href="#platform">Platform</a>
-        <a href="demo/">Live demo</a>
         <a href="#segments">Who it's for</a>
+        <a href="demo/">Live demo</a>
         <a class="nav-contact" href="contact/">Request a briefing</a>
       </div>
       <a href="contact/" class="btn btn-primary nav-cta">Request a Briefing</a>
@@ -236,19 +249,19 @@
           <div class="fig-body">
             <svg viewBox="0 0 560 300" role="img" aria-label="Schematic in two rows. The upper row plots an object's observed track against the physics model of its orbit; the two coincide until a burn, after which the observed track departs. The lower row plots the residual, which is flat until the burn and then steps to a new level, with the step marked as a delta-v.">
               <!-- upper row: observed vs modelled track -->
-              <text x="30" y="18" fill="#7d828b" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4">ELEMENT-SET HISTORY</text>
-              <path d="M30 74 C110 78 200 86 300 94 C390 101 470 107 536 112" fill="none" stroke="#7d828b" stroke-width="1.4" stroke-dasharray="4 3"/>
+              <text x="30" y="18" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4">ELEMENT-SET HISTORY</text>
+              <path d="M30 74 C110 78 200 86 300 94 C390 101 470 107 536 112" fill="none" stroke="#878c95" stroke-width="1.4" stroke-dasharray="4 3"/>
               <path d="M30 74 C110 78 200 86 300 94 C365 84 455 62 536 44" fill="none" stroke="#e8eaec" stroke-width="1.8"/>
               <text x="536" y="36" fill="#e8eaec" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">OBSERVED</text>
-              <text x="536" y="126" fill="#7d828b" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">PHYSICS MODEL (J2 + DRAG)</text>
+              <text x="536" y="126" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">PHYSICS MODEL (J2 + DRAG)</text>
 
               <!-- burn-time guide -->
-              <path d="M300 30 V276" stroke="#343b44" stroke-width="1" stroke-dasharray="2 4"/>
+              <path d="M300 30 V276" stroke="#3d4552" stroke-width="1" stroke-dasharray="2 4"/>
 
               <!-- lower row: residual -->
-              <text x="30" y="176" fill="#7d828b" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4">RESIDUAL AFTER PHYSICS IS REMOVED</text>
-              <path d="M30 248 H536" stroke="#343b44" stroke-width="1" stroke-dasharray="3 3"/>
-              <text x="14" y="252" fill="#7d828b" font-family="IBM Plex Mono, monospace" font-size="10">0</text>
+              <text x="30" y="176" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4">RESIDUAL AFTER PHYSICS IS REMOVED</text>
+              <path d="M30 248 H536" stroke="#3d4552" stroke-width="1" stroke-dasharray="3 3"/>
+              <text x="14" y="252" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10">0</text>
               <path d="M30 248 L64 246 L98 250 L132 247 L166 250 L200 246 L234 249 L268 247 L299 249 L301 206 L336 203 L370 207 L404 202 L438 206 L472 203 L506 206 L536 204" fill="none" stroke="#e8eaec" stroke-width="1.8" stroke-linejoin="round"/>
               <path d="M300 196 V258" stroke="#ffca16" stroke-width="1.4"/>
               <circle cx="300" cy="206" r="3.6" fill="#ffca16"/>
@@ -259,6 +272,10 @@
         </div>
       </div>
 
+      <div class="hero-statement">
+        <p class="statement-line reveal"><span class="dim">Everyone can see <em>that</em> a satellite moved. The tracking data is public.</span> Vantage is the layer that tells you <em>why</em>.</p>
+      </div>
+
       <div class="rail reveal">
         <div class="cell"><div class="num">84%</div><div class="lbl">Maneuvers caught at 0 false alarms · sealed bench</div></div>
         <div class="cell"><div class="num">162,634</div><div class="lbl">ESA close-approach reports used for calibration</div></div>
@@ -267,10 +284,24 @@
     </div>
   </section>
 
-  <!-- CATEGORY STATEMENT -->
-  <section class="sec sec-tight band" id="why">
+  <!-- PLATFORM: the console first, then the pipeline behind it -->
+  <section class="sec sec-wide band" id="platform">
     <div class="wrap">
-      <p class="statement-line reveal"><span class="dim">Everyone can see <em>that</em> a satellite moved. The tracking data is public.</span> Vantage is the layer that tells you <em>why</em>.</p>
+      <div class="sec-head reveal">
+        <span class="eyebrow">Platform</span>
+        <h2>From a new element set to an assessed event.</h2>
+        <p>The <em>why</em> comes off a pipeline that runs end-to-end in seconds, turning a public catalog into an assessed event.</p>
+      </div>
+      <a class="frame shot reveal" href="demo/">
+        <div class="frame-bar"><span>vantage.industries/demo</span><span class="grow">Open live demo ↗</span></div>
+        <img src="assets/demo-console.png" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage mission console: a live LEO feed flags a foreign inspector maneuvering to shadow an orbital AI data center, with the evidence panel showing the signals behind the call, the one-sidedness discriminator, and a sealed assurance PASS." />
+      </a>
+      <div class="stages reveal">
+        <div class="stage"><span class="sn">01 · Ingest</span><h4>Public catalogs in</h4><p>Open connectors normalize public catalogs (CelesTrak, Space-Track) and five-year element-set histories into one data fabric. No proprietary sensor required.</p></div>
+        <div class="stage"><span class="sn">02 · Detect</span><h4>Subtract physics</h4><p>Remove J2 oblateness and atmospheric drag; the residual is thrust, detected, measured, timestamped. 519 maneuvers on a 1,039-object catalog in 6.0 s.</p></div>
+        <div class="stage"><span class="sn">03 · Assess</span><h4>Name the behavior</h4><p>Six models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life.</p></div>
+        <div class="stage"><span class="sn">04 · Report</span><h4>Into the analyst queue</h4><p>The event arrives with the signals behind it attached, ranked so the calls that need a human get one first.</p></div>
+      </div>
     </div>
   </section>
 
@@ -289,7 +320,7 @@
             <h3>Maneuver detection</h3>
             <p>Subtracts the drift physics explains, J2 oblateness and atmospheric drag, from each object's public element-set history. The residual Δv is somebody's engine: detected, measured, timestamped.</p>
           </div>
-          <div class="metric"><span class="val">84%</span><span class="key">caught · 0 false alarms<br>sealed bench</span></div>
+          <div class="metric"><span class="key">physics-subtracted<br>J2 + drag removed</span></div>
         </li>
         <li class="reveal">
           <span class="idx">02</span>
@@ -303,34 +334,9 @@
           <span class="idx">03</span>
           <div>
             <h3>Proximity and RPO watch</h3>
-            <p>Separates a deliberate shadower from an incidental pass or a benign co-orbiting formation. One-sidedness is the discriminator.</p>
-            <div class="disc">
-              <div class="disc-case">
-                <span class="chip chip-nominal">Benign formation</span>
-                <svg viewBox="0 44 260 96" role="img" aria-label="Two co-orbiting nodes shown as markers on a shared orbit arc, with no thrust vector on either one.">
-                  <path d="M20 118 Q135 38 250 118" fill="none" stroke="#343b44" stroke-width="1.4"/>
-                  <circle cx="112" cy="80" r="6" fill="none" stroke="#3ad389" stroke-width="1.8"/>
-                  <circle cx="163" cy="80" r="6" fill="none" stroke="#3ad389" stroke-width="1.8"/>
-                  <path d="M118 80 H157" stroke="#343b44" stroke-width="1" stroke-dasharray="3 3"/>
-                  <text x="135" y="128" fill="#3ad389" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">no Δv on either side</text>
-                </svg>
-                <p>Two nodes in the same formation hold their spacing because orbital mechanics puts them there. Neither one spends propellant to stay.</p>
-              </div>
-              <div class="disc-case">
-                <span class="chip chip-threat">Shadowing</span>
-                <svg viewBox="0 44 260 96" role="img" aria-label="Two nodes on a shared orbit arc. The trailing node carries a thrust vector aimed at the leading node, which carries none.">
-                  <path d="M20 118 Q135 38 250 118" fill="none" stroke="#343b44" stroke-width="1.4"/>
-                  <circle cx="112" cy="80" r="6" fill="#ff6b5f"/>
-                  <circle cx="163" cy="80" r="6" fill="none" stroke="#e8eaec" stroke-width="1.8"/>
-                  <path d="M122 78 H150" stroke="#ff6b5f" stroke-width="1.8"/>
-                  <path d="M144 73 L152 78 L144 83" fill="none" stroke="#ff6b5f" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-                  <text x="135" y="128" fill="#ff6b5f" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">Δv on one side only</text>
-                </svg>
-                <p>One party maneuvers to hold station next to another that never agreed to it. That asymmetry is what separates a shadower from a neighbor.</p>
-              </div>
-            </div>
+            <p>Separates a deliberate shadower from an incidental pass or a benign co-orbiting formation. One-sidedness is the discriminator, shown below.</p>
           </div>
-          <div class="metric"><span class="val">100%</span><span class="key">on seeded shadowing</span></div>
+          <div class="metric"><span class="key">one-sidedness<br>discriminator</span></div>
         </li>
         <li class="reveal">
           <span class="idx">04</span>
@@ -349,11 +355,41 @@
           <div class="metric"><span class="val">1,039</span><span class="key">baselines<br>scored pre-event</span></div>
         </li>
       </ol>
+
+      <div class="disc-figure reveal">
+        <span class="disc-lead">Schematic · one-sidedness discriminator</span>
+        <div class="disc">
+          <div class="disc-case">
+            <span class="chip chip-nominal">Benign formation</span>
+            <svg viewBox="0 44 260 96" role="img" aria-label="Two co-orbiting nodes shown as markers on a shared orbit arc, with no thrust vector on either one.">
+              <path d="M20 118 Q135 38 250 118" fill="none" stroke="#3d4552" stroke-width="1.4"/>
+              <circle cx="112" cy="80" r="6" fill="none" stroke="#3ad389" stroke-width="1.8"/>
+              <circle cx="163" cy="80" r="6" fill="none" stroke="#3ad389" stroke-width="1.8"/>
+              <path d="M118 80 H157" stroke="#3d4552" stroke-width="1" stroke-dasharray="3 3"/>
+              <text x="135" y="128" fill="#3ad389" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">no Δv on either side</text>
+            </svg>
+            <p>Two nodes in the same formation hold their spacing because orbital mechanics puts them there. Neither one spends propellant to stay.</p>
+          </div>
+          <div class="disc-case">
+            <span class="chip chip-threat">Shadowing</span>
+            <svg viewBox="0 44 260 96" role="img" aria-label="Two nodes on a shared orbit arc. The trailing node carries a thrust vector aimed at the leading node, which carries none.">
+              <path d="M20 118 Q135 38 250 118" fill="none" stroke="#3d4552" stroke-width="1.4"/>
+              <circle cx="112" cy="80" r="6" fill="#ff6b5f"/>
+              <circle cx="163" cy="80" r="6" fill="none" stroke="#e8eaec" stroke-width="1.8"/>
+              <path d="M122 78 H150" stroke="#ff6b5f" stroke-width="1.8"/>
+              <path d="M144 73 L152 78 L144 83" fill="none" stroke="#ff6b5f" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+              <text x="135" y="128" fill="#ff6b5f" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">Δv on one side only</text>
+            </svg>
+            <p>One party maneuvers to hold station next to another that never agreed to it. That asymmetry is what separates a shadower from a neighbor.</p>
+          </div>
+        </div>
+        <p class="disc-note">Same geometry in both cases, same separation, same closing rate. The only difference is which side is spending propellant to be there, and on the seeded scenarios that difference alone carries the call at 100%.</p>
+      </div>
     </div>
   </section>
 
   <!-- ASSURANCE -->
-  <section class="sec band" id="assurance">
+  <section class="sec sec-wide band" id="assurance">
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="eyebrow">Assurance</span>
@@ -386,29 +422,8 @@
     </div>
   </section>
 
-  <!-- PLATFORM -->
-  <section class="sec" id="platform">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <span class="eyebrow">Platform</span>
-        <h2>From a new element set to an assessed event.</h2>
-        <p>The <em>why</em> comes off a pipeline that runs end-to-end in seconds, turning a public catalog into an assessed event.</p>
-      </div>
-      <div class="stages reveal">
-        <div class="stage"><span class="sn">01 · Ingest</span><h4>Public catalogs in</h4><p>Open connectors normalize public catalogs (CelesTrak, Space-Track) and five-year element-set histories into one data fabric. No proprietary sensor required.</p></div>
-        <div class="stage"><span class="sn">02 · Detect</span><h4>Subtract physics</h4><p>Remove J2 oblateness and atmospheric drag; the residual is thrust, detected, measured, timestamped. 519 maneuvers on a 1,039-object catalog in 6.0 s.</p></div>
-        <div class="stage"><span class="sn">03 · Assess</span><h4>Name the behavior</h4><p>Six models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life.</p></div>
-        <div class="stage"><span class="sn">04 · Report</span><h4>Into the analyst queue</h4><p>The event arrives with the signals behind it attached, ranked so the calls that need a human get one first.</p></div>
-      </div>
-      <a class="frame shot reveal" href="demo/">
-        <div class="frame-bar"><span>vantage.industries/demo</span><span class="grow">Open live demo ↗</span></div>
-        <img src="assets/demo-console.png" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage mission console: a live LEO feed flags a foreign inspector maneuvering to shadow an orbital AI data center, with the evidence panel showing the signals behind the call, the one-sidedness discriminator, and a sealed assurance PASS." />
-      </a>
-    </div>
-  </section>
-
   <!-- WHO IT'S FOR -->
-  <section class="sec band" id="segments">
+  <section class="sec" id="segments">
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="eyebrow">Who it's for</span>
@@ -457,24 +472,12 @@
     </div>
   </section>
 
-  <!-- MISSION -->
-  <section class="sec sec-tight" id="mission">
-    <div class="wrap">
-      <div class="sec-head mission-copy reveal">
-        <span class="eyebrow">Mission</span>
-        <h2>Building the intelligence layer for autonomous space defense.</h2>
-        <p>Space is becoming strategic infrastructure: defense assets today, orbital compute platforms and servicing vehicles tomorrow. The systems protecting it will increasingly act on their own.</p>
-        <p>Software that acts needs software that understands. The contest won't be won by whoever tracks objects best, but by whoever understands behavior best and can prove every call they made.</p>
-        <p>That's why assurance is the product. Fast enough to matter. Accountable enough to trust.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- CLOSING CTA -->
-  <section class="sec sec-wide cta" id="contact">
+  <!-- CLOSING CTA (also carries the mission) -->
+  <section class="sec sec-wide band cta" id="contact">
     <div class="wrap">
       <span class="eyebrow reveal">Request a briefing</span>
       <h2 class="reveal">See what assured space intelligence looks like for your mission.</h2>
+      <p class="mission-line reveal">Software that acts needs software that understands. The contest won't be won by whoever tracks objects best, but by whoever understands behavior best and can prove every call they made. That's why assurance is the product.</p>
       <p class="reveal">Book a technical briefing with the Vantage team. We'll walk your mission set and run a live detection-to-evidence loop end-to-end.</p>
       <div class="cta-row reveal">
         <a href="contact/" class="btn btn-primary">Request a briefing →</a>
@@ -504,9 +507,9 @@
       </div>
       <div class="foot-col">
         <h5>Platform</h5>
+        <a href="#platform">Platform</a>
         <a href="#capabilities">Capabilities</a>
         <a href="#assurance">Assurance</a>
-        <a href="#platform">Platform</a>
         <a href="demo/">Live demo</a>
       </div>
       <div class="foot-col">
@@ -514,7 +517,6 @@
         <a href="#defense">Defense &amp; intelligence</a>
         <a href="#operators">Satellite operators</a>
         <a href="#orbital-compute">Orbital compute</a>
-        <a href="#mission">Mission</a>
       </div>
       <div class="foot-col">
         <h5>Contact</h5>

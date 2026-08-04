@@ -34,14 +34,16 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 .eyebrow::before{content:"";width:26px;height:1px;background:var(--rule-edge)}
 
 /* --- Section surface system ----------------------------------------------
-   Sections alternate canvas / band and every boundary carries a full-bleed
-   structural rule. This pairing, not a 1px hairline on its own, is what
-   separates one section from the next. Padding alternates for rhythm.       */
+   A boundary is carried by three cues together, never one: a full-bleed
+   --rule-edge rule, a change of surface, and a change of pace. Sections
+   alternate canvas / band, and adjacent sections never share both a surface
+   and a padding tier. The surface ladder in tokens.css was widened so the
+   second of those cues is actually perceptible.                             */
 section{position:relative;scroll-margin-top:var(--anchor-offset)}
 .band{background:var(--surface-band)}
 .sec{padding:var(--section-pad) 0;border-top:1px solid var(--rule-edge)}
 .sec-tight{padding:var(--section-pad-tight) 0}
-.sec-wide{padding:var(--spacing-128) 0}
+.sec-wide{padding:var(--section-pad-lg) 0}
 
 .sec-head{max-width:66ch;margin-bottom:var(--spacing-48)}
 .sec-head h2{font-weight:var(--font-weight-medium);color:var(--text-primary);font-size:var(--text-h2);line-height:1.2;letter-spacing:var(--tracking-display);margin:var(--spacing-20) 0 var(--spacing-16)}
@@ -61,7 +63,10 @@ nav{display:flex;align-items:center;justify-content:space-between;height:var(--h
 .brand .mark{width:26px;height:26px;flex:0 0 auto}
 .brand .mark svg{display:block}
 .navlinks{display:flex;gap:var(--spacing-24);align-items:center}
-.navlinks a{font-size:var(--text-body-sm);color:var(--text-muted);white-space:nowrap;transition:color var(--motion-fast) var(--motion-ease-out)}
+/* 44px hit target at every width, not only on coarse pointers. The links sit
+   inside a 68px header and are flex-centred, so this enlarges the target
+   without moving anything visually. */
+.navlinks a{display:flex;align-items:center;min-height:44px;font-size:var(--text-body-sm);color:var(--text-muted);white-space:nowrap;transition:color var(--motion-fast) var(--motion-ease-out)}
 .navlinks a:hover,.navlinks a[aria-current="page"]{color:var(--text-primary)}
 /* Only surfaces below 560px, where .nav-cta is hidden and the menu would
    otherwise contain no route to the contact path. Selector is kept at the

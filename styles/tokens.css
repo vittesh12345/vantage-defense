@@ -6,27 +6,40 @@
 :root {
 
   /* --- Surfaces ------------------------------------------------------------
-     A four-step ladder measured in CIE L*: 0.0 / 2.7 / 5.0 / 9.1.
+     A four-step ladder measured in CIE L*: 0.0 / 4.2 / 9.1 / 14.0.
      Every level is used in more than one place. Sections alternate between
-     canvas and band; panels sit at panel; panel headers sit at chrome.       */
+     canvas and band; panels sit at panel; panel headers sit at chrome.
+
+     The ladder was previously 0.0 / 2.7 / 5.0 / 9.1, which compressed three
+     of the four steps into the bottom 5 L*. Two consequences, both visible:
+     a band section was almost indistinguishable from the canvas behind it,
+     so section separation fell entirely to the 1px rule; and a panel sitting
+     inside a band section cleared its background by only 2.3 L*. Steps are
+     now even at roughly 4.2 / 4.9 / 4.9, so every level separates from its
+     neighbour without any level leaving near-black.                         */
   --surface-canvas: #000000;   /* L*  0.0  page base, default section        */
-  --surface-band:   #080a0d;   /* L*  2.7  alternating section band          */
-  --surface-panel:  #0e1116;   /* L*  5.0  raised panels, cards, inputs      */
-  --surface-chrome: #151a21;   /* L*  9.1  panel headers, inset bars, chips  */
+  --surface-band:   #0c0f14;   /* L*  4.2  alternating section band          */
+  --surface-panel:  #151a22;   /* L*  9.1  raised panels, cards, inputs      */
+  --surface-chrome: #1e242e;   /* L* 14.0  panel headers, inset bars, chips  */
 
   /* --- Rules ---------------------------------------------------------------
      Two weights only. Hairline divides inside a container; edge draws the
      structural boundaries (section edges, panel perimeters).
-     edge measures 3.01:1 on canvas; the old single rule measured 1.51:1.    */
-  --rule-hairline: #343b44;    /* 1.86:1 on canvas */
-  --rule-edge:     #525a66;    /* 3.01:1 on canvas */
+     Hairline was lifted alongside the surface ladder: at #343b44 it measured
+     only 1.38:1 on the new chrome and was effectively gone inside a panel
+     header. edge is unchanged and still measures 3.01:1 on canvas.          */
+  --rule-hairline: #3d4552;    /* 2.17:1 on canvas, 1.61:1 on chrome */
+  --rule-edge:     #525a66;    /* 3.01:1 on canvas, 2.24:1 on chrome */
 
   /* --- Text ----------------------------------------------------------------
-     All four tiers clear WCAG AA (4.5:1) on all four surfaces.               */
-  --text-primary: #ffffff;     /* headings, key figures                       */
-  --text-body:    #e8eaec;     /* body copy on panels                         */
-  --text-muted:   #a1a4a5;     /* secondary copy, descriptions       ≥ 6.96:1 */
-  --text-faint:   #7d828b;     /* labels, timestamps, fine print     ≥ 4.53:1 */
+     All four tiers clear WCAG AA (4.5:1) on all four surfaces. The worst
+     pairing in the system is --text-faint on --surface-chrome at 4.61:1.
+     faint moved from #7d828b when the ladder lifted: against the new chrome
+     the old value measured 4.04:1 and no longer cleared AA.                 */
+  --text-primary: #ffffff;     /* headings, key figures             ≥ 15.59:1 */
+  --text-body:    #e8eaec;     /* body copy on panels               ≥ 12.93:1 */
+  --text-muted:   #a1a4a5;     /* secondary copy, descriptions       ≥ 6.21:1 */
+  --text-faint:   #878c95;     /* labels, timestamps, fine print     ≥ 4.61:1 */
 
   /* --- Status --------------------------------------------------------------
      The only accent colors in the system. One meaning each, applied
@@ -39,7 +52,7 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  --font-weight-regular:  400;
+  /* 400 is the body default and is never set explicitly, so it has no token. */
   --font-weight-medium:   500;
   --font-weight-semibold: 600;
 
@@ -83,10 +96,13 @@
   --anchor-offset:  108px;   /* header height + clearance for jumped-to headings */
   --card-padding:   var(--spacing-32);
 
-  /* Vertical rhythm. Sections alternate between these two to break the page
-     into perceptible movements rather than one uniform column.               */
+  /* Vertical rhythm. Three tiers, not two. With only two the page ran four
+     consecutive 96px sections through its middle, which is what made it read
+     as one uniform column. No two adjacent sections may share both a surface
+     and a padding tier.                                                      */
   --section-pad:       var(--spacing-96);
   --section-pad-tight: var(--spacing-64);
+  --section-pad-lg:    var(--spacing-128);
 
   /* --- Shape ---------------------------------------------------------------
      Two radii. The system is architectural: nothing is soft.                 */

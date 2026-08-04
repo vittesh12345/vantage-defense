@@ -16,30 +16,38 @@ A four-step ladder. Steps are sized in CIE L\* so each one is perceptible agains
 
 | Level | Name | Value | L\* | Token | Used by |
 |-------|------|-------|-----|-------|---------|
-| 0 | Canvas | `#000000` | 0.0 | `--surface-canvas` | `body`, hero, capabilities, platform, who-it's-for, closing CTA |
-| 1 | Band | `#080a0d` | 2.7 | `--surface-band` | alternating sections (statement, assurance, orbital compute, mission), footer |
-| 2 | Panel | `#0e1116` | 5.0 | `--surface-panel` | assurance panel, mission cards, discriminator cases, framed figures, form inputs |
-| 3 | Chrome | `#151a21` | 9.1 | `--surface-chrome` | panel header bars, status chips, the footer badge, the contact address block |
+| 0 | Canvas | `#000000` | 0.0 | `--surface-canvas` | `body`, hero, capabilities, who-it's-for, demo console page |
+| 1 | Band | `#0c0f14` | 4.2 | `--surface-band` | alternating sections (platform, assurance, closing CTA), footer |
+| 2 | Panel | `#151a22` | 9.1 | `--surface-panel` | assurance panel, mission cards, discriminator cases, framed figures, form inputs, demo panels |
+| 3 | Chrome | `#1e242e` | 14.0 | `--surface-chrome` | panel header bars, status chips, the footer badge, the contact address block, selected feed rows |
+
+The ladder was previously `0.0 / 2.7 / 5.0 / 9.1`, which compressed three of its four levels into the bottom 5 L\*. That had two visible consequences: a `.band` section was almost indistinguishable from the canvas behind it, so section separation fell entirely to the 1px rule; and a panel sitting inside a band section cleared its background by only 2.3 L\*. Steps are now even at roughly **4.2 / 4.9 / 4.9**. Nothing leaves near-black, and each level separates from its neighbour without help.
+
+Lifting the ladder forced two dependent tokens up with it: `--rule-hairline` and `--text-faint`. Both are recorded below. **If a surface moves again, re-check those two first.**
 
 ## Tokens: Rules
 
-Two weights, and only two. The previous single hairline measured 1.51:1 against the canvas and was effectively invisible.
+Two weights, and only two.
 
-| Name | Value | On canvas | Token | Role |
-|------|-------|-----------|-------|------|
-| Hairline | `#343b44` | 1.86:1 | `--rule-hairline` | dividers *inside* a container: ledger rows, gate cells, panel header underline |
-| Edge | `#525a66` | 3.01:1 | `--rule-edge` | structural boundaries: section edges, panel perimeters, button borders, the rule a rail hangs from |
+| Name | Value | On canvas | On chrome | Token | Role |
+|------|-------|-----------|-----------|-------|------|
+| Hairline | `#3d4552` | 2.17:1 | 1.61:1 | `--rule-hairline` | dividers *inside* a container: ledger rows, gate cells, panel header underline |
+| Edge | `#525a66` | 3.01:1 | 2.24:1 | `--rule-edge` | structural boundaries: section edges, panel perimeters, button borders, the rule a rail hangs from |
+
+Hairline moved from `#343b44` when the ladder lifted: against the new chrome it measured 1.38:1 and had effectively vanished inside a panel header.
 
 ## Tokens: Text
 
-All four tiers clear WCAG AA (4.5:1) on **all four** surfaces. The worst pairing in the system is `--text-faint` on `--surface-chrome` at 4.53:1.
+All four tiers clear WCAG AA (4.5:1) on **all four** surfaces. The worst pairing in the system is `--text-faint` on `--surface-chrome` at 4.61:1.
 
 | Name | Value | Min ratio | Token | Role |
 |------|-------|-----------|-------|------|
-| Primary | `#ffffff` | 14.5:1 | `--text-primary` | headings, key figures, active labels |
-| Body | `#e8eaec` | 14.5:1 | `--text-body` | body copy on panels, mission copy |
-| Muted | `#a1a4a5` | 6.96:1 | `--text-muted` | secondary copy, descriptions, footer links |
-| Faint | `#7d828b` | 4.53:1 | `--text-faint` | mono labels, eyebrows, timestamps, fine print |
+| Primary | `#ffffff` | 15.59:1 | `--text-primary` | headings, key figures, active labels |
+| Body | `#e8eaec` | 12.93:1 | `--text-body` | body copy on panels, ledger prose, mission copy |
+| Muted | `#a1a4a5` | 6.21:1 | `--text-muted` | secondary copy, descriptions, footer links |
+| Faint | `#878c95` | 4.61:1 | `--text-faint` | mono labels, eyebrows, timestamps, fine print |
+
+Faint moved from `#7d828b` when the ladder lifted: against the new chrome the old value measured **4.04:1** and no longer cleared AA. Min ratios above are measured against `--surface-chrome`, the lightest surface and therefore the worst case for every tier.
 
 ## Tokens: Status
 
@@ -56,7 +64,7 @@ The previous palette carried `--color-signal-blue` and `--color-iris-violet`, ea
 ## Tokens: Typography
 
 ### Inter: prose
-`--font-sans` · weights 400 / 500 / 600 (`--font-weight-regular` / `-medium` / `-semibold`)
+`--font-sans` · weights 400 / 500 / 600. Only 500 and 600 have tokens (`--font-weight-medium` / `-semibold`); 400 is the body default and is never set explicitly, so it has none.
 
 Headings sit at 500 and sub-headings at 600. Display sizes carry `-0.03em` tracking; nothing above 20px is left at default tracking. Nothing is set in 700.
 
@@ -92,8 +100,11 @@ Tracking: `--tracking-display` `-0.03em`, `--tracking-tight` `-0.02em`, `--track
 | `--header-height` | 68px | fixed nav |
 | `--anchor-offset` | 108px | `scroll-margin-top`: header height plus 40px clearance, so a jumped-to heading is not flush under the nav |
 | `--card-padding` | 32px | card and panel interiors |
-| `--section-pad` | 96px | standard section rhythm |
-| `--section-pad-tight` | 64px | compressed sections (statement, mission) |
+| `--section-pad` | 96px | standard section rhythm (`.sec`) |
+| `--section-pad-tight` | 64px | compressed sections (`.sec-tight`) |
+| `--section-pad-lg` | 128px | the page's larger movements (`.sec-wide`) |
+
+Three tiers, not two. With only two the page ran four consecutive 96px sections through its middle, which is what made it read as one uniform column regardless of what the surfaces were doing.
 
 ### Radius
 
@@ -112,13 +123,24 @@ Two values. The system is architectural, not soft.
 
 ## Section separation
 
-This is the system's load-bearing decision, so it is stated as a rule rather than left to each section:
+This is the system's load-bearing decision, so it is stated as a rule rather than left to each section. A boundary is carried by **three cues together, never one**:
 
 1. Every top-level `<section>` gets `.sec`, which applies `border-top: 1px solid var(--rule-edge)` full-bleed.
 2. Sections **alternate** between canvas and `.band`. No section may declare a background equal to the one behind it.
-3. Vertical padding alternates between `--section-pad` and `--section-pad-tight`, with `--spacing-128` reserved for the closing CTA, so the page has changes of pace rather than one uniform column.
+3. Adjacent sections never share both a surface *and* a padding tier. Pace changes across every boundary.
 
-A surface change and a visible rule together, not a 1px hairline alone.
+The landing page currently runs:
+
+| # | Section | Surface | Padding |
+|---|---------|---------|---------|
+| 1 | Hero `#top` | canvas | 144 / 96 |
+| 2 | Platform `#platform` | band | 128 |
+| 3 | Capabilities `#capabilities` | canvas | 96 |
+| 4 | Assurance `#assurance` | band | 128 |
+| 5 | Who it's for `#segments` | canvas | 96 |
+| 6 | Closing CTA `#contact` | band | 128 |
+
+Two earlier failures this rule is written to prevent, both of which had shipped: `#mission` and `#contact` sat on **canvas back to back**, so one boundary had no surface change at all; and the middle four sections all ran at 96px, so there was no change of pace anywhere in the body of the page.
 
 ---
 
@@ -138,6 +160,10 @@ Three or four cells hanging off one `--rule-edge` top rule, divided by `--rule-h
 
 ### Capability ledger
 Full-width rows on a shared rule: a mono index column, a prose column, and a right-aligned mono metric column. Rows divided by `--rule-hairline`, the set bounded top and bottom by `--rule-edge`. Not a card grid, and deliberately so: it replaced three stacked bordered grids. Rows without a headline figure show the mono sub-label alone.
+
+**Rows stay uniform.** The one-sidedness discriminator was previously embedded inside row 03, which made that row roughly three times the height of every other one and buried the sharpest idea in the product inside a list item. Anything that wants more room than a row is not a row: promote it to a figure below the ledger. Prose here is `--text-body-md` on `--text-body`; at 14px muted, five stacked rows were the densest thing on the page.
+
+A figure headline only earns the `.val` slot if the number is **new**. `84%` and `100%` appear in the hero metric rail, so rows 01 and 03 carry a mono sub-label instead of restating them. Rows 04 and 05 keep their figures because those numbers appear nowhere else.
 
 ### Framed figure
 `--surface-panel` body, `--rule-edge` perimeter, `--radius-sm`, with a `--surface-chrome` header bar in mono 12px. The only wrapper for a picture of the system: the hero schematic and the real product screenshot both use it, which is what keeps a diagram and a screenshot visually accountable to each other.
@@ -212,18 +238,31 @@ The rule that governs this: **anything that looks like product output must be pr
 
 Full-bleed surfaces with content constrained to a 1200px centered column (`--page-max-width`, 28px gutters, 20px below 560px). The fixed 68px header blurs the canvas behind it and gains a `--rule-edge` bottom border once scrolled.
 
-The page deliberately changes primitive from section to section: asymmetric hero with a schematic, metric rail, full-width statement, capability ledger, focal assurance panel, stage rail plus product screenshot, side-by-side discriminator, two-card grid, editorial mission column, centered closing CTA. Nothing is repeated twice in a row.
+The page deliberately changes primitive from section to section: asymmetric hero with a schematic, closing statement, metric rail, product screenshot, stage rail, capability ledger, side-by-side discriminator, focal assurance panel, featured block plus two-card grid, centered closing CTA. Nothing is repeated twice in a row.
+
+**The product is shown early, and on purpose.** The console screenshot is the page's most important visual and the fastest answer to "is this real software", so the platform section carries it directly after the hero: screenshot first, then the pipeline that produces it. It previously sat in section 5 of 8, behind a schematic, a one-line statement, five capability rows and the assurance panel.
 
 ### Breakpoints
 
 | Width | What changes |
 |-------|--------------|
 | ≤1040px | Horizontal nav collapses to the toggle menu |
-| ≤900px | Hero, assurance body, discriminator, question pair, mission cards, and footer go single-column; stage rail and ledger reflow |
+| ≤900px | Hero, assurance body, discriminator, mission cards, and footer go single-column; stage rail and ledger reflow |
 | ≤560px | Nav CTA is replaced by an in-menu contact link, gutters tighten to 20px, metric rail and stage rail stack, gate readout goes 2×2 |
 | `pointer: coarse` | All targets reach 44px regardless of viewport width |
 
 ---
+
+## The demo console (`/demo/`)
+
+The system covers three pages, not two. `/demo/` is a **product surface**, not a marketing page, and that earns it exactly one exception: it keeps its own shell, a sticky status bar in place of the fixed site header and no footer. Everything inside that shell is drawn from the same tokens as the rest of the site, and it links `tokens.css` and `site.css` like every other page.
+
+It used to be a second design system in the same repository: a private `:root` with a blue-black `#080b11` canvas, Space Grotesk and IBM Plex Sans instead of Inter, a `#57a0c4` accent, 6px radii, a glowing status dot, and a filled primary button. It imported neither stylesheet. Since it is the page a buyer clicks into from the landing page, it read as a different company's product.
+
+Two decisions worth keeping:
+
+- **No accent replaced the blue.** The system has three status colors and no brand accent, so the five feed event kinds separate on status where they *are* a status (`k-warn` watch, `k-crit` threat, `k-ok` nominal) and on text tier plus rule weight where they are not (`k-sys` faint on hairline, `k-info` body on edge). An event kind is not a state, and it does not get a color for decoration.
+- **Console controls may be compact.** `.chip-btn` is a ghost button that sits below the 44px floor on precise pointers, because a 44px control inside a panel header is wrong for a dense console. It reaches 44px under `pointer: coarse`, so the touch guarantee still holds. This is the only place the floor is relaxed, and the relaxation is pointer-conditional.
 
 ## Progressive enhancement
 
@@ -236,13 +275,16 @@ The contact page applies the same principle to its form: the working, script-fre
 ## Quick reference
 
 ```css
-/* Surfaces */    #000000 · #080a0d · #0e1116 · #151a21
-/* Rules */       #343b44 (inside) · #525a66 (structure)
-/* Text */        #ffffff · #e8eaec · #a1a4a5 · #7d828b
+/* Surfaces */    #000000 · #0c0f14 · #151a22 · #1e242e      (L* 0 / 4.2 / 9.1 / 14.0)
+/* Rules */       #3d4552 (inside) · #525a66 (structure)
+/* Text */        #ffffff · #e8eaec · #a1a4a5 · #878c95      (worst pairing 4.61:1)
 /* Status */      #3ad389 nominal · #ffca16 watch · #ff6b5f threat
 /* Type */        Inter 400/500/600 · IBM Plex Mono 400/500/600
+/* Sections */    96 · 64 · 128, alternating canvas/band, never both the same twice
 /* Radius */      2px · 4px
 /* Primary action */ ghost outline, rgba(255,255,255,.42) border, white label: never filled
 ```
 
-Tokens live in `styles/tokens.css`. The shared shell (reset, sections, nav, buttons, chips, frames, footer, reveal) lives in `styles/site.css` and `scripts/site.js`. Page-specific composition stays in each page's own `<style>` block.
+Tokens live in `styles/tokens.css`. The shared shell (reset, sections, nav, buttons, chips, frames, footer, reveal) lives in `styles/site.css` and `scripts/site.js`. Page-specific composition stays in each page's own `<style>` block. All three pages (`/`, `/contact/`, `/demo/`) link both stylesheets.
+
+Two things to check before changing a surface value: `--rule-hairline` and `--text-faint` are both sized against `--surface-chrome` and will silently fall below AA if it moves.
