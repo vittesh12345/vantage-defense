@@ -17,16 +17,16 @@
 <meta property="og:title" content="Vantage · Assured Space Intelligence" />
 <meta property="og:description" content="Vantage understands what satellites are doing: maneuver detection, intent inference, and surveillance-and-shadowing warnings from public orbital data." />
 <meta property="og:url" content="https://vantage.industries/" />
-<meta property="og:image" content="https://vantage.industries/assets/demo-console.png" />
-<meta property="og:image:width" content="1584" />
-<meta property="og:image:height" content="928" />
-<meta property="og:image:alt" content="The Vantage mission console: a live LEO feed flagging a foreign inspector that maneuvered to shadow an orbital AI data center, with the evidence panel open beside it." />
+<meta property="og:image" content="https://vantage.industries/assets/og-card.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Earth's limb seen from orbit, with the Vantage wordmark." />
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Vantage · Assured Space Intelligence" />
 <meta name="twitter:description" content="Vantage understands what satellites are doing: maneuver detection, intent inference, and surveillance-and-shadowing warnings from public orbital data." />
-<meta name="twitter:image" content="https://vantage.industries/assets/demo-console.png" />
-<meta name="twitter:image:alt" content="The Vantage mission console: a live LEO feed flagging a foreign inspector that maneuvered to shadow an orbital AI data center, with the evidence panel open beside it." />
+<meta name="twitter:image" content="https://vantage.industries/assets/og-card.jpg" />
+<meta name="twitter:image:alt" content="Earth's limb seen from orbit, with the Vantage wordmark." />
 <!-- Structured data -->
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"Vantage","alternateName":["Vantage Industries","Vantage AI","Vantage Space Intelligence"],"url":"https://vantage.industries/","description":"Vantage delivers assured space intelligence: satellite maneuver detection, intent inference, and surveillance-and-shadowing warnings from public orbital data.","knowsAbout":["Space Situational Awareness","Satellite Intelligence","Orbital Analytics","Space Domain Awareness","Artificial Intelligence"],"contactPoint":{"@type":"ContactPoint","email":"contact@vantage.industries","contactType":"General","url":"https://vantage.industries/contact/"}}
@@ -75,6 +75,11 @@
   .rail .cell + .cell{border-left:1px solid var(--rule-hairline);padding-left:var(--spacing-28)}
   .rail .num{font-family:var(--font-mono);font-size:32px;font-weight:var(--font-weight-medium);color:var(--text-primary);line-height:1.1}
   .rail .lbl{font-size:var(--text-body-sm);color:var(--text-muted);margin-top:var(--spacing-8);max-width:30ch}
+  /* Provenance for the two named findings above. Matches .seal in the assurance
+     panel: this is a receipt, so it is set as machine voice, not prose. Kept at
+     caption/muted rather than micro/faint because it is what makes the two
+     figures checkable instead of merely asserted. */
+  .rail-note{margin-top:var(--spacing-24);font-family:var(--font-mono);font-size:var(--text-caption);color:var(--text-muted);line-height:1.6}
 
   /* ---------- CAPABILITY LEDGER ----------
      Full-width rows on a shared rule. Replaces what used to be three separate
@@ -277,10 +282,11 @@
       </div>
 
       <div class="rail reveal">
-        <div class="cell"><div class="num">84%</div><div class="lbl">Maneuvers caught at 0 false alarms · sealed bench</div></div>
+        <div class="cell"><div class="num">under 15 km</div><div class="lbl">Russian inspector holding station beside Intelsat 39, recomputed daily</div></div>
+        <div class="cell"><div class="num">0.73°</div><div class="lbl">Five Kosmos satellites plane-matched to a commercial radar satellite</div></div>
         <div class="cell"><div class="num">162,634</div><div class="lbl">ESA close-approach reports used for calibration</div></div>
-        <div class="cell"><div class="num">100%</div><div class="lbl">On seeded shadowing scenarios</div></div>
       </div>
+      <p class="rail-note reveal">Computed by Vantage from public CelesTrak element sets. No sensors, no credentials, reproducible.</p>
     </div>
   </section>
 
@@ -320,7 +326,7 @@
             <h3>Maneuver detection</h3>
             <p>Subtracts the drift physics explains, J2 oblateness and atmospheric drag, from each object's public element-set history. The residual Δv is somebody's engine: detected, measured, timestamped.</p>
           </div>
-          <div class="metric"><span class="key">physics-subtracted<br>J2 + drag removed</span></div>
+          <div class="metric"><span class="val">84%</span><span class="key">caught at 0<br>false alarms</span></div>
         </li>
         <li class="reveal">
           <span class="idx">02</span>
@@ -336,7 +342,7 @@
             <h3>Proximity and RPO watch</h3>
             <p>Separates a deliberate shadower from an incidental pass or a benign co-orbiting formation. One-sidedness is the discriminator, shown below.</p>
           </div>
-          <div class="metric"><span class="key">one-sidedness<br>discriminator</span></div>
+          <div class="metric"><span class="val">100%</span><span class="key">seeded shadowing<br>scenarios</span></div>
         </li>
         <li class="reveal">
           <span class="idx">04</span>

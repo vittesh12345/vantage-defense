@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Not found · Vantage</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
+<meta name="theme-color" content="#05070a" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{--bg:#05070a;--txt:#e8edf2;--muted:#8a97a6;--dim:#5b6672;--line:rgba(255,255,255,.08);--accent:#4da3ff}
+  body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;
+    -webkit-font-smoothing:antialiased}
+  .grid{position:fixed;inset:0;z-index:0;opacity:.5;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:64px 64px;
+    -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,#000 20%,transparent 76%);
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,#000 20%,transparent 76%)}
+  .w{position:relative;z-index:2;max-width:560px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:'Space Grotesk',sans-serif;
+    font-weight:700;font-size:19px;letter-spacing:.04em;margin-bottom:44px}
+  .code{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;
+    letter-spacing:.24em;color:var(--accent);margin-bottom:18px}
+  h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(30px,5vw,44px);
+    line-height:1.08;letter-spacing:-.02em;margin-bottom:18px}
+  p{color:var(--muted);font-size:16.5px;line-height:1.55;margin-bottom:34px;max-width:46ch}
+  .row{display:flex;gap:14px;flex-wrap:wrap}
+  a.btn{font-family:'Space Grotesk',sans-serif;font-size:13.5px;letter-spacing:.04em;
+    padding:11px 21px;border:1px solid rgba(255,255,255,.14);border-radius:2px;color:var(--txt);
+    text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
+  a.btn:hover{border-color:var(--accent);color:var(--accent)}
+  a.solid{background:var(--txt);color:#05070a;border-color:var(--txt)}
+  a.solid:hover{background:var(--accent);border-color:var(--accent);color:#05070a}
+</style>
+</head>
+<body>
+<div class="grid"></div>
+<div class="w">
+  <a href="/" style="text-decoration:none;color:inherit"><div class="brand">
+    <svg width="26" height="26" viewBox="0 0 100 100" fill="#fff" aria-hidden="true">
+      <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
+      <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
+      <polygon points="29.0,66.9 50.0,80.9 71.0,67.1 57.0,68.9 50.0,73.5 43.0,68.9"/>
+      <circle cx="50" cy="49.8" r="6.3"/>
+    </svg>
+    VANTAGE
+  </div></a>
+  <div class="code">ERROR 404</div>
+  <h1>This one is off the catalog.</h1>
+  <p>The page you asked for is not in orbit. Head back to the main site, or watch the engine run on a real scenario.</p>
+  <div class="row">
+    <a class="btn solid" href="/">Back to Vantage &rarr;</a>
+    <a class="btn" href="/demo/">See the live demo &rarr;</a>
+  </div>
+</div>
+</body>
+</html>
