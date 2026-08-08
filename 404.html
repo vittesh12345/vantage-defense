@@ -5,59 +5,127 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Not found · Vantage</title>
 <meta name="robots" content="noindex" />
+<meta name="theme-color" content="#000000" />
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
 <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
-<meta name="theme-color" content="#05070a" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/tokens.css">
+<link rel="stylesheet" href="/styles/site.css">
+<!-- Scripting reveals content on scroll. Without it, show everything immediately. -->
+<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  :root{--bg:#05070a;--txt:#e8edf2;--muted:#8a97a6;--dim:#5b6672;--line:rgba(255,255,255,.08);--accent:#4da3ff}
-  body{background:var(--bg);color:var(--txt);font-family:'Inter',system-ui,sans-serif;
-    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;
-    -webkit-font-smoothing:antialiased}
-  .grid{position:fixed;inset:0;z-index:0;opacity:.5;
-    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
-    background-size:64px 64px;
-    -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,#000 20%,transparent 76%);
-    mask-image:radial-gradient(ellipse 70% 60% at 50% 40%,#000 20%,transparent 76%)}
-  .w{position:relative;z-index:2;max-width:560px}
-  .brand{display:flex;align-items:center;gap:11px;font-family:'Space Grotesk',sans-serif;
-    font-weight:700;font-size:19px;letter-spacing:.04em;margin-bottom:44px}
-  .code{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;
-    letter-spacing:.24em;color:var(--accent);margin-bottom:18px}
-  h1{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:clamp(30px,5vw,44px);
-    line-height:1.08;letter-spacing:-.02em;margin-bottom:18px}
-  p{color:var(--muted);font-size:16.5px;line-height:1.55;margin-bottom:34px;max-width:46ch}
-  .row{display:flex;gap:14px;flex-wrap:wrap}
-  a.btn{font-family:'Space Grotesk',sans-serif;font-size:13.5px;letter-spacing:.04em;
-    padding:11px 21px;border:1px solid rgba(255,255,255,.14);border-radius:2px;color:var(--txt);
-    text-decoration:none;transition:all .2s;display:inline-flex;align-items:center;gap:8px}
-  a.btn:hover{border-color:var(--accent);color:var(--accent)}
-  a.solid{background:var(--txt);color:#05070a;border-color:var(--txt)}
-  a.solid:hover{background:var(--accent);border-color:var(--accent);color:#05070a}
+  /* This page used to be a second design system: a private :root on a
+     blue-black canvas, Inter at weight 700, a #4da3ff fourth accent, a masked
+     gradient grid, a filled button, and neither stylesheet linked. That is the
+     same failure design.md records fixing on /demo/, and a 404 is exactly
+     where a stale link from a briefing email lands, so it is a first
+     impression for the buyer this site is written for.
+
+     It now composes entirely from shared primitives. All that is left here is
+     the vertical centering, which no other page needs. */
+  .notfound{
+    min-height:calc(100vh - var(--header-height));
+    display:flex;align-items:center;
+    padding:var(--spacing-128) 0 var(--section-pad);
+  }
+  .notfound h1{
+    font-weight:var(--font-weight-medium);color:var(--text-primary);
+    font-size:var(--text-h2);line-height:1.15;letter-spacing:var(--tracking-display);
+    margin:var(--spacing-20) 0 var(--spacing-16);max-width:18ch;
+  }
+  .notfound p{color:var(--text-muted);font-size:var(--text-body-md);max-width:52ch;margin-bottom:var(--spacing-32)}
 </style>
 </head>
 <body>
-<div class="grid"></div>
-<div class="w">
-  <a href="/" style="text-decoration:none;color:inherit"><div class="brand">
-    <svg width="26" height="26" viewBox="0 0 100 100" fill="#fff" aria-hidden="true">
-      <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
-      <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
-      <polygon points="29.0,66.9 50.0,80.9 71.0,67.1 57.0,68.9 50.0,73.5 43.0,68.9"/>
-      <circle cx="50" cy="49.8" r="6.3"/>
-    </svg>
-    VANTAGE
-  </div></a>
-  <div class="code">ERROR 404</div>
-  <h1>This one is off the catalog.</h1>
-  <p>The page you asked for is not in orbit. Head back to the main site, or watch the engine run on a real scenario.</p>
-  <div class="row">
-    <a class="btn solid" href="/">Back to Vantage &rarr;</a>
-    <a class="btn" href="/demo/">See the live demo &rarr;</a>
+
+<a class="skip-link" href="#main">Skip to main content</a>
+<header id="hdr">
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="/">
+        <span class="mark">
+          <svg width="26" height="26" viewBox="0 0 100 100" fill="#fff" aria-hidden="true" focusable="false">
+            <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
+            <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
+            <polygon points="29.0,66.9 50.0,80.9 71.0,67.1 57.0,68.9 50.0,73.5 43.0,68.9"/>
+            <circle cx="50" cy="49.8" r="6.3"/>
+          </svg>
+        </span>
+        VANTAGE
+      </a>
+      <div class="navlinks" id="primary-nav">
+        <a href="/#platform">Platform</a>
+        <a href="/#capabilities">Capabilities</a>
+        <a href="/#assurance">Assurance</a>
+        <a href="/#segments">Who it's for</a>
+        <a href="/demo/">Live demo</a>
+        <a class="nav-contact" href="/contact/">Request a briefing</a>
+      </div>
+      <a href="/contact/" class="btn nav-cta">Request a briefing</a>
+      <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-nav">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </nav>
   </div>
-</div>
+</header>
+
+<main id="main" class="notfound">
+  <div class="wrap">
+    <span class="eyebrow reveal">Error 404</span>
+    <h1 class="reveal">This one is off the catalog.</h1>
+    <p class="reveal">The page you asked for is not in orbit. Head back to the main site, or watch the engine run end-to-end on a seeded scenario.</p>
+    <div class="cta-row reveal">
+      <a href="/" class="btn btn-primary">Back to Vantage →</a>
+      <a href="/demo/" class="btn">Open the live demo →</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a class="brand footer-brand" href="/">
+          <span class="mark">
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="#fff" aria-hidden="true" focusable="false">
+              <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
+              <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
+              <polygon points="29.0,66.9 50.0,80.9 71.0,67.1 57.0,68.9 50.0,73.5 43.0,68.9"/>
+              <circle cx="50" cy="49.8" r="6.3"/>
+            </svg>
+          </span>
+          VANTAGE
+        </a>
+        <p>The intelligence layer for space defense: understand what a satellite is doing, and what it's trying to accomplish, from public orbital data.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Platform</h5>
+        <a href="/#platform">Platform</a>
+        <a href="/#capabilities">Capabilities</a>
+        <a href="/#assurance">Assurance</a>
+        <a href="/demo/">Live demo</a>
+      </div>
+      <div class="foot-col">
+        <h5>Who it's for</h5>
+        <a href="/#defense">Defense &amp; intelligence</a>
+        <a href="/#operators">Satellite operators</a>
+        <a href="/#orbital-compute">Orbital compute</a>
+      </div>
+      <div class="foot-col">
+        <h5>Contact</h5>
+        <a href="/contact/">Request a briefing</a>
+        <span class="plain">contact@vantage.industries</span>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <p>© 2026 Vantage · Assured Space Intelligence</p>
+      <span class="badge">SEALED EVIDENCE · HUMAN-ON-THE-LOOP</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/scripts/site.js" defer></script>
 </body>
 </html>
