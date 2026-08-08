@@ -120,8 +120,18 @@
   --radius-xs: 2px;   /* tags, status chips, badges                           */
   --radius-sm: 4px;   /* buttons, inputs, panels, cards, images               */
 
-  /* --- Motion -------------------------------------------------------------- */
+  /* --- Motion --------------------------------------------------------------
+     The first three are the system: hover, scroll reveal, and the easing they
+     share. The last two exist for exactly one moment, the hero spacecraft's
+     flight from the opening full-viewport view into its frame, and are named
+     for it rather than added to the general scale. Nothing else may use them;
+     if a second thing needs a transit, that is the point at which this stops
+     being a one-off and earns a real tier.                                    */
   --motion-fast:     150ms;
   --motion-reveal:   600ms;
   --motion-ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  --motion-flight:      1150ms;
+  --motion-veil:         700ms;
+  --motion-ease-flight: cubic-bezier(0.16, 0.84, 0.3, 1);
 }
