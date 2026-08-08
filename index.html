@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Vantage · Assured Space Intelligence</title>
@@ -40,7 +40,28 @@
 <link rel="stylesheet" href="styles/tokens.css">
 <link rel="stylesheet" href="styles/site.css">
 <!-- Scripting reveals content on scroll. Without it, show everything immediately. -->
-<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+<!-- The stage rail's rule and ticks are drawn by transform and only released
+     by the `.in` class, which nothing adds without scripting. Without this
+     they would simply be missing, so they are pinned open here alongside the
+     reveal they belong to. -->
+<noscript><style>.reveal{opacity:1;transform:none}.stages::before,.stages .stage::before{transform:none}.disc-wipe{width:42px}.disc-label{opacity:1}</style></noscript>
+<!-- Arms the hero intro before first paint, so the landed state never flashes
+     ahead of the opening view. It only ever *adds* a class, and it carries a
+     backstop that clears that class if scripts/hero-satellite.js never arrives:
+     the veil is full-viewport, so a failed load must not be able to strand a
+     visitor behind it. hero-satellite.js clears the backstop when it takes over. -->
+<script>
+(function(){
+  try{
+    if (sessionStorage.getItem('vantage-intro') === 'done') return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.documentElement.className += ' intro-armed';
+    window.__vantageIntroBackstop = setTimeout(function(){
+      document.documentElement.classList.remove('intro-armed');
+    }, 6000);
+  }catch(e){}
+})();
+</script>
 <style>
   /* ---------- HERO ---------- */
   .hero{padding:var(--spacing-144) 0 var(--section-pad)}
@@ -52,17 +73,124 @@
   }
   .hero p.lede{font-size:var(--text-body-lg);color:var(--text-body);max-width:52ch;margin-bottom:var(--spacing-40)}
 
-  .fig-body{padding:var(--spacing-20) var(--spacing-16) var(--spacing-16)}
+  .fig-body{padding:var(--spacing-20) var(--spacing-16) var(--spacing-16);position:relative}
   .fig-body svg{display:block;width:100%;height:auto}
   .fig-note{padding:0 var(--spacing-16) var(--spacing-16);font-family:var(--font-mono);font-size:var(--text-micro);color:var(--text-faint);line-height:1.6}
 
-  /* ---------- HERO STATEMENT ----------
-     Absorbed from what used to be its own #why section. A single sentence did
-     not earn a section boundary, and it says the same thing the hero says, so
-     it now closes the hero instead of interrupting the page after it. No rule
-     of its own: the rail below already carries one, and two rules this close
-     together read as clutter. */
-  .hero-statement{margin-top:var(--spacing-80)}
+  /* ---------- HERO SPACECRAFT ----------
+     The frame used to hold the residual trace as a static SVG. It now holds a
+     drawn wireframe spacecraft on its orbit track, and the residual is what
+     the Δv marker on that track opens. Same frame, same caption, same claim:
+     the explanation is now the payoff of the interaction rather than a diagram
+     a visitor has to decode cold.
+
+     The SVG is still the *default* markup state, so a visitor without
+     scripting gets the schematic this replaced, in place and fully labelled.
+     scripts/hero-satellite.js adds `.sat-live` once it has a 2D context, and
+     that class is what performs the swap. */
+  .sat-slot{display:none}
+  /* Close to the 560×300 of the SVG this frame used to hold, so the hero grid
+     keeps the proportions it was balanced against. */
+  .sat-live .sat-slot{display:block;position:relative;aspect-ratio:7/4}
+  .sat-stage{position:absolute;inset:0;touch-action:pan-y}
+  .sat-canvas{display:block;width:100%;height:100%}
+
+  /* A real button over the drawn Δv diamond: keyboard reachable, announced,
+     and 44px like every other target. It is invisible because the canvas has
+     already drawn the marker and its affordance ring underneath. */
+  .dv-hit{
+    position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;
+    padding:0;border:0;border-radius:50%;background:none;cursor:pointer;
+  }
+  .sat-hint{font-family:var(--font-mono);font-size:var(--text-micro);color:var(--text-faint)}
+
+  /* Residual overlay. Default state is in-flow (the no-script path); once the
+     canvas is live it becomes a cover for the figure body that the marker
+     toggles. */
+  .sat-live .residual{
+    position:absolute;inset:0;padding:var(--spacing-20) var(--spacing-16);
+    background:var(--surface-panel);
+    display:flex;flex-direction:column;justify-content:center;
+    opacity:0;visibility:hidden;transform:translateY(10px);
+    transition:opacity var(--motion-reveal) var(--motion-ease-out),
+               transform var(--motion-reveal) var(--motion-ease-out),
+               visibility 0s linear var(--motion-reveal);
+  }
+  .sat-live.residual-open .residual{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+  /* Hidden on the no-script path, where there is nothing to close. */
+  .residual-close{
+    display:none;align-self:flex-start;margin-top:var(--spacing-16);
+    min-height:44px;padding:0 var(--spacing-12);
+    background:none;border:1px solid var(--rule-edge);border-radius:var(--radius-sm);
+    font-family:var(--font-mono);font-size:var(--text-micro);letter-spacing:.1em;
+    text-transform:uppercase;color:var(--text-muted);cursor:pointer;
+    transition:border-color var(--motion-fast) var(--motion-ease-out),color var(--motion-fast) var(--motion-ease-out);
+  }
+  .sat-live .residual-close{display:inline-flex;align-items:center}
+  .residual-close:hover{border-color:var(--text-primary);color:var(--text-primary)}
+
+  /* ---------- HERO INTRO ----------
+     Plays once per session. The stage is pinned at its natural rect and
+     transformed out to the centre of the viewport, held over a star field,
+     then transitioned back to identity so it lands exactly where it belongs.
+     Every rule here is scoped to a class that only exists while it runs. */
+  .intro-veil{
+    position:fixed;inset:0;z-index:60;background:var(--surface-canvas);
+    display:none;opacity:0;
+    transition:opacity var(--motion-veil) var(--motion-ease-out);
+  }
+  .intro-armed .intro-veil,.intro-flying .intro-veil{display:block}
+  .intro-armed .intro-veil{opacity:1}
+  .intro-veil canvas{display:block;width:100%;height:100%}
+  .intro-line{
+    position:absolute;left:50%;bottom:14%;transform:translateX(-50%);
+    margin:0;white-space:nowrap;
+    font-family:var(--font-mono);font-size:var(--text-caption);
+    letter-spacing:var(--tracking-label);text-transform:uppercase;
+    color:var(--text-faint);opacity:0;
+    transition:opacity var(--motion-reveal) var(--motion-ease-out);
+  }
+  .intro-armed .intro-line{opacity:1;transition-delay:420ms}
+
+  /* Scroll stays locked through the flight as well as the hold: the stage is
+     position:fixed against a rect measured at rest, so a scroll mid-flight
+     would land it somewhere other than its frame. */
+  .intro-armed body,.intro-flying body{overflow:hidden}
+  .intro-armed #hdr,.intro-flying #hdr{transition:opacity var(--motion-veil) var(--motion-ease-out)}
+  .intro-armed #hdr{opacity:0;pointer-events:none}
+  /* The figure is held at its final position while the veil covers it, so the
+     spacecraft lands into a frame that is already exactly where it will stay.
+     Without this it would be chasing a target that is itself still animating. */
+  .intro-armed #hero-figure{opacity:1;transform:none;transition:none}
+  /* The hero copy is held back and released as the spacecraft flies in, so the
+     two arrive together. Dropping `.intro-armed` restores the normal reveal
+     transition and the copy animates from here. */
+  .intro-armed .hero-copy .reveal{opacity:0;transform:translateY(18px);transition:none}
+
+  @media(prefers-reduced-motion:reduce){
+    .intro-veil{display:none !important}
+    .intro-armed body{overflow:auto}
+    .intro-armed .hero-copy .reveal{opacity:1;transform:none}
+    /* site.js still adds `.in` under reduced motion, so these would sweep.
+       The `.in` selectors are repeated because they would otherwise outrank
+       the base rule and win. */
+    .stages::before,.stages.in::before,
+    .stages .stage::before,.stages .stage.in::before{transform:none;transition:none}
+    .disc-wipe,.disc-figure.in .disc-wipe{width:42px;transition:none}
+    .disc-label,.disc-figure.in .disc-label{opacity:1;transition:none}
+  }
+
+  /* ---------- SECTION STATEMENT ----------
+     Once its own #why section, then the closing beat of the hero, now the
+     thing that opens the capability ledger in place of a heading. A single
+     sentence still does not earn a section boundary, so it opens one instead.
+     No rule of its own: the ledger below carries one, and two rules this close
+     together read as clutter.
+
+     The top margin matches what .sec-head gives its h2, so the gap under the
+     eyebrow is the same here as in every other section even though the
+     heading itself is gone. */
+  .sec-statement{margin:var(--spacing-20) 0 var(--spacing-48)}
   .statement-line{font-weight:var(--font-weight-medium);color:var(--text-primary);font-size:var(--text-statement);line-height:1.3;letter-spacing:var(--tracking-tight);max-width:46ch}
   .statement-line .dim{color:var(--text-muted)}
   .statement-line em{font-style:italic}
@@ -81,6 +209,33 @@
      figures checkable instead of merely asserted. */
   .rail-note{margin-top:var(--spacing-24);font-family:var(--font-mono);font-size:var(--text-caption);color:var(--text-muted);line-height:1.6}
 
+  /* ---------- AUDIENCE SIGNPOST ----------
+     Same machine voice and caption tier as the rail note it used to hang off.
+     It exists because moving #segments earlier was rejected, and that
+     rationale is recorded in design.md so nobody "fixes" this later by
+     reordering sections.
+
+     Now opens the platform section instead of closing the hero. It carries no
+     rule of its own: the metric rail directly below hangs off a --rule-edge,
+     and a hairline 48px above that read as clutter rather than structure.
+
+     Links, not buttons, so the ghost-button hierarchy and the one-card-grid
+     budget are both untouched. The 44px floor is met by making each link an
+     inline-flex box rather than running text, which is the only way to reach
+     the target height without wrecking the line. */
+  .signpost{
+    display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--spacing-20);
+    margin-bottom:var(--spacing-40);
+    font-family:var(--font-mono);font-size:var(--text-caption);
+  }
+  .signpost-lead{color:var(--text-faint);letter-spacing:var(--tracking-label);text-transform:uppercase}
+  .signpost a{
+    display:inline-flex;align-items:center;min-height:44px;
+    color:var(--text-muted);border-bottom:1px solid var(--rule-hairline);
+    transition:color var(--motion-fast) var(--motion-ease-out),border-color var(--motion-fast) var(--motion-ease-out);
+  }
+  .signpost a:hover,.signpost a:focus-visible{color:var(--text-primary);border-bottom-color:var(--text-primary)}
+
   /* ---------- CAPABILITY LEDGER ----------
      Full-width rows on a shared rule. Replaces what used to be three separate
      bordered card grids stacked on top of each other. Rows are uniform by
@@ -89,17 +244,67 @@
      of every other and buried the product's sharpest idea inside a list item.
      It now sits below the ledger as its own figure. */
   .ledger{list-style:none;border-top:1px solid var(--rule-edge);border-bottom:1px solid var(--rule-edge)}
+  /* Padding tightened from 32px when the descriptions moved behind a
+     disclosure: a collapsed row is a 44px summary, and the old spacing was
+     sized for a four-line paragraph that is no longer there by default. */
   .ledger li{
     display:grid;grid-template-columns:var(--spacing-64) minmax(0,1fr) minmax(0,250px);
-    gap:var(--spacing-32);padding:var(--spacing-32) 0;
+    gap:var(--spacing-32);padding:var(--spacing-24) 0;
   }
   .ledger li + li{border-top:1px solid var(--rule-hairline)}
-  .ledger .idx{font-family:var(--font-mono);font-size:var(--text-body-sm);color:var(--text-faint);padding-top:5px}
-  .ledger h3{font-weight:var(--font-weight-semibold);color:var(--text-primary);font-size:19px;letter-spacing:-.01em;margin-bottom:var(--spacing-8)}
-  .ledger p{color:var(--text-body);font-size:var(--text-body-md);max-width:64ch}
-  .ledger .metric{text-align:right}
+  /* The index and the figure are nudged down to sit on the heading's optical
+     centre. The summary is 44px and centres its h3, so a top-aligned index
+     and a top-aligned figure both read as sitting too high against it. */
+  .ledger .idx{font-family:var(--font-mono);font-size:var(--text-body-sm);color:var(--text-faint);padding-top:11px}
+  .ledger h3{font-weight:var(--font-weight-semibold);color:var(--text-primary);font-size:19px;letter-spacing:-.01em;margin:0}
+  .ledger p{color:var(--text-body);font-size:var(--text-body-md);max-width:64ch;margin-top:var(--spacing-12)}
+
+  /* ---------- LEDGER DISCLOSURE ----------
+     Descriptions collapse behind their own capability name so the ledger can
+     be scanned as a list of what the product does, with the mechanism there
+     for anyone who wants it.
+
+     This is the inverse of the change design.md records rejecting. That one
+     put *extra* prose behind a toggle while leaving the visible copy in place,
+     so an open row towered over its neighbours: the row-03 failure again. Here
+     every row collapses to the same height, so the resting state is more
+     uniform than the old always-open ledger, and the tall state only exists
+     because a visitor asked for it.
+
+     <details> and not a scripted toggle: it is keyboard operable, announces
+     its own expanded state, and works with no JavaScript, which matters on a
+     page whose no-script path is the default markup state everywhere else. */
+  .ledger details{min-width:0}
+  .ledger summary{
+    display:flex;align-items:center;gap:var(--spacing-16);
+    min-height:44px;cursor:pointer;list-style:none;
+  }
+  .ledger summary::-webkit-details-marker{display:none}
+  /* The heading does not flex. <summary> is already a block-level flex box
+     filling its grid column, so the whole row width stays clickable, but the
+     +/- sits beside the title instead of being flung to a far edge 600px away
+     from the thing it opens. */
+  .ledger summary h3{transition:color var(--motion-fast) var(--motion-ease-out)}
+  /* The +/- is typographic, not an icon: the system bans stock iconography,
+     and the same reasoning that allows the arrows on the buttons allows this. */
+  .ledger .disclose{
+    flex:0 0 auto;font-family:var(--font-mono);font-size:18px;line-height:1;
+    color:var(--text-faint);transition:color var(--motion-fast) var(--motion-ease-out);
+  }
+  .ledger .disclose::after{content:"+"}
+  .ledger details[open] .disclose::after{content:"\2212"}
+  .ledger summary:hover .disclose,.ledger summary:focus-visible .disclose{color:var(--text-primary)}
+  .ledger summary:hover h3{color:var(--text-primary)}
+  .ledger summary:focus-visible{outline:2px solid var(--text-primary);outline-offset:4px}
+  .ledger .metric{text-align:right;padding-top:7px}
   .ledger .metric .val{display:block;font-family:var(--font-mono);font-size:26px;color:var(--text-primary);line-height:1.2}
   .ledger .metric .key{display:block;font-family:var(--font-mono);font-size:var(--text-micro);color:var(--text-faint);line-height:1.65;margin-top:var(--spacing-8)}
+  /* Row 02 carries no headline figure, which the system allows. But .key's
+     top margin is sized to sit *under* a .val, so with no .val the sub-label
+     started at the cell top and fell out of line with every other row's
+     figure. Push it down to where the other rows' .key sits instead. */
+  .ledger .metric .val + .key{margin-top:var(--spacing-8)}
+  .ledger .metric .key:first-child{margin-top:38px}
 
   /* ---------- ASSURANCE PANEL (the focal moment) ---------- */
   .assure{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);overflow:hidden}
@@ -118,14 +323,50 @@
   .gate .monitor .gv{color:var(--status-watch)}
   .seal{margin-top:var(--spacing-24);padding-top:var(--spacing-16);border-top:1px solid var(--rule-hairline);font-family:var(--font-mono);font-size:var(--text-caption);color:var(--text-muted)}
   .seal b{color:var(--text-body);font-weight:var(--font-weight-medium)}
+  /* A text link, not a button: the assurance panel must not compete with the
+     page's one primary action, and this is a route to evidence rather than a
+     conversion. The caveat rides along on its own line so the disclosure can
+     never be separated from the claim. */
+  .seal-link{
+    display:inline-flex;flex-direction:column;gap:var(--spacing-4);
+    margin-top:var(--spacing-12);min-height:44px;justify-content:center;
+    font-family:var(--font-mono);font-size:var(--text-caption);color:var(--text-body);
+    transition:color var(--motion-fast) var(--motion-ease-out);
+  }
+  .seal-link:hover,.seal-link:focus-visible{color:var(--text-primary)}
+  .seal-caveat{color:var(--text-faint);font-size:var(--text-micro)}
 
   /* ---------- PIPELINE RAIL ----------
      Stages read as ticks along one continuous rule, not as four boxes. Sits
      below the screenshot now: the product is shown first, then the path that
      produces it. */
-  .stages{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule-edge);margin-top:var(--spacing-64)}
+  /* The rule is a pseudo-element rather than a border-top because a border
+     cannot be drawn directionally. Everything else about it is unchanged:
+     same 1px, same --rule-edge, same position. */
+  .stages{position:relative;display:grid;grid-template-columns:repeat(4,1fr);margin-top:var(--spacing-64)}
+  .stages::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:1px;background:var(--rule-edge);
+    transform:scaleX(0);transform-origin:0 50%;
+    transition:transform 560ms linear;
+  }
+  /* Linear, not the system ease-out, and 560ms on purpose: the four stages sit
+     130ms apart, so a constant-rate sweep arrives at each one just as it
+     fades up. Easing it would desynchronise the line from the cascade. */
+  .stages.in::before{transform:scaleX(1)}
+  /* `.reveal` on the container is only a hook for the rule above. If it also
+     faded, it would fade its children a second time on top of their own
+     reveal and the cascade would read as mush. */
+  .stages.reveal{opacity:1;transform:none;transition:none}
+
   .stages .stage{position:relative;padding:var(--spacing-32) var(--spacing-24) 0 0}
-  .stages .stage::before{content:"";position:absolute;top:-1px;left:0;width:var(--spacing-32);height:3px;background:var(--text-primary)}
+  /* The tick snaps in with its own stage, so the sweeping rule appears to
+     bring each stage online as it reaches it. */
+  .stages .stage::before{
+    content:"";position:absolute;top:-1px;left:0;width:var(--spacing-32);height:3px;background:var(--text-primary);
+    transform:scaleX(0);transform-origin:0 50%;
+    transition:transform var(--motion-fast) var(--motion-ease-out);
+  }
+  .stages .stage.in::before{transform:scaleX(1)}
   .stages .sn{font-family:var(--font-mono);font-size:var(--text-caption);letter-spacing:.06em;color:var(--text-faint)}
   .stages h4{font-weight:var(--font-weight-semibold);color:var(--text-primary);font-size:var(--text-body-md);letter-spacing:-.01em;margin:var(--spacing-8) 0 var(--spacing-8)}
   .stages p{color:var(--text-muted);font-size:13px;line-height:1.55}
@@ -134,6 +375,24 @@
   .shot:hover,.shot:focus-visible{border-color:var(--text-primary)}
   .shot img{display:block;width:100%;height:auto}
   .shot:hover .grow,.shot:focus-visible .grow{color:var(--text-primary)}
+
+  /* ---------- LIVE CONSOLE PREVIEW ----------
+     The still and the running demo occupy the same box because the screenshot
+     was captured at exactly the viewport the demo lays out at (1584×928), so
+     the aspect ratio is shared and the swap does not move anything.
+
+     The iframe is scaled rather than resized: /demo/ is built for a console
+     viewport, and reflowing it into 1040px would give a different layout from
+     the one the screenshot shows. --shot-scale is written by script on
+     resize. pointer-events are off so the whole frame stays a single link. */
+  .shot-stage{position:relative;aspect-ratio:1584/928;overflow:hidden}
+  .shot-stage iframe{
+    position:absolute;left:0;top:0;width:1584px;height:928px;border:0;
+    transform-origin:0 0;transform:scale(var(--shot-scale,1));
+    pointer-events:none;opacity:0;
+    transition:opacity var(--motion-reveal) var(--motion-ease-out);
+  }
+  .shot-stage.live iframe{opacity:1}
 
   /* ---------- ONE-SIDEDNESS DISCRIMINATOR ----------
      Promoted out of ledger row 03 to close the capabilities section. This is
@@ -148,6 +407,21 @@
   .disc-case svg{display:block;width:100%;height:auto;margin:var(--spacing-20) 0}
   .disc-case p{color:var(--text-muted);font-size:var(--text-body-sm)}
   .disc-note{margin-top:var(--spacing-20);font-family:var(--font-mono);font-size:var(--text-micro);color:var(--text-faint);line-height:1.6;max-width:76ch}
+
+  /* ---------- DISCRIMINATOR: ANIMATING THE DIFFERENCE ----------
+     The whole claim of this figure is that the two cases are the same
+     situation apart from one thing, so both animate identically: the same
+     wipe, over the same span, at the same moment. What emerges on the left is
+     a dashed gap and on the right an engine firing across it. The comparison
+     teaches itself because the animation is symmetric and the content is not.
+
+     No JavaScript. `.disc-figure` is already a `.reveal`, so `.in` arrives on
+     scroll and these ride it. Held-back states live on the elements rather
+     than behind `.reveal`, so the <noscript> override can release them. */
+  .disc-wipe{width:0}
+  .disc-figure.in .disc-wipe{width:42px;transition:width 420ms linear 260ms}
+  .disc-label{opacity:0}
+  .disc-figure.in .disc-label{opacity:1;transition:opacity 260ms var(--motion-ease-out) 720ms}
 
   /* ---------- MISSION CARDS (the only card grid on the page) ---------- */
   .dom-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24)}
@@ -185,6 +459,11 @@
     .ledger li{grid-template-columns:var(--spacing-40) minmax(0,1fr);gap:var(--spacing-20)}
     .ledger .metric{grid-column:2;text-align:left}
     .ledger .metric .val{font-size:22px}
+    /* Both offsets exist to line the figure up with the heading across a
+       side-by-side grid. Once the metric stacks underneath they are just a
+       hole, and on the row with no .val the 38px one is a large one. */
+    .ledger .metric{padding-top:0}
+    .ledger .metric .key:first-child{margin-top:0}
     .disc,.dom-grid{grid-template-columns:1fr}
     .dom-feature{grid-template-columns:1fr;gap:var(--spacing-24);padding:var(--card-padding)}
   }
@@ -197,6 +476,9 @@
     .gate{grid-template-columns:1fr 1fr}
     .gate .g:nth-child(3){border-left:0;padding-left:0}
     .assure-head,.assure-body{padding-left:var(--spacing-20);padding-right:var(--spacing-20)}
+    /* The frame bar cannot hold a caption and an affordance note side by side
+       at this width; they collide. The marker itself stays tappable. */
+    .sat-hint{display:none}
   }
 </style>
 </head>
@@ -225,7 +507,11 @@
         <a href="demo/">Live demo</a>
         <a class="nav-contact" href="contact/">Request a briefing</a>
       </div>
-      <a href="contact/" class="btn btn-primary nav-cta">Request a Briefing</a>
+      <!-- Deliberately not .btn-primary. It is the only button in a 68px
+           header, so placement already carries its priority, and two primary
+           controls for the same action visible at once made "primary" a
+           default rather than a hierarchy. -->
+      <a href="contact/" class="btn nav-cta">Request a briefing</a>
       <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-nav">
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
@@ -239,48 +525,101 @@
   <section class="hero" id="top">
     <div class="wrap">
       <div class="hero-grid">
-        <div>
+        <div class="hero-copy">
           <span class="eyebrow reveal">The intelligence layer for space defense</span>
           <h1 class="reveal">Know why it moved. And prove every call.</h1>
-          <p class="lede reveal">Vantage reads satellite behavior from public orbital data. It detects maneuvers, infers intent, and flags shadowing. Every call includes a written rationale and sealed evidence. No telescopes or radar.</p>
+          <p class="lede reveal">Vantage reads satellite behavior from public orbital data. No telescopes, no radar.</p>
           <div class="cta-row reveal">
             <a href="contact/" class="btn btn-primary">Request a briefing →</a>
-            <a href="demo/" class="btn">See the live demo →</a>
+            <a href="demo/" class="btn">Open the live demo →</a>
           </div>
         </div>
 
-        <div class="frame reveal">
-          <div class="frame-bar"><span>Schematic · maneuver detection</span></div>
+        <div class="frame reveal" id="hero-figure">
+          <div class="frame-bar">
+            <span>Schematic · maneuver detection</span>
+            <span class="grow sat-hint" id="sat-hint" hidden>Δv marker opens the residual</span>
+          </div>
           <div class="fig-body">
-            <svg viewBox="0 0 560 300" role="img" aria-label="Schematic in two rows. The upper row plots an object's observed track against the physics model of its orbit; the two coincide until a burn, after which the observed track departs. The lower row plots the residual, which is flat until the burn and then steps to a new level, with the step marked as a delta-v.">
-              <!-- upper row: observed vs modelled track -->
-              <text x="30" y="18" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4">ELEMENT-SET HISTORY</text>
-              <path d="M30 74 C110 78 200 86 300 94 C390 101 470 107 536 112" fill="none" stroke="#878c95" stroke-width="1.4" stroke-dasharray="4 3"/>
-              <path d="M30 74 C110 78 200 86 300 94 C365 84 455 62 536 44" fill="none" stroke="#e8eaec" stroke-width="1.8"/>
-              <text x="536" y="36" fill="#e8eaec" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">OBSERVED</text>
-              <text x="536" y="126" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">PHYSICS MODEL (J2 + DRAG)</text>
+            <!-- Drawn spacecraft on its orbit track. Shown only once
+                 hero-satellite.js has a 2D context; the residual SVG below is
+                 the default state and stays put without it. -->
+            <div class="sat-slot">
+              <div class="sat-stage" id="sat-stage">
+                <canvas class="sat-canvas" role="img" aria-label="A wireframe schematic of a spacecraft, slowly turning, drawn on an orbit track. The track is dashed where physics alone predicts the orbit and solid where the object was observed; the two separate after a marked delta-v."></canvas>
+                <button type="button" class="dv-hit" id="dv-marker" aria-expanded="false" aria-controls="residual" aria-label="Show the residual trace behind this delta-v"></button>
+              </div>
+            </div>
 
-              <!-- burn-time guide -->
-              <path d="M300 30 V276" stroke="#3d4552" stroke-width="1" stroke-dasharray="2 4"/>
+            <div class="residual" id="residual">
+              <svg viewBox="0 0 560 300" role="img" aria-label="Schematic in two rows. The upper row plots an object's observed track against the physics model of its orbit; the two coincide until a burn, after which the observed track departs. The lower row plots the residual, which is flat until the burn and then steps to a new level, with the step marked as a delta-v.">
+                <!-- The wipe that draws the plot left to right when the marker
+                     opens it. Full width in the markup, so with no scripting
+                     and under reduced motion the schematic is simply drawn.
+                     A clip rather than stroke-dashoffset because two of these
+                     paths are already dashed, and a dash-based draw would
+                     destroy the pattern that distinguishes model from
+                     observed. -->
+                <defs>
+                  <clipPath id="residual-clip">
+                    <rect id="residual-wipe" x="0" y="0" width="560" height="300"/>
+                  </clipPath>
+                </defs>
 
-              <!-- lower row: residual -->
-              <text x="30" y="176" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4">RESIDUAL AFTER PHYSICS IS REMOVED</text>
-              <path d="M30 248 H536" stroke="#3d4552" stroke-width="1" stroke-dasharray="3 3"/>
-              <text x="14" y="252" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10">0</text>
-              <path d="M30 248 L64 246 L98 250 L132 247 L166 250 L200 246 L234 249 L268 247 L299 249 L301 206 L336 203 L370 207 L404 202 L438 206 L472 203 L506 206 L536 204" fill="none" stroke="#e8eaec" stroke-width="1.8" stroke-linejoin="round"/>
-              <path d="M300 196 V258" stroke="#ffca16" stroke-width="1.4"/>
-              <circle cx="300" cy="206" r="3.6" fill="#ffca16"/>
-              <text x="312" y="192" fill="#ffca16" font-family="IBM Plex Mono, monospace" font-size="12">Δv</text>
-            </svg>
+                <g clip-path="url(#residual-clip)">
+                  <!-- upper row: observed vs modelled track -->
+                  <text x="30" y="18" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4">ELEMENT-SET HISTORY</text>
+                  <path d="M30 74 C110 78 200 86 300 94 C390 101 470 107 536 112" fill="none" stroke="#878c95" stroke-width="1.4" stroke-dasharray="4 3"/>
+                  <path d="M30 74 C110 78 200 86 300 94 C365 84 455 62 536 44" fill="none" stroke="#e8eaec" stroke-width="1.8"/>
+
+                  <!-- burn-time guide -->
+                  <path d="M300 30 V276" stroke="#3d4552" stroke-width="1" stroke-dasharray="2 4"/>
+
+                  <!-- lower row: residual -->
+                  <text x="30" y="176" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.4">RESIDUAL AFTER PHYSICS IS REMOVED</text>
+                  <path d="M30 248 H536" stroke="#3d4552" stroke-width="1" stroke-dasharray="3 3"/>
+                  <text x="14" y="252" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10">0</text>
+                  <path d="M30 248 L64 246 L98 250 L132 247 L166 250 L200 246 L234 249 L268 247 L299 249 L301 206 L336 203 L370 207 L404 202 L438 206 L472 203 L506 206 L536 204" fill="none" stroke="#e8eaec" stroke-width="1.8" stroke-linejoin="round"/>
+                </g>
+
+                <!-- Held out of the wipe: right-anchored labels would be
+                     sliced through their letterforms by a left-to-right
+                     reveal. They land once the traces have separated, which
+                     is also when they start being true. -->
+                <g class="res-late">
+                  <text x="536" y="36" fill="#e8eaec" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">OBSERVED</text>
+                  <text x="536" y="126" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">PHYSICS MODEL (J2 + DRAG)</text>
+                </g>
+
+                <!-- Also held out, so it snaps in as the wipe reaches the burn
+                     rather than being revealed by it. -->
+                <g class="res-dv">
+                  <path d="M300 196 V258" stroke="#ffca16" stroke-width="1.4"/>
+                  <circle cx="300" cy="206" r="3.6" fill="#ffca16"/>
+                  <text x="312" y="192" fill="#ffca16" font-family="IBM Plex Mono, monospace" font-size="12">Δv</text>
+                </g>
+              </svg>
+              <button type="button" class="residual-close" id="residual-close">← Back to the spacecraft</button>
+            </div>
           </div>
           <p class="fig-note">Subtract what nature does to an orbit. Whatever is left is somebody's engine.</p>
         </div>
       </div>
 
-      <div class="hero-statement">
-        <p class="statement-line reveal"><span class="dim">Everyone can see <em>that</em> a satellite moved. The tracking data is public.</span> Vantage is the layer that tells you <em>why</em>.</p>
-      </div>
+      <!-- The page's only real-world evidence, and the reason it sits in the
+           hero rather than in a section: the first two are outputs, computed
+           on named public objects, and they are the fastest answer a visitor
+           gets to "is this a working system or a deck". The third is a
+           different argument for a different reader, the evaluator who has to
+           sign off on the collision model.
 
+           The provenance note is not decoration. Three bare figures are
+           assertions; the note is what makes them checkable, which is the
+           whole thesis of the site. It travels with the rail, always.
+
+           This is the hero's second and last block. The statement line and the
+           audience signpost stayed in their sections when the hero was cut
+           back: see design.md, which caps the hero at these two. -->
       <div class="rail reveal">
         <div class="cell"><div class="num">under 15 km</div><div class="lbl">Russian inspector holding station beside Intelsat 39, recomputed daily</div></div>
         <div class="cell"><div class="num">0.73°</div><div class="lbl">Five Kosmos satellites plane-matched to a commercial radar satellite</div></div>
@@ -296,17 +635,45 @@
       <div class="sec-head reveal">
         <span class="eyebrow">Platform</span>
         <h2>From a new element set to an assessed event.</h2>
-        <p>The <em>why</em> comes off a pipeline that runs end-to-end in seconds, turning a public catalog into an assessed event.</p>
       </div>
+
+      <!-- Audience signpost. "Who it's for" is section 5 of 6, so a visitor
+           reaches role-specific relevance late. Moving that section was
+           rejected: it would force re-deriving the whole canvas/band table in
+           design.md §Section separation. This routes to the anchors that
+           already exist instead, costs no section, and stays machine voice so
+           it reads as a label rather than a fourth call to action.
+
+           It opens the first body section rather than the hero. The hero is
+           capped at two blocks, the headline grid and the evidence rail, and
+           navigation is not evidence. -->
+      <nav class="signpost reveal" aria-label="Jump to your mission context">
+        <span class="signpost-lead" aria-hidden="true">Built for</span>
+        <a href="#defense">Defense &amp; intelligence</a>
+        <a href="#operators">Satellite operators</a>
+        <a href="#orbital-compute">Orbital compute</a>
+      </nav>
+
       <a class="frame shot reveal" href="demo/">
         <div class="frame-bar"><span>vantage.industries/demo</span><span class="grow">Open live demo ↗</span></div>
-        <img src="assets/demo-console.png" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage mission console: a live LEO feed flags a foreign inspector maneuvering to shadow an orbital AI data center, with the evidence panel showing the signals behind the call, the one-sidedness discriminator, and a sealed assurance PASS." />
+        <!-- The still is the default state and stays in the DOM as both the
+             fallback and the accessible content. scripts/console-preview.js
+             lays the running demo over it where that is worth the weight. -->
+        <div class="shot-stage" id="shot-stage">
+          <img src="assets/demo-console.png" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage mission console: a live LEO feed flags a foreign inspector maneuvering to shadow an orbital AI data center, with the evidence panel showing the signals behind the call, the one-sidedness discriminator, and a sealed assurance PASS." />
+        </div>
       </a>
-      <div class="stages reveal">
-        <div class="stage"><span class="sn">01 · Ingest</span><h4>Public catalogs in</h4><p>Open connectors normalize public catalogs (CelesTrak, Space-Track) and five-year element-set histories into one data fabric. No proprietary sensor required.</p></div>
-        <div class="stage"><span class="sn">02 · Detect</span><h4>Subtract physics</h4><p>Remove J2 oblateness and atmospheric drag; the residual is thrust, detected, measured, timestamped. 519 maneuvers on a 1,039-object catalog in 6.0 s.</p></div>
-        <div class="stage"><span class="sn">03 · Assess</span><h4>Name the behavior</h4><p>Six models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life.</p></div>
-        <div class="stage"><span class="sn">04 · Report</span><h4>Into the analyst queue</h4><p>The event arrives with the signals behind it attached, ranked so the calls that need a human get one first.</p></div>
+      <!-- The rail reads as a sequence, so the stages reveal one after another
+           rather than as a block, and the rule they hang from draws left to
+           right at the same rate. `.reveal` on the container is not a fade
+           here: it is neutralised in CSS and used only as the hook that starts
+           the rule. data-stagger asks the shared shell for a longer step than
+           its 60ms default, which four items would finish inside 180ms. -->
+      <div class="stages reveal" data-stagger="130">
+        <div class="stage reveal"><span class="sn">01 · Ingest</span><h4>Public catalogs in</h4><p>Open connectors normalize public catalogs (CelesTrak, Space-Track) and five-year element-set histories into one data fabric.</p></div>
+        <div class="stage reveal"><span class="sn">02 · Detect</span><h4>Subtract physics</h4><p>Remove J2 oblateness and atmospheric drag; the residual is thrust, detected, measured, timestamped. 519 maneuvers on a 1,039-object catalog in 6.0 s.</p></div>
+        <div class="stage reveal"><span class="sn">03 · Assess</span><h4>Name the behavior</h4><p>Six models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life.</p></div>
+        <div class="stage reveal"><span class="sn">04 · Report</span><h4>Into the analyst queue</h4><p>The event arrives with the signals behind it attached, ranked so the calls that need a human get one first.</p></div>
       </div>
     </div>
   </section>
@@ -314,50 +681,80 @@
   <!-- CAPABILITIES -->
   <section class="sec" id="capabilities">
     <div class="wrap">
-      <div class="sec-head reveal">
-        <span class="eyebrow">Capabilities</span>
-        <h2>What it did, why, and whether it's a threat.</h2>
-        <p>Vantage answers behavioral questions, not positional ones. One stack covers maneuver, intent, and proximity threat, running where the mission is, including fully offline on your own hardware.</p>
+      <!-- No heading and no lede. The h2 ("What it did, why, and whether it's
+           a threat") and the statement below it were the same sentence twice,
+           so the section opened by saying its point, then restating it, then
+           finally listing the capabilities. The statement is the better of the
+           two and now carries the section alone.
+
+           The eyebrow stays. It is the section's *label*, not its heading: the
+           nav link, the footer link and the scrollspy all name this section
+           "Capabilities", and without it a visitor whose nav reads Capabilities
+           arrives somewhere that says so nowhere.
+
+           The lede's deployment claim is not lost: the defense card below says
+           "runs on your own servers, even air-gapped", and the contact page
+           carries it too. -->
+      <span class="eyebrow reveal">Capabilities</span>
+
+      <div class="sec-statement">
+        <p class="statement-line reveal"><span class="dim">Everyone can see <em>that</em> a satellite moved. The tracking data is public.</span> Vantage is the layer that tells you <em>why</em>.</p>
       </div>
+
       <ol class="ledger">
         <li class="reveal">
           <span class="idx">01</span>
-          <div>
-            <h3>Maneuver detection</h3>
-            <p>Subtracts the drift physics explains, J2 oblateness and atmospheric drag, from each object's public element-set history. The residual Δv is somebody's engine: detected, measured, timestamped.</p>
-          </div>
+          <details>
+            <summary>
+              <h3>Maneuver detection</h3>
+              <span class="disclose" aria-hidden="true"></span>
+            </summary>
+            <p>Tells you that an object fired its engine, when, and how hard, without tasking a sensor. It works by subtracting the drift physics explains, the Earth's equatorial bulge (J2) and atmospheric drag, from the object's public element-set history. Whatever residual Δv is left is somebody's engine.</p>
+          </details>
           <div class="metric"><span class="val">84%</span><span class="key">caught at 0<br>false alarms</span></div>
         </li>
         <li class="reveal">
           <span class="idx">02</span>
-          <div>
-            <h3>Intent classification</h3>
-            <p>Names the reason for a burn (station-keeping, orbit raise or lower, rendezvous, collision-avoidance) with a confidence band and a rule-based, fully auditable rationale on every call. No black box to trust.</p>
-          </div>
+          <details>
+            <summary>
+              <h3>Intent classification</h3>
+              <span class="disclose" aria-hidden="true"></span>
+            </summary>
+            <p>Tells you what the burn was for: station-keeping, an orbit raise or lower, a rendezvous, or collision-avoidance. Each call carries a confidence band and a written rationale from a rule-based model, so an analyst can check the reasoning rather than take it on faith. No black box to trust.</p>
+          </details>
           <div class="metric"><span class="key">rule-based<br>fully auditable</span></div>
         </li>
         <li class="reveal">
           <span class="idx">03</span>
-          <div>
-            <h3>Proximity and RPO watch</h3>
-            <p>Separates a deliberate shadower from an incidental pass or a benign co-orbiting formation. One-sidedness is the discriminator, shown below.</p>
-          </div>
+          <details>
+            <summary>
+              <h3>Proximity and rendezvous watch (RPO)</h3>
+              <span class="disclose" aria-hidden="true"></span>
+            </summary>
+            <p>Tells you whether something is deliberately shadowing one of your assets, or merely passing close. It separates a purchased geometry from an incidental pass and from a benign co-orbiting formation. One-sidedness is the discriminator, shown below.</p>
+          </details>
           <div class="metric"><span class="val">100%</span><span class="key">seeded shadowing<br>scenarios</span></div>
         </li>
         <li class="reveal">
           <span class="idx">04</span>
-          <div>
-            <h3>Collision risk screening prior</h3>
-            <p>Conjunction screening calibrated against 162,634 ESA close-approach reports. Public element sets carry no covariance, so this is a labeled screening prior: it ranks which conjunctions deserve an analyst, not an operational probability of collision.</p>
-          </div>
-          <div class="metric"><span class="val">0.963</span><span class="key">ROC-AUC<br>Brier 0.010</span></div>
+          <details>
+            <summary>
+              <h3>Collision risk screening prior</h3>
+              <span class="disclose" aria-hidden="true"></span>
+            </summary>
+            <p>Tells you which close approaches are worth an analyst's morning, ranked. Screening is calibrated against 162,634 ESA close-approach reports, scoring 0.963 ROC-AUC and 0.010 Brier on that set. Public element sets carry no covariance, so this is a labeled screening prior, not an operational probability of collision.</p>
+          </details>
+          <div class="metric"><span class="val">0.963</span><span class="key">ROC-AUC · Brier 0.010<br>on 162,634 ESA reports</span></div>
         </li>
         <li class="reveal">
           <span class="idx">05</span>
-          <div>
-            <h3>Pattern of life</h3>
-            <p>Baselines each object against its own history: activity class, maneuver cadence, burn size. New behavior is scored against the prior that existed before it. Dormant-then-active is the classic early warning.</p>
-          </div>
+          <details>
+            <summary>
+              <h3>Pattern of life</h3>
+              <span class="disclose" aria-hidden="true"></span>
+            </summary>
+            <p>Tells you when an object breaks its own routine, judged against itself rather than a fleet average. Each one is baselined on its own history (activity class, maneuver cadence, burn size) and new behavior is scored against the prior that existed before it. Dormant-then-active is the classic early warning.</p>
+          </details>
           <div class="metric"><span class="val">1,039</span><span class="key">baselines<br>scored pre-event</span></div>
         </li>
       </ol>
@@ -368,23 +765,43 @@
           <div class="disc-case">
             <span class="chip chip-nominal">Benign formation</span>
             <svg viewBox="0 44 260 96" role="img" aria-label="Two co-orbiting nodes shown as markers on a shared orbit arc, with no thrust vector on either one.">
+              <defs>
+                <clipPath id="disc-wipe-benign">
+                  <rect class="disc-wipe" x="116" y="44" width="42" height="96"/>
+                </clipPath>
+              </defs>
               <path d="M20 118 Q135 38 250 118" fill="none" stroke="#3d4552" stroke-width="1.4"/>
               <circle cx="112" cy="80" r="6" fill="none" stroke="#3ad389" stroke-width="1.8"/>
               <circle cx="163" cy="80" r="6" fill="none" stroke="#3ad389" stroke-width="1.8"/>
-              <path d="M118 80 H157" stroke="#3d4552" stroke-width="1" stroke-dasharray="3 3"/>
-              <text x="135" y="128" fill="#3ad389" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">no Δv on either side</text>
+              <!-- Wiped across the same span, at the same moment, as the thrust
+                   vector opposite. Both cases animate identically; what emerges
+                   is a dashed gap here and an engine firing there. -->
+              <g clip-path="url(#disc-wipe-benign)">
+                <path d="M118 80 H157" stroke="#3d4552" stroke-width="1" stroke-dasharray="3 3"/>
+              </g>
+              <text class="disc-label" x="135" y="128" fill="#3ad389" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">no Δv on either side</text>
             </svg>
             <p>Two nodes in the same formation hold their spacing because orbital mechanics puts them there. Neither one spends propellant to stay.</p>
           </div>
           <div class="disc-case">
             <span class="chip chip-threat">Shadowing</span>
             <svg viewBox="0 44 260 96" role="img" aria-label="Two nodes on a shared orbit arc. The trailing node carries a thrust vector aimed at the leading node, which carries none.">
+              <defs>
+                <clipPath id="disc-wipe-shadow">
+                  <rect class="disc-wipe" x="116" y="44" width="42" height="96"/>
+                </clipPath>
+              </defs>
               <path d="M20 118 Q135 38 250 118" fill="none" stroke="#3d4552" stroke-width="1.4"/>
               <circle cx="112" cy="80" r="6" fill="#ff6b5f"/>
               <circle cx="163" cy="80" r="6" fill="none" stroke="#e8eaec" stroke-width="1.8"/>
-              <path d="M122 78 H150" stroke="#ff6b5f" stroke-width="1.8"/>
-              <path d="M144 73 L152 78 L144 83" fill="none" stroke="#ff6b5f" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-              <text x="135" y="128" fill="#ff6b5f" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">Δv on one side only</text>
+              <!-- The vector draws toward the target, because the direction is
+                   the claim: this node is spending propellant to close on one
+                   that is not. -->
+              <g clip-path="url(#disc-wipe-shadow)">
+                <path d="M122 78 H150" stroke="#ff6b5f" stroke-width="1.8"/>
+                <path d="M144 73 L152 78 L144 83" fill="none" stroke="#ff6b5f" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+              </g>
+              <text class="disc-label" x="135" y="128" fill="#ff6b5f" font-family="IBM Plex Mono, monospace" font-size="11" text-anchor="middle">Δv on one side only</text>
             </svg>
             <p>One party maneuvers to hold station next to another that never agreed to it. That asymmetry is what separates a shadower from a neighbor.</p>
           </div>
@@ -420,8 +837,17 @@
             </div>
           </div>
           <div>
-            <p>Every model behind the feed is graded on every release against explicit, versioned acceptance floors: detection recall, false-alarm rate, collision calibration, shadower recall. The result is sealed into a tamper-evident bundle, so a reviewer can re-check the claim instead of trusting it.</p>
-            <p class="seal">sealed <b>sha256:732c19…</b> · the 1 SKIP is credential-gated and disclosed, never silently passed</p>
+            <p>Every model behind the feed is graded on every release against explicit, versioned acceptance floors: detection recall, false-alarm rate, collision calibration, shadower recall. The result is sealed into a tamper-evident bundle, so a reviewer can re-check the claim instead of trusting it. The collision floor is calibrated against 162,634 real ESA close-approach reports, and the 1 SKIP is the real-data check itself: credential-gated, disclosed, never silently passed.</p>
+            <!-- Only the digest resolves. The `sha256:` prefix is the name of
+                 the algorithm, not part of the value, and masking the 256 in
+                 it would read as noise rather than as a readout locking on. -->
+            <p class="seal">sealed <b>sha256:<span class="digest">732c19</span>…</b></p>
+            <!-- The section claimed a reviewer "can re-check the claim" and
+                 then offered nothing to check. This gate already runs in the
+                 console, so point at it rather than assert it. The scenario is
+                 synthetic and the label says so: a receipt that oversells what
+                 it proves is worse than the silence it replaced. -->
+            <a class="seal-link" href="demo/#assure"><span>Open this gate running in the console <span aria-hidden="true">→</span></span><span class="seal-caveat">synthetic scenario, real engine output</span></a>
           </div>
         </div>
       </div>
@@ -433,8 +859,8 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="eyebrow">Who it's for</span>
-        <h2>Every mission. One standard of evidence.</h2>
-        <p>Each mission gets its own acceptance policy: floors on recall, false alarms, and calibration tuned to which failure is unforgivable.</p>
+        <h2>Three mission sets. One standard of evidence.</h2>
+        <p>Each one gets its own acceptance policy: floors on recall, false alarms, and calibration tuned to which failure is unforgivable.</p>
       </div>
 
       <div class="dom dom-feature reveal" id="orbital-compute">
@@ -536,6 +962,17 @@
   </div>
 </footer>
 
+<!-- Opening view for the hero spacecraft. Present in the DOM but display:none
+     until `.intro-armed` is set, and removed from play for good once the
+     spacecraft has landed. aria-hidden throughout: the heading, the lede and
+     the figure's own label already carry everything it says. -->
+<div class="intro-veil" id="intro-veil" aria-hidden="true">
+  <canvas></canvas>
+  <p class="intro-line">The intelligence layer for space defense</p>
+</div>
+
 <script src="scripts/site.js" defer></script>
+<script src="scripts/hero-satellite.js" defer></script>
+<script src="scripts/console-preview.js" defer></script>
 </body>
 </html>
