@@ -58,7 +58,11 @@ header{
   transition:border-color var(--motion-fast) var(--motion-ease-out),background var(--motion-fast) var(--motion-ease-out);
 }
 header.scrolled,header.menu-open{border-color:var(--rule-edge);background:rgba(0,0,0,.94)}
-nav{display:flex;align-items:center;justify-content:space-between;height:var(--header-height);gap:var(--spacing-16)}
+/* Scoped to the header. As a bare `nav` selector this silently imposed
+   space-between and a 68px height on every other navigation landmark on the
+   site, which is a trap for any future one: the hero's audience signpost is a
+   <nav> and was spread edge to edge by it. */
+header nav{display:flex;align-items:center;justify-content:space-between;height:var(--header-height);gap:var(--spacing-16)}
 .brand{display:flex;align-items:center;min-height:44px;gap:var(--spacing-12);font-weight:var(--font-weight-semibold);font-size:19px;letter-spacing:.04em;color:var(--text-primary);white-space:nowrap}
 .brand .mark{width:26px;height:26px;flex:0 0 auto}
 .brand .mark svg{display:block}
@@ -67,7 +71,10 @@ nav{display:flex;align-items:center;justify-content:space-between;height:var(--h
    inside a 68px header and are flex-centred, so this enlarges the target
    without moving anything visually. */
 .navlinks a{display:flex;align-items:center;min-height:44px;font-size:var(--text-body-sm);color:var(--text-muted);white-space:nowrap;transition:color var(--motion-fast) var(--motion-ease-out)}
-.navlinks a:hover,.navlinks a[aria-current="page"]{color:var(--text-primary)}
+/* Matches both markers: aria-current="page" on the contact page's own link,
+   written into the markup, and aria-current="location" written by the
+   scrollspy in site.js as the visitor moves through the landing page. */
+.navlinks a:hover,.navlinks a[aria-current]{color:var(--text-primary)}
 /* Only surfaces below 560px, where .nav-cta is hidden and the menu would
    otherwise contain no route to the contact path. Selector is kept at the
    same specificity as `.navlinks a` so the responsive rules below win. */
