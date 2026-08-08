@@ -5,3 +5,6 @@ Desktop.ini
 
 # Local Claude Code session state
 .claude/
+
+# Audit tool output, not site content
+.impeccable/
