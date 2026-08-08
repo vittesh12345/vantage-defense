@@ -192,7 +192,7 @@
 <div class="about">
   <div class="inner">
     <span>This is a <b>replay of real engine output</b> from Vantage's seeded orbital-compute scenario: a commercial AI data-center constellation, and a foreign inspector that approaches and holds station next to it. Synthetic catalog; scores are screening priors an analyst adjudicates. Human-on-the-loop, always.</span>
-    <span class="fine"><a href="../">vantage.industries</a> · <a href="../contact/">request a live briefing</a></span>
+    <span class="fine"><a href="../">vantage.industries</a> · <a href="../contact/">request a briefing</a></span>
   </div>
 </div>
 
@@ -297,7 +297,17 @@ function addEvent(e, select){
 const GAPS = [420,340,560,700,520,620,560];
 const LEAD_IN = 260;
 
-function play(instant){
+// Which event opens selected. THREAT is the scenario's payload and stays the
+// default, but the landing page's assurance panel claims a reviewer can
+// re-check the gate, so `#assure` has to be able to land on that exact event.
+// Any event kind works; unknown fragments fall back to the default.
+function targetKind(){
+  const hash = (location.hash || '').replace('#','').toUpperCase();
+  return EVENTS.some(e => e.k === hash) ? hash : 'THREAT';
+}
+
+function play(instant, kind){
+  const want = kind || targetKind();
   timers.forEach(clearTimeout); timers = [];
   document.querySelectorAll('.ev').forEach(x=>x.remove());
   detail.innerHTML = '<p class="hint">// select an event to see its evidence</p>';
@@ -306,13 +316,16 @@ function play(instant){
   EVENTS.forEach((e,i)=>{
     const gap = (instant||reduced) ? 0 : (i===0 ? LEAD_IN : GAPS[i-1] || 500);
     delay += gap;
-    timers.push(setTimeout(()=>addEvent(e, e.k==='THREAT'), delay));
+    timers.push(setTimeout(()=>addEvent(e, e.k===want), delay));
   });
 }
 
 document.getElementById('skip').addEventListener('click', ()=>play(true));
 document.getElementById('replay').addEventListener('click', ()=>play(false));
-play(false);
+// Arriving on #assure should not make a visitor sit through the full replay
+// before the thing they clicked for appears, so a deep link plays instantly.
+addEventListener('hashchange', ()=>play(true));
+play(targetKind() !== 'THREAT');
 </script>
 </body>
 </html>
