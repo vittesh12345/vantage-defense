@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Request a Briefing · Vantage</title>
+<title>Request a briefing · Vantage</title>
 <meta name="description" content="Book a technical briefing with the Vantage team. We'll walk your mission set and run a live detection-to-evidence loop end-to-end, from maneuver detection through the sealed assurance gate." />
 <meta name="robots" content="index, follow" />
 <meta name="theme-color" content="#000000" />
@@ -12,7 +12,7 @@
 <!-- Open Graph -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Vantage" />
-<meta property="og:title" content="Request a Briefing · Vantage" />
+<meta property="og:title" content="Request a briefing · Vantage" />
 <meta property="og:description" content="Book a technical briefing with the Vantage team. We'll walk your mission set and run a live detection-to-evidence loop end-to-end." />
 <meta property="og:url" content="https://vantage.industries/contact/" />
 <meta property="og:image" content="https://vantage.industries/assets/demo-console.png" />
@@ -21,7 +21,7 @@
 <meta property="og:image:alt" content="The Vantage mission console: a live LEO feed flagging a foreign inspector that maneuvered to shadow an orbital AI data center, with the evidence panel open beside it." />
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Request a Briefing · Vantage" />
+<meta name="twitter:title" content="Request a briefing · Vantage" />
 <meta name="twitter:description" content="Book a technical briefing with the Vantage team. We'll walk your mission set and run a live detection-to-evidence loop end-to-end." />
 <meta name="twitter:image" content="https://vantage.industries/assets/demo-console.png" />
 <meta name="twitter:image:alt" content="The Vantage mission console: a live LEO feed flagging a foreign inspector that maneuvered to shadow an orbital AI data center, with the evidence panel open beside it." />
@@ -33,11 +33,14 @@
 <!-- Scripting reveals content on scroll. Without it, show everything immediately. -->
 <noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 <style>
-  .contact-head{padding:var(--spacing-144) 0 var(--spacing-48)}
+  /* The page's top space now belongs to the grid, so the heading and the
+     aside beside it start on the same line. Left here it would have indented
+     only the left column. */
+  .contact-head{padding:0 0 var(--spacing-48)}
   .contact-head h1{font-weight:var(--font-weight-medium);color:var(--text-primary);font-size:var(--text-h2);line-height:1.15;letter-spacing:var(--tracking-display);margin:var(--spacing-20) 0 var(--spacing-16);max-width:20ch}
   .contact-head p{color:var(--text-muted);font-size:var(--text-body-md);max-width:58ch}
 
-  .contact-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:var(--spacing-64);align-items:start;padding-bottom:var(--spacing-96)}
+  .contact-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:var(--spacing-64);align-items:start;padding:var(--spacing-144) 0 var(--spacing-96)}
 
   /* --- Form ---------------------------------------------------------------- */
   .field{margin-bottom:var(--spacing-24)}
@@ -111,7 +114,8 @@
     .contact-grid{grid-template-columns:1fr;gap:var(--spacing-48)}
   }
   @media(max-width:560px){
-    .contact-head{padding:var(--spacing-128) 0 var(--spacing-32)}
+    .contact-grid{padding-top:var(--spacing-128)}
+    .contact-head{padding:0 0 var(--spacing-32)}
     .row2{grid-template-columns:1fr;gap:0}
     .fallback-body,.done{padding-left:var(--spacing-20);padding-right:var(--spacing-20)}
   }
@@ -142,7 +146,10 @@
         <a href="../demo/">Live demo</a>
         <a class="nav-contact" href="./" aria-current="page">Request a briefing</a>
       </div>
-      <a href="./" class="btn btn-primary nav-cta" aria-current="page">Request a Briefing</a>
+      <!-- Plain .btn, matching the landing page: the form's submit is this
+           page's one primary action, and a second primary in the header would
+           compete with it. -->
+      <a href="./" class="btn nav-cta" aria-current="page">Request a briefing</a>
       <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-nav">
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
@@ -153,14 +160,20 @@
 <main id="main">
   <div class="wrap">
 
-    <div class="contact-head">
-      <span class="eyebrow reveal">Request a briefing</span>
-      <h1 class="reveal">Bring us a mission set. We'll bring the evidence.</h1>
-      <p class="reveal">Tell us what you need to be able to prove, and we will walk a live detection-to-evidence loop end-to-end against it: maneuver, intent, proximity threat, and the sealed assurance gate behind each call.</p>
-    </div>
-
     <div class="contact-grid">
       <div>
+
+        <!-- The heading sits inside the left column rather than spanning the
+             page above the grid. Full width it left the top right corner
+             empty, because the headline is capped at 20ch and the lede at
+             58ch, so a third of that band was never going to be filled. In
+             the column, both sides of the grid start on the same line. -->
+        <div class="contact-head">
+          <span class="eyebrow reveal">Request a briefing</span>
+          <h1 class="reveal">Bring us a mission set. We'll bring the evidence.</h1>
+          <p class="reveal">Tell us what you need to be able to prove, and we will walk a live detection-to-evidence loop end-to-end against it: maneuver, intent, proximity threat, and the sealed assurance gate behind each call.</p>
+        </div>
+
 
         <!-- Shown whenever the form cannot be used: no scripting, no configured
              endpoint, or a submission that failed. This is the page's default
