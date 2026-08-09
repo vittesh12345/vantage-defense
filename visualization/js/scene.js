@@ -212,64 +212,96 @@ function buildAtmosphere() {
 /* ------------------------------------------------------------------ */
 /* Catalog as instanced, velocity-aligned boxes                        */
 /* ------------------------------------------------------------------ */
+/* Each catalog category renders with its own silhouette, instanced per kind:
+   payloads are a bus with two solar wings, rocket bodies are spent cylinders,
+   debris are jagged shards (each with a fixed random roll), unknowns are
+   octahedra. All share one SGP-shaped vertex shader: per-instance elements in,
+   velocity-aligned basis out, sun-lit flat shading. */
+
+function boxPart(w, h, d, tx, ty, tz) {
+  const g = new THREE.BoxGeometry(w, h, d).toNonIndexed();
+  g.translate(tx, ty, tz);
+  return g;
+}
+
+function concatGeoms(geoms) {
+  let count = 0;
+  for (const g of geoms) count += g.attributes.position.count;
+  const pos = new Float32Array(count * 3);
+  const nor = new Float32Array(count * 3);
+  let o = 0;
+  for (const g of geoms) {
+    pos.set(g.attributes.position.array, o * 3);
+    nor.set(g.attributes.normal.array, o * 3);
+    o += g.attributes.position.count;
+  }
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  out.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  return out;
+}
+
+function kindGeometries() {
+  // x = along-track, y = cross-track, z = radial (matches the shader basis)
+  const payload = concatGeoms([
+    boxPart(0.85, 0.42, 0.42, 0, 0, 0),      // bus
+    boxPart(0.5, 0.85, 0.06, 0, 0.65, 0),    // +y solar wing
+    boxPart(0.5, 0.85, 0.06, 0, -0.65, 0),   // −y solar wing
+  ]);
+  const rb = new THREE.CylinderGeometry(0.26, 0.26, 1.5, 10);
+  rb.rotateZ(Math.PI / 2); // axis along the direction of travel
+  const debris = new THREE.TetrahedronGeometry(0.62);
+  debris.scale(1.2, 0.65, 0.9); // a flattened, jagged shard
+  const unknown = new THREE.OctahedronGeometry(0.48);
+  return [payload, rb.toNonIndexed(), debris.toNonIndexed(), unknown.toNonIndexed()];
+}
+
 function buildObjects(objects) {
   const n = objects.length;
-  const base = new THREE.BoxGeometry(1, 0.34, 0.34);
-  const geo = new THREE.InstancedBufferGeometry();
-  geo.index = base.index;
-  geo.attributes.position = base.attributes.position;
-  geo.attributes.normal = base.attributes.normal;
-  geo.instanceCount = n;
+  const byKind = [[], [], [], []];
+  for (let i = 0; i < n; i++) byKind[objects[i].kind].push(i);
+  const bases = kindGeometries();
+  const uLen = [1.0, 0.95, 0.62, 0.7];   // relative size per kind
+  const roll = [0, 0, 1, 1];             // shards & unknowns get a random roll
 
-  const e1 = new Float32Array(n * 4);
-  const e2 = new Float32Array(n * 4);
-  const e3 = new Float32Array(n * 2);
-  const vis = new Float32Array(n).fill(1);
-  const rand = new Float32Array(n);
-  const color = new Float32Array(n * 3);
+  const group = new THREE.Group();
+  const parts = [];
+  const slotK = new Uint8Array(n);
+  const slotJ = new Uint32Array(n);
+  const masterVis = new Float32Array(n).fill(1);
   let seed = 77;
-  for (let i = 0; i < n; i++) {
-    const el = objects[i].el;
-    e1[i * 4] = el.a; e1[i * 4 + 1] = el.e; e1[i * 4 + 2] = el.inc; e1[i * 4 + 3] = el.raan;
-    e2[i * 4] = el.argp; e2[i * 4 + 1] = el.m0; e2[i * 4 + 2] = el.n; e2[i * 4 + 3] = el.raanDot;
-    e3[i * 2] = el.argpDot; e3[i * 2 + 1] = objects[i].kind;
-    seed = (seed * 16807) % 2147483647;
-    rand[i] = seed / 2147483647;
-  }
-  geo.setAttribute('iE1', new THREE.InstancedBufferAttribute(e1, 4));
-  geo.setAttribute('iE2', new THREE.InstancedBufferAttribute(e2, 4));
-  geo.setAttribute('iE3', new THREE.InstancedBufferAttribute(e3, 2));
-  geo.setAttribute('iVis', new THREE.InstancedBufferAttribute(vis, 1));
-  geo.setAttribute('iRand', new THREE.InstancedBufferAttribute(rand, 1));
-  geo.setAttribute('iColor', new THREE.InstancedBufferAttribute(color, 3));
-  geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 80);
+  const nextRand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
 
-  const mat = new THREE.ShaderMaterial({
+  const makeMat = (len, rollOn) => new THREE.ShaderMaterial({
     uniforms: {
       uTime: { value: 0 },
       uReveal: { value: 1 },
       uDim: { value: 1 },
       uFlash: { value: 0 },
-      uScale: { value: 0.055 }, // ~55 km boxes: exaggerated like the reference
+      uScale: { value: 0.052 }, // ~52 km: exaggerated like the reference
+      uLen: { value: len },
+      uRoll: { value: rollOn },
       uSunDir: { value: new THREE.Vector3(1, 0, 0) },
     },
     vertexShader: /* glsl */`
       attribute vec4 iE1; // a(km), e, inc, raan
       attribute vec4 iE2; // argp, m0, n, raanDot
-      attribute vec2 iE3; // argpDot, kind
+      attribute float iE3; // argpDot
       attribute float iVis;
       attribute float iRand;
       attribute vec3 iColor;
       uniform float uTime;
       uniform float uReveal;
       uniform float uScale;
+      uniform float uLen;
+      uniform float uRoll;
       uniform vec3 uSunDir;
       varying vec3 vCol;
       const float KM = 0.001;
       vec3 orbitPos(float t) {
         float a = iE1.x, e = iE1.y, inc = iE1.z;
         float raan = iE1.w + iE2.w * t;
-        float argp = iE2.x + iE3.x * t;
+        float argp = iE2.x + iE3 * t;
         float M = iE2.y + iE2.z * t;
         float E = M;
         for (int k = 0; k < 6; k++) {
@@ -297,11 +329,17 @@ function buildObjects(objects) {
         vec3 up = normalize(c0);              // radial
         vec3 s = normalize(cross(f, up));     // cross-track
         vec3 u2 = cross(s, f);
-        float kind = iE3.y;
-        float len = kind < 0.5 ? 1.0 : (kind < 1.5 ? 0.9 : (kind < 2.5 ? 0.5 : 0.7));
-        float sc = uScale * (0.75 + iRand * 0.55) * len * on;
-        vec3 wpos = c0 + (f * position.x + s * position.y + u2 * position.z) * sc;
-        vec3 nrm = normalize(f * normal.x + s * normal.y + u2 * normal.z);
+        vec3 lp = position;
+        vec3 ln = normal;
+        if (uRoll > 0.5) {
+          float th = iRand * 6.28318;
+          float cr = cos(th), sr = sin(th);
+          lp = vec3(lp.x, lp.y * cr - lp.z * sr, lp.y * sr + lp.z * cr);
+          ln = vec3(ln.x, ln.y * cr - ln.z * sr, ln.y * sr + ln.z * cr);
+        }
+        float sc = uScale * (0.75 + iRand * 0.55) * uLen * on;
+        vec3 wpos = c0 + (f * lp.x + s * lp.y + u2 * lp.z) * sc;
+        vec3 nrm = normalize(f * ln.x + s * ln.y + u2 * ln.z);
         float light = 0.52 + 0.58 * max(dot(nrm, uSunDir), 0.0);
         vCol = iColor * light;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(wpos, 1.0);
@@ -314,9 +352,44 @@ function buildObjects(objects) {
         gl_FragColor = vec4(vCol * (1.0 + uFlash * 0.8) * uDim + vec3(1.0) * uFlash * 0.08, 1.0);
       }`,
   });
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.frustumCulled = false;
-  return mesh;
+
+  for (let k = 0; k < 4; k++) {
+    const idx = byKind[k];
+    const m = idx.length;
+    const geo = new THREE.InstancedBufferGeometry();
+    geo.setAttribute('position', bases[k].attributes.position);
+    geo.setAttribute('normal', bases[k].attributes.normal);
+    geo.instanceCount = m;
+    const e1 = new Float32Array(m * 4);
+    const e2 = new Float32Array(m * 4);
+    const e3 = new Float32Array(m);
+    const vis = new Float32Array(m).fill(1);
+    const rand = new Float32Array(m);
+    const color = new Float32Array(m * 3);
+    for (let j = 0; j < m; j++) {
+      const g = idx[j];
+      const el = objects[g].el;
+      e1[j * 4] = el.a; e1[j * 4 + 1] = el.e; e1[j * 4 + 2] = el.inc; e1[j * 4 + 3] = el.raan;
+      e2[j * 4] = el.argp; e2[j * 4 + 1] = el.m0; e2[j * 4 + 2] = el.n; e2[j * 4 + 3] = el.raanDot;
+      e3[j] = el.argpDot;
+      rand[j] = nextRand();
+      slotK[g] = k;
+      slotJ[g] = j;
+    }
+    geo.setAttribute('iE1', new THREE.InstancedBufferAttribute(e1, 4));
+    geo.setAttribute('iE2', new THREE.InstancedBufferAttribute(e2, 4));
+    geo.setAttribute('iE3', new THREE.InstancedBufferAttribute(e3, 1));
+    geo.setAttribute('iVis', new THREE.InstancedBufferAttribute(vis, 1));
+    geo.setAttribute('iRand', new THREE.InstancedBufferAttribute(rand, 1));
+    geo.setAttribute('iColor', new THREE.InstancedBufferAttribute(color, 3));
+    geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 80);
+    const mesh = new THREE.Mesh(geo, makeMat(uLen[k], roll[k]));
+    mesh.frustumCulled = false;
+    group.add(mesh);
+    parts.push({ mesh, geo, mat: mesh.material });
+  }
+
+  return { group, parts, slotK, slotJ, masterVis };
 }
 
 /* ------------------------------------------------------------------ */
@@ -501,8 +574,9 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
   const atmosphere = buildAtmosphere();
   scene.add(atmosphere);
 
-  const cloud = buildObjects(objects);
-  scene.add(cloud);
+  const cloudObj = buildObjects(objects);
+  scene.add(cloudObj.group);
+  const eachCloudMat = (fn) => cloudObj.parts.forEach((p) => fn(p.mat));
 
   const orbitLine = makeOrbitLine(0xffffff);
   scene.add(orbitLine);
@@ -527,19 +601,21 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
 
   function rebase() {
     const dt = tSec();
-    const e1 = cloud.geometry.attributes.iE1;
-    const e2 = cloud.geometry.attributes.iE2;
     for (let i = 0; i < objects.length; i++) {
       const el = objects[i].el;
       el.m0 = (el.m0 + el.n * dt) % TAU;
       el.raan += el.raanDot * dt;
       el.argp += el.argpDot * dt;
-      e1.array[i * 4 + 3] = el.raan;
-      e2.array[i * 4] = el.argp;
-      e2.array[i * 4 + 1] = el.m0;
+      const p = cloudObj.parts[cloudObj.slotK[i]];
+      const j = cloudObj.slotJ[i];
+      p.geo.attributes.iE1.array[j * 4 + 3] = el.raan;
+      p.geo.attributes.iE2.array[j * 4] = el.argp;
+      p.geo.attributes.iE2.array[j * 4 + 1] = el.m0;
     }
-    e1.needsUpdate = true;
-    e2.needsUpdate = true;
+    for (const p of cloudObj.parts) {
+      p.geo.attributes.iE1.needsUpdate = true;
+      p.geo.attributes.iE2.needsUpdate = true;
+    }
     epochMs = simMs;
   }
 
@@ -548,7 +624,7 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
     return sceneFromEci(tmpP, out || tmpS);
   }
 
-  const visArr = cloud.geometry.attributes.iVis.array;
+  const visArr = cloudObj.masterVis;
   function pick(px, py, w, h) {
     const proj = new THREE.Matrix4().multiplyMatrices(
       camera.projectionMatrix, camera.matrixWorldInverse);
@@ -640,7 +716,7 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
     simMs = ms;
     if (Math.abs(tSec()) > 3 * 86400) rebase();
     const t = tSec();
-    cloud.material.uniforms.uTime.value = t;
+    eachCloudMat((m) => { m.uniforms.uTime.value = t; });
     const g = gmst(simMs);
     if (followEarth) {
       // keep the camera fixed over the ground: rotate it with the planet
@@ -652,7 +728,7 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
     clouds.rotation.y = g + (simMs / 1000) * 0.0000105; // slow eastward drift
     const s = sunEci(simMs);
     earth.material.uniforms.uSunDir.value.set(s[0], s[2], -s[1]);
-    cloud.material.uniforms.uSunDir.value.set(s[0], s[2], -s[1]);
+    eachCloudMat((m) => { m.uniforms.uSunDir.value.set(s[0], s[2], -s[1]); });
     if (selected >= 0 && Math.abs(simMs - lastOrbitRefresh) > 60000) {
       fillOrbitLine(orbitLine, objects[selected].el, t);
       lastOrbitRefresh = simMs;
@@ -680,9 +756,9 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
       marker.scale.setScalar(d * 0.02);
     }
 
-    const fl = cloud.material.uniforms.uFlash.value;
-    if (fl > 0.002) cloud.material.uniforms.uFlash.value = fl * Math.exp(-dt * 3.2);
-    else if (fl !== 0) cloud.material.uniforms.uFlash.value = 0;
+    const fl = cloudObj.parts[0].mat.uniforms.uFlash.value;
+    if (fl > 0.002) eachCloudMat((m) => { m.uniforms.uFlash.value = fl * Math.exp(-dt * 3.2); });
+    else if (fl !== 0) eachCloudMat((m) => { m.uniforms.uFlash.value = 0; });
 
     renderer.render(scene, camera);
   }
@@ -694,32 +770,35 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
   }
 
   return {
-    renderer, scene, camera, controls, cloud, objects,
+    renderer, scene, camera, controls, objects,
     setTime, render, resize, pick, project, select, flyTo, sensorScreenPos,
     get selected() { return selected; },
     get simMs() { return simMs; },
     tOf(ms) { return (ms - epochMs) / 1000; },
     setVis(updateFn) {
-      const arr = cloud.geometry.attributes.iVis.array;
-      updateFn(arr);
-      cloud.geometry.attributes.iVis.needsUpdate = true;
+      updateFn(cloudObj.masterVis);
+      for (let i = 0; i < objects.length; i++) {
+        cloudObj.parts[cloudObj.slotK[i]].geo.attributes.iVis.array[cloudObj.slotJ[i]] = cloudObj.masterVis[i];
+      }
+      for (const p of cloudObj.parts) p.geo.attributes.iVis.needsUpdate = true;
     },
     /* Per-object colors for the view modes; fn(i) -> [r,g,b] in 0..1 */
     setColors(fn) {
-      const arr = cloud.geometry.attributes.iColor.array;
       for (let i = 0; i < objects.length; i++) {
         const c = fn(i);
-        arr[i * 3] = c[0]; arr[i * 3 + 1] = c[1]; arr[i * 3 + 2] = c[2];
+        const arr = cloudObj.parts[cloudObj.slotK[i]].geo.attributes.iColor.array;
+        const j = cloudObj.slotJ[i];
+        arr[j * 3] = c[0]; arr[j * 3 + 1] = c[1]; arr[j * 3 + 2] = c[2];
       }
-      cloud.geometry.attributes.iColor.needsUpdate = true;
+      for (const p of cloudObj.parts) p.geo.attributes.iColor.needsUpdate = true;
     },
     toggles: {
       beams: (v) => { sensors.beams.visible = v; },
       instruments: (v) => { sensors.group.visible = v; },
       follow: (v) => { followEarth = v; },
     },
-    setReveal(v) { cloud.material.uniforms.uReveal.value = v; },
-    get reveal() { return cloud.material.uniforms.uReveal.value; },
-    pulse() { cloud.material.uniforms.uFlash.value = 1; },
+    setReveal(v) { eachCloudMat((m) => { m.uniforms.uReveal.value = v; }); },
+    get reveal() { return cloudObj.parts[0].mat.uniforms.uReveal.value; },
+    pulse() { eachCloudMat((m) => { m.uniforms.uFlash.value = 1; }); },
   };
 }
