@@ -1,444 +1,287 @@
-/* HUD wiring: catalog search and filters, the details card, conjunction list,
-   display toggles, time transport, tooltip, and sensor labels. The scene is
-   driven only through the small API createViz returns. */
+/* HUD wiring for the reference-style console: the left menu (search, speed,
+   layer toggles, view modes, filters), the boxed legend, the object popup,
+   the big clock and the objects-displayed counter. */
 
 import { KIND_NAME } from './catalog.js';
 import {
-  apogeeKm, perigeeKm, periodMinutes, speedAt, eciPosition, eciToLatLon,
-  latLonToScene, sunEci, isSunlit, fmtUtc, R_MEAN,
+  apogeeKm, perigeeKm, periodMinutes, eciPosition, fmtUtc,
 } from './orbits.js';
 
 const $ = (id) => document.getElementById(id);
-const fmt = (n) => Math.round(n).toLocaleString('en-US');
 
+const TYPE_RGB = [
+  [0.21, 0.77, 0.09],  // payload — green
+  [0.79, 0.74, 0.17],  // rocket body — olive yellow
+  [0.83, 0.20, 0.20],  // debris — red
+  [0.17, 0.25, 0.83],  // unknown — blue
+];
+
+const COUNTRY_COLORS = {
+  US: [0.18, 0.51, 0.97], CIS: [0.88, 0.25, 0.25], PRC: [0.91, 0.77, 0.13],
+  UK: [0.21, 0.77, 0.30], ESA: [0.55, 0.39, 0.82], JPN: [0.90, 0.45, 0.13],
+  IND: [0.13, 0.78, 0.81], FR: [0.85, 0.33, 0.63],
+};
+const OTHER_COLOR = [0.62, 0.62, 0.62];
 const COUNTRY_NAMES = {
   US: 'United States', CIS: 'Russia / CIS', PRC: 'China', UK: 'United Kingdom',
-  ESA: 'ESA', JPN: 'Japan', IND: 'India', FR: 'France', DEU: 'Germany',
-  KOR: 'South Korea', CAN: 'Canada', ARG: 'Argentina', FIN: 'Finland',
-  SWE: 'Sweden', CHE: 'Switzerland', EUM: 'EUMETSAT', TBD: 'Unassigned',
+  ESA: 'ESA', JPN: 'Japan', IND: 'India', FR: 'France',
 };
 
-export function initUI({ viz, objects, conjunctions, time, sensorSites }) {
-  const meanAlt = new Float32Array(objects.length);
-  for (let i = 0; i < objects.length; i++) {
+/* Blue → cyan → green → yellow → red, like the classic parameter ramps. */
+function ramp(t) {
+  t = Math.max(0, Math.min(1, t));
+  const stops = [
+    [0.15, 0.25, 0.90], [0.10, 0.75, 0.90], [0.20, 0.80, 0.20],
+    [0.92, 0.85, 0.15], [0.90, 0.22, 0.15],
+  ];
+  const x = t * (stops.length - 1);
+  const i = Math.min(stops.length - 2, Math.floor(x));
+  const f = x - i;
+  return [0, 1, 2].map((k) => stops[i][k] + (stops[i + 1][k] - stops[i][k]) * f);
+}
+
+export function initUI({ viz, objects, time, sensorSites }) {
+  const n = objects.length;
+  const perigee = new Float32Array(n);
+  const apogee = new Float32Array(n);
+  const period = new Float32Array(n);
+  const incDeg = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
     const el = objects[i].el;
-    meanAlt[i] = (apogeeKm(el.a, el.e) + perigeeKm(el.a, el.e)) / 2;
+    perigee[i] = perigeeKm(el.a, el.e);
+    apogee[i] = apogeeKm(el.a, el.e);
+    period[i] = periodMinutes(el.a);
+    incDeg[i] = el.inc * 180 / Math.PI;
   }
 
-  const filter = {
-    kinds: [true, true, true, true],
-    altMin: 150, altMax: 42000,
-    country: '', group: '', query: '',
+  const state = {
+    view: 'type',
+    debris: false,          // the analyst small-debris layer
+    filterParam: 'perigee',
+    filterMin: NaN,
+    filterMax: NaN,
+    autoRefresh: true,
   };
   let selectedIdx = -1;
+  let shownCount = 0;
 
-  /* Deterministic per-object tracking metadata (RCS, last-seen, pass count):
-     the kind of columns a screening product carries, derived from the catalog
-     number so they are stable across loads. */
-  function hash32(n) {
-    let h = Math.imul(n ^ 0x9E3779B9, 2654435761) >>> 0;
-    h ^= h >>> 15; h = Math.imul(h, 0x85EBCA77) >>> 0; h ^= h >>> 13;
-    return h >>> 0;
-  }
-  function trackMeta(o) {
-    const h = hash32(o.id);
-    const rcsBase = [1.2 + (h % 900) / 25, 4 + (h % 500) / 24, 0.01 + (h % 300) / 620, 0.05 + (h % 200) / 105][o.kind];
-    const lastMin = 4 + (h >>> 8) % 560;
-    return {
-      rcs: rcsBase >= 10 ? rcsBase.toFixed(0) : rcsBase.toFixed(2),
-      lastSensor: sensorSites[(h >>> 3) % sensorSites.length].name,
-      lastMin,
-      passes: 4 + ((h >>> 16) % 13),
-    };
-  }
-
-  /* Next pass over the sensor network: real geometry, sampled forward. */
-  const siteVecs = sensorSites.map((s) => {
-    const v = latLonToScene(s.lat, s.lon, R_MEAN);
-    const m = Math.hypot(v[0], v[1], v[2]);
-    return { v, n: [v[0] / m, v[1] / m, v[2] / m] };
-  });
-  function nextPass(o, fromMs, horizonH = 12) {
-    const stepS = 20;
-    const p = [0, 0, 0], q = [0, 0, 0];
-    for (let τ = 0; τ < horizonH * 3600; τ += stepS) {
-      const ms = fromMs + τ * 1000;
-      eciPosition(o.el, viz.tOf(ms), p);
-      const g = eciToLatLon(p, ms);
-      latLonToScene(g.lat, g.lon, R_MEAN + g.alt, q);
-      for (let s = 0; s < siteVecs.length; s++) {
-        const sv = siteVecs[s].v, sn = siteVecs[s].n;
-        const dx = q[0] - sv[0], dy = q[1] - sv[1], dz = q[2] - sv[2];
-        const d = Math.hypot(dx, dy, dz);
-        const sinEl = (dx * sn[0] + dy * sn[1] + dz * sn[2]) / d;
-        if (sinEl > 0.342) { // elevation above ~20°
-          return { site: sensorSites[s].name, ms };
-        }
-      }
+  /* ---------------- visibility ---------------- */
+  const paramValue = (i) => {
+    switch (state.filterParam) {
+      case 'perigee': return perigee[i];
+      case 'apogee': return apogee[i];
+      case 'period': return period[i];
+      case 'inclination': return incDeg[i];
+      case 'year': return objects[i].year;
+      default: return 0;
     }
-    return null;
-  }
-  let passCache = null; // { idx, ms, result }
+  };
 
-  /* ---------------- filters -> visibility ---------------- */
-  const kindTotals = [0, 0, 0, 0];
-  for (const o of objects) kindTotals[o.kind]++;
-
-  function matches(i) {
-    const o = objects[i];
-    if (!filter.kinds[o.kind]) return false;
-    if (meanAlt[i] < filter.altMin || meanAlt[i] > filter.altMax) return false;
-    if (filter.country && o.country !== filter.country) return false;
-    if (filter.group && o.group !== filter.group) return false;
-    return true;
-  }
-
-  const shownPerKind = [0, 0, 0, 0];
-  function applyFilters() {
-    shownPerKind.fill(0);
+  function applyVis() {
+    let count = 0;
+    const lo = Number.isFinite(state.filterMin) ? state.filterMin : -Infinity;
+    const hi = Number.isFinite(state.filterMax) ? state.filterMax : Infinity;
+    const filtered = lo !== -Infinity || hi !== Infinity;
     viz.setVis((arr) => {
-      for (let i = 0; i < objects.length; i++) {
-        const m = matches(i);
-        arr[i] = m ? 1 : 0;
-        if (m) shownPerKind[objects[i].kind]++;
+      for (let i = 0; i < n; i++) {
+        let on = state.debris || objects[i].group !== 'xdeb';
+        if (on && filtered) {
+          const v = paramValue(i);
+          on = v >= lo && v <= hi;
+        }
+        arr[i] = on ? 1 : 0;
+        if (on) count++;
       }
     });
-    const shown = shownPerKind[0] + shownPerKind[1] + shownPerKind[2] + shownPerKind[3];
-    $('catalog-shown').textContent = `${fmt(shown)} shown`;
-    $('stat-count').textContent = `${fmt(objects.length)} OBJECTS`;
-    for (let k = 0; k < 4; k++) {
-      $(`count-k${k}`).textContent = fmt(shownPerKind[k]);
-      $(`legend-k${k}`).textContent = fmt(shownPerKind[k]);
-    }
-    renderResults();
+    shownCount = count;
   }
 
-  /* ---------------- results list ---------------- */
-  const resultsEl = $('results');
-  const rowIndex = new Map(); // li -> object index
-  function renderResults() {
-    const q = filter.query.trim().toUpperCase();
-    resultsEl.textContent = '';
-    rowIndex.clear();
-    let shown = 0, matched = 0;
-    const frag = document.createDocumentFragment();
-    for (let i = 0; i < objects.length; i++) {
-      if (!matches(i)) continue;
-      const o = objects[i];
-      if (q && !o.name.toUpperCase().includes(q) && !String(o.id).includes(q)) continue;
-      matched++;
-      if (shown < 200) {
-        const li = document.createElement('li');
-        if (i === selectedIdx) li.classList.add('sel');
-        const dot = document.createElement('span');
-        dot.className = `kdot k${o.kind}`;
-        const nm = document.createElement('span');
-        nm.className = 'rname';
-        nm.textContent = o.name;
-        const meta = document.createElement('span');
-        meta.className = 'rmeta';
-        meta.textContent = `${o.id} · ${fmt(meanAlt[i])} km`;
-        li.append(dot, nm, meta);
-        rowIndex.set(li, i);
-        frag.appendChild(li);
-        shown++;
-      }
+  /* ---------------- view modes & legend ---------------- */
+  const legendHead = $('legend-head');
+  const legendBody = $('legend-body');
+
+  function legendRows(rows) {
+    legendBody.textContent = '';
+    for (const [rgb, label] of rows) {
+      const row = document.createElement('div');
+      row.className = 'legend-row';
+      const sw = document.createElement('span');
+      sw.className = 'sw';
+      sw.style.background = `rgb(${rgb.map((c) => Math.round(c * 255)).join(',')})`;
+      const tx = document.createElement('span');
+      tx.textContent = label;
+      row.append(sw, tx);
+      legendBody.appendChild(row);
     }
-    if (matched > shown) {
-      const li = document.createElement('li');
-      li.className = 'more';
-      li.textContent = `+ ${fmt(matched - shown)} more — refine the search`;
-      frag.appendChild(li);
-    }
-    if (matched === 0) {
-      const li = document.createElement('li');
-      li.className = 'more';
-      li.textContent = 'No objects match';
-      frag.appendChild(li);
-    }
-    resultsEl.appendChild(frag);
   }
-  resultsEl.addEventListener('click', (e) => {
-    const li = e.target.closest('li');
-    if (!li || !rowIndex.has(li)) return;
-    selectObject(rowIndex.get(li), { fly: true });
+
+  const VIEWS = {
+    type: {
+      title: 'Object Type',
+      color: (i) => TYPE_RGB[objects[i].kind],
+      legend: () => legendRows(KIND_NAME.map((name, k) => [TYPE_RGB[k], name === 'Rocket body' ? 'Rocket Body' : name])),
+    },
+    perigee: {
+      title: 'Perigee',
+      color: (i) => ramp((perigee[i] - 200) / 1300),
+      legend: () => legendRows([0, 0.25, 0.5, 0.75, 1].map((t) => [ramp(t), `${Math.round(200 + t * 1300)} km`])),
+    },
+    period: {
+      title: 'Period',
+      color: (i) => ramp((period[i] - 88) / 40),
+      legend: () => legendRows([0, 0.25, 0.5, 0.75, 1].map((t) => [ramp(t), `${Math.round(88 + t * 40)} min`])),
+    },
+    inclination: {
+      title: 'Inclination',
+      color: (i) => ramp(incDeg[i] / 110),
+      legend: () => legendRows([0, 0.25, 0.5, 0.75, 1].map((t) => [ramp(t), `${Math.round(t * 110)}°`])),
+    },
+    country: {
+      title: 'Country of Origin',
+      color: (i) => COUNTRY_COLORS[objects[i].country] || OTHER_COLOR,
+      legend: () => legendRows([
+        ...Object.keys(COUNTRY_COLORS).map((c) => [COUNTRY_COLORS[c], COUNTRY_NAMES[c] || c]),
+        [OTHER_COLOR, 'Other'],
+      ]),
+    },
+  };
+
+  function setView(name) {
+    state.view = name;
+    document.querySelectorAll('.vrow').forEach((r) => r.classList.toggle('sel', r.dataset.view === name));
+    const v = VIEWS[name];
+    legendHead.textContent = v.title;
+    v.legend();
+    viz.setColors(v.color);
+  }
+  document.querySelectorAll('.vrow').forEach((r) => {
+    r.addEventListener('click', () => setView(r.dataset.view));
   });
 
-  /* ---------------- selection & details ---------------- */
-  function selectObject(i, { fly = false, secondary = -1 } = {}) {
+  /* ---------------- menu controls ---------------- */
+  const speedEl = $('speed');
+  const speedVal = $('speed-val');
+  function applySpeed() {
+    const v = +speedEl.value;
+    speedVal.textContent = v;
+    time.setMultiplier(v === 0 ? 0 : Math.max(1, (v * v) / 6.25));
+  }
+  speedEl.addEventListener('input', applySpeed);
+
+  $('t-debris').addEventListener('change', (e) => { state.debris = e.target.checked; applyVis(); });
+  $('t-beams').addEventListener('change', (e) => viz.toggles.beams(e.target.checked));
+  $('t-instruments').addEventListener('change', (e) => {
+    viz.toggles.instruments(e.target.checked);
+    $('labels').style.display = e.target.checked ? '' : 'none';
+  });
+  $('t-follow').addEventListener('change', (e) => viz.toggles.follow(e.target.checked));
+  $('t-refresh').addEventListener('change', (e) => { state.autoRefresh = e.target.checked; });
+
+  $('filter-param').addEventListener('change', (e) => { state.filterParam = e.target.value; applyVis(); });
+  const numOrNaN = (el) => (el.value.trim() === '' ? NaN : +el.value);
+  $('filter-min').addEventListener('input', () => { state.filterMin = numOrNaN($('filter-min')); applyVis(); });
+  $('filter-max').addEventListener('input', () => { state.filterMax = numOrNaN($('filter-max')); applyVis(); });
+
+  $('hide-menu').addEventListener('click', () => {
+    $('menu').hidden = true;
+    $('show-menu').hidden = false;
+    $('search-results').hidden = true;
+  });
+  $('show-menu').addEventListener('click', () => {
+    $('menu').hidden = false;
+    $('show-menu').hidden = true;
+  });
+
+  /* ---------------- search ---------------- */
+  const searchEl = $('search');
+  const resultsEl = $('search-results');
+  let searchTimer = 0;
+  function runSearch() {
+    const q = searchEl.value.trim().toUpperCase();
+    resultsEl.textContent = '';
+    if (!q) { resultsEl.hidden = true; return; }
+    let found = 0;
+    for (let i = 0; i < n && found < 8; i++) {
+      const o = objects[i];
+      if (o.group === 'xdeb' && !state.debris) continue;
+      if (!o.name.toUpperCase().includes(q) && !String(o.id).includes(q)) continue;
+      const row = document.createElement('div');
+      row.textContent = `${o.name} · ${o.id}`;
+      row.addEventListener('click', () => {
+        selectObject(i, { fly: true });
+        resultsEl.hidden = true;
+        searchEl.value = o.name;
+      });
+      resultsEl.appendChild(row);
+      found++;
+    }
+    resultsEl.hidden = found === 0;
+  }
+  searchEl.addEventListener('input', () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(runSearch, 140);
+  });
+  searchEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const first = resultsEl.querySelector('div');
+      if (first) first.click();
+    }
+  });
+
+  /* ---------------- selection popup ---------------- */
+  const popup = $('popup');
+  function selectObject(i, { fly = false } = {}) {
     selectedIdx = i;
-    viz.select(i, secondary);
-    for (const [li, idx] of rowIndex) li.classList.toggle('sel', idx === i);
-    const panel = $('details');
+    viz.select(i);
     if (i < 0) {
-      panel.hidden = true;
-      $('d-track').setAttribute('aria-pressed', 'false');
-      viz.tracking = false;
-      reflectHash();
+      popup.hidden = true;
+      history.replaceState(null, '', location.pathname + location.search);
       return;
     }
     const o = objects[i];
-    panel.hidden = false;
-    $('d-dot').className = `kdot k${o.kind}`;
-    $('d-name').textContent = o.name;
-    $('d-id').textContent = o.id;
-    $('d-intl').textContent = o.intl;
-    $('d-type').textContent = KIND_NAME[o.kind];
-    $('d-country').textContent = COUNTRY_NAMES[o.country] || o.country;
-    $('d-year').textContent = o.year;
-    $('d-apo').textContent = `${fmt(apogeeKm(o.el.a, o.el.e))} km`;
-    $('d-per').textContent = `${fmt(perigeeKm(o.el.a, o.el.e))} km`;
-    $('d-inc').textContent = `${(o.el.inc * 180 / Math.PI).toFixed(2)}°`;
-    $('d-period').textContent = `${periodMinutes(o.el.a).toFixed(1)} min`;
-    $('d-ecc').textContent = o.el.e.toFixed(4);
-    const meta = trackMeta(o);
-    $('d-rcs').textContent = `${meta.rcs} m²`;
-    $('d-last').textContent = meta.lastMin < 60
-      ? `${meta.lastSensor} · ${meta.lastMin} min ago`
-      : `${meta.lastSensor} · ${(meta.lastMin / 60).toFixed(1)} h ago`;
-    $('d-passes').textContent = meta.passes;
-    passCache = null;
+    $('p-name').textContent = o.name;
+    $('p-id').textContent = o.id;
+    $('p-type').textContent = KIND_NAME[o.kind];
+    $('p-country').textContent = COUNTRY_NAMES[o.country] || o.country;
+    $('p-year').textContent = o.year;
+    $('p-apo').textContent = `${Math.round(apogee[i])} km`;
+    $('p-per').textContent = `${Math.round(perigee[i])} km`;
+    $('p-inc').textContent = `${incDeg[i].toFixed(2)}°`;
+    $('p-period').textContent = `${period[i].toFixed(1)} min`;
+    popup.hidden = false;
+    history.replaceState(null, '', `#${o.id}`);
     if (fly) viz.flyTo(i);
-    updateLive();
-    reflectHash();
   }
-  $('d-close').addEventListener('click', () => selectObject(-1));
-  $('d-track').addEventListener('click', () => {
-    viz.tracking = !viz.tracking;
-    $('d-track').setAttribute('aria-pressed', String(viz.tracking));
-  });
-  $('d-reset').addEventListener('click', () => {
-    viz.tracking = false;
-    $('d-track').setAttribute('aria-pressed', 'false');
-    viz.camera.position.set(11.5, 6.4, 22.5);
-  });
-
-  const livePos = [0, 0, 0];
-  function updateLive() {
-    if (selectedIdx < 0) return;
-    const o = objects[selectedIdx];
-    eciPosition(o.el, viz.tOf(viz.simMs), livePos);
-    const r = Math.hypot(livePos[0], livePos[1], livePos[2]);
-    const g = eciToLatLon(livePos, viz.simMs);
-    $('d-vel').textContent = `${speedAt(o.el.a, r).toFixed(2)} km/s`;
-    $('d-lat').textContent = `${g.lat.toFixed(2)}°`;
-    $('d-lon').textContent = `${g.lon.toFixed(2)}°`;
-    $('d-alt').textContent = `${fmt(g.alt)} km`;
-    const lit = isSunlit(livePos, sunEci(viz.simMs));
-    const sunEl = $('d-sun');
-    sunEl.textContent = lit ? 'Sunlit' : 'In eclipse';
-    sunEl.style.color = lit ? 'var(--status-watch)' : 'var(--text-muted)';
-    // Next pass over the network: recompute when stale or already elapsed.
-    if (!passCache || passCache.idx !== selectedIdx ||
-        Math.abs(viz.simMs - passCache.ms) > 30 * 60 * 1000 ||
-        (passCache.result && viz.simMs > passCache.result.ms + 60000)) {
-      passCache = { idx: selectedIdx, ms: viz.simMs, result: nextPass(o, viz.simMs) };
-      const n = passCache.result;
-      $('d-next').textContent = n
-        ? `${n.site} · ${fmtUtc(n.ms).slice(5, 19)}`
-        : 'None in 12 h';
-    }
-  }
-
-  /* ---------------- filter inputs ---------------- */
-  document.querySelectorAll('[data-kind]').forEach((cb) => {
-    cb.addEventListener('change', () => {
-      filter.kinds[+cb.dataset.kind] = cb.checked;
-      applyFilters();
-    });
-  });
-  $('alt-min').addEventListener('change', () => { filter.altMin = +$('alt-min').value || 0; applyFilters(); });
-  $('alt-max').addEventListener('change', () => { filter.altMax = +$('alt-max').value || 42000; applyFilters(); });
-
-  const countrySel = $('country');
-  const present = [...new Set(objects.map((o) => o.country))].sort();
-  for (const c of present) {
-    const opt = document.createElement('option');
-    opt.value = c;
-    opt.textContent = COUNTRY_NAMES[c] || c;
-    countrySel.appendChild(opt);
-  }
-  countrySel.addEventListener('change', () => { filter.country = countrySel.value; applyFilters(); });
-
-  $('group-chips').addEventListener('click', (e) => {
-    const chip = e.target.closest('.chip');
-    if (!chip) return;
-    document.querySelectorAll('#group-chips .chip').forEach((c) => c.classList.toggle('on', c === chip));
-    filter.group = chip.dataset.group;
-    applyFilters();
-  });
-
-  let searchTimer = 0;
-  $('search').addEventListener('input', () => {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => {
-      filter.query = $('search').value;
-      renderResults();
-    }, 120);
-  });
-
-  /* ---------------- conjunctions ---------------- */
-  const conjList = $('conj-list');
-  $('conj-count').textContent = `${conjunctions.length} events`;
-  const conjRows = [];
-  conjunctions.forEach((ev, k) => {
-    const li = document.createElement('li');
-    const pair = document.createElement('div');
-    pair.className = 'conj-pair';
-    const sev = document.createElement('span');
-    sev.className = `sev s-${ev.sev}`;
-    const names = document.createElement('span');
-    names.textContent = `${ev.primaryName} × ${ev.secondaryName}`;
-    names.style.overflow = 'hidden';
-    names.style.textOverflow = 'ellipsis';
-    pair.append(sev, names);
-    const meta = document.createElement('div');
-    meta.className = 'conj-meta';
-    const d = new Date(ev.tca);
-    const p2 = (n) => String(n).padStart(2, '0');
-    const tcaStr = `${p2(d.getUTCMonth() + 1)}-${p2(d.getUTCDate())} ${p2(d.getUTCHours())}:${p2(d.getUTCMinutes())}:${p2(d.getUTCSeconds())}`;
-    const tSpan = document.createElement('span');
-    tSpan.textContent = `TCA ${tcaStr}`;
-    const mSpan = document.createElement('span');
-    mSpan.className = 'miss';
-    mSpan.textContent = `${fmt(ev.missM)} m · Pc ${ev.pc}`;
-    meta.append(tSpan, mSpan);
-    li.append(pair, meta);
-    conjList.appendChild(li);
-    conjRows.push(li);
-    li.addEventListener('click', () => {
-      conjRows.forEach((r) => r.classList.toggle('sel', r === li));
-      time.scrubToMs(ev.tca - 90 * 1000);
-      time.setSpeed(1);
-      time.setPlaying(true);
-      selectObject(ev.primary, { fly: true, secondary: ev.secondary });
-    });
-  });
-
-  /* ---------------- display toggles ---------------- */
-  const wire = (id, fn, init) => {
-    const el = $(id);
-    el.checked = init;
-    fn(init);
-    el.addEventListener('change', () => fn(el.checked));
-  };
-  wire('t-trails', viz.toggles.trails, true);
-  wire('t-groundtrack', viz.toggles.groundtrack, true);
-  wire('t-graticule', viz.toggles.graticule, true);
-  wire('t-terminator', viz.toggles.terminator, true);
-  wire('t-atmosphere', viz.toggles.atmosphere, true);
-  wire('t-stars', viz.toggles.stars, true);
-  wire('t-sensors', (v) => { viz.toggles.sensors(v); $('labels').style.display = v ? '' : 'none'; }, true);
-  wire('t-coverage', viz.toggles.coverage, false);
-  $('t-size').addEventListener('input', () => viz.setPointSize(+$('t-size').value));
-
-  /* ---------------- panel collapse ---------------- */
-  const wireCollapse = (btnId, panelEl) => {
-    const btn = $(btnId);
-    btn.addEventListener('click', () => {
-      const hidden = panelEl.classList.toggle('hidden');
-      btn.setAttribute('aria-expanded', String(!hidden));
-    });
-  };
-  wireCollapse('btn-catalog', $('catalog-panel'));
-  wireCollapse('btn-panels', $('rightcol'));
-  // Small screens start with the catalog closed.
-  if (window.innerWidth < 900) {
-    $('catalog-panel').classList.add('hidden');
-    $('btn-catalog').setAttribute('aria-expanded', 'false');
-    $('rightcol').classList.add('hidden');
-    $('btn-panels').setAttribute('aria-expanded', 'false');
-  }
-
-  /* ---------------- transport ---------------- */
-  const playBtn = $('tb-play');
-  const liveBtn = $('tb-live');
-  function reflectTime() {
-    playBtn.textContent = time.playing ? '❚❚' : '▶';
-    playBtn.setAttribute('aria-label', time.playing ? 'Pause' : 'Play');
-    liveBtn.setAttribute('aria-pressed', String(time.live));
-    $('live-label').textContent = time.live ? 'LIVE' : 'SIMULATION';
-    $('live-dot').classList.toggle('sim', !time.live);
-    document.querySelectorAll('.sp').forEach((b) => b.classList.toggle('on', +b.dataset.speed === time.speed));
-  }
-  playBtn.addEventListener('click', () => { time.setPlaying(!time.playing); reflectTime(); });
-  liveBtn.addEventListener('click', () => { time.goLive(); reflectTime(); });
-  $('tb-back').addEventListener('click', () => { time.nudge(-3600 * 1000); reflectTime(); });
-  $('tb-fwd').addEventListener('click', () => { time.nudge(3600 * 1000); reflectTime(); });
-  document.querySelectorAll('.sp').forEach((b) => {
-    b.addEventListener('click', () => { time.setSpeed(+b.dataset.speed); reflectTime(); });
-  });
-  const scrub = $('scrub');
-  let scrubbing = false;
-  scrub.addEventListener('input', () => {
-    scrubbing = true;
-    time.scrubToMs(Date.now() + scrub.value * 60000);
-    reflectTime();
-  });
-  scrub.addEventListener('change', () => { scrubbing = false; });
-
-  /* ---------------- date/time jump ---------------- */
-  const jump = $('jump');
-  jump.addEventListener('change', () => {
-    const ms = Date.parse(`${jump.value}Z`);
-    if (Number.isFinite(ms)) { time.scrubToMs(ms); reflectTime(); }
-  });
-
-  /* ---------------- ground view ---------------- */
-  const viewSel = $('view-mode');
-  sensorSites.forEach((s, i) => {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = `Ground · ${s.name}`;
-    viewSel.appendChild(opt);
-  });
-  function setView(idx) {
-    idx = +idx;
-    viewSel.value = String(idx);
-    if (idx < 0) {
-      viz.exitGroundView();
-      $('gv-bar').hidden = true;
-    } else {
-      viz.enterGroundView(idx);
-      $('gv-bar').hidden = false;
-      $('gv-site').textContent = `Ground view · ${sensorSites[idx].name}`;
-      $('d-track').setAttribute('aria-pressed', 'false');
-    }
-  }
-  viewSel.addEventListener('change', () => setView(viewSel.value));
-  $('gv-exit').addEventListener('click', () => setView(-1));
-
-  /* ---------------- help modal ---------------- */
-  const helpModal = $('help-modal');
-  $('btn-help').addEventListener('click', () => { helpModal.hidden = false; });
-  $('help-close').addEventListener('click', () => { helpModal.hidden = true; });
-  helpModal.addEventListener('click', (e) => { if (e.target === helpModal) helpModal.hidden = true; });
+  $('popup-x').addEventListener('click', () => selectObject(-1));
 
   /* ---------------- deep link ---------------- */
   const idIndex = new Map();
   objects.forEach((o, i) => { if (!idIndex.has(o.id)) idIndex.set(o.id, i); });
-  function reflectHash() {
-    const h = selectedIdx >= 0 ? `#${objects[selectedIdx].id}` : ' ';
-    history.replaceState(null, '', selectedIdx >= 0 ? h : location.pathname + location.search);
-  }
   function applyHash(fly) {
     const m = location.hash.match(/^#(\d+)$/);
-    if (!m) return false;
+    if (!m) return;
     const idx = idIndex.get(+m[1]);
-    if (idx == null) return false;
-    selectObject(idx, { fly });
-    return true;
+    if (idx != null) selectObject(idx, { fly });
   }
   window.addEventListener('hashchange', () => applyHash(true));
 
-  document.addEventListener('keydown', (e) => {
-    if (e.target.matches('input, select, textarea')) return;
-    if (e.code === 'Space') { e.preventDefault(); time.setPlaying(!time.playing); reflectTime(); }
-    else if (e.key === 'l' || e.key === 'L') { time.goLive(); reflectTime(); }
-    else if (e.key === 'Escape') {
-      if (!helpModal.hidden) helpModal.hidden = true;
-      else if (viz.groundView >= 0) setView(-1);
-      else selectObject(-1);
+  /* ---------------- copy link ---------------- */
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  document.body.appendChild(toast);
+  let toastTimer = 0;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('on'), 1800);
+  }
+  $('copy-link').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      showToast('Link copied to clipboard');
+    } catch {
+      showToast(location.href);
     }
   });
 
@@ -451,10 +294,9 @@ export function initUI({ viz, objects, conjunctions, time, sensorSites }) {
     if (!downXY) return;
     const moved = Math.hypot(e.clientX - downXY[0], e.clientY - downXY[1]);
     downXY = null;
-    if (moved > 5) return; // it was a drag
+    if (moved > 5) return;
     const i = viz.pick(e.clientX, e.clientY, window.innerWidth, window.innerHeight);
-    if (i >= 0) selectObject(i);
-    else selectObject(-1);
+    selectObject(i);
   });
   let hoverTimer = 0;
   canvas.addEventListener('pointermove', (e) => {
@@ -470,7 +312,7 @@ export function initUI({ viz, objects, conjunctions, time, sensorSites }) {
         strong.textContent = o.name;
         const meta = document.createElement('div');
         meta.className = 'tt-meta';
-        meta.textContent = `${KIND_NAME[o.kind]} · ${o.id} · ${fmt(meanAlt[i])} km`;
+        meta.textContent = `${KIND_NAME[o.kind]} · ${o.id}`;
         tooltip.append(strong, meta);
         tooltip.style.left = `${e.clientX}px`;
         tooltip.style.top = `${e.clientY}px`;
@@ -483,85 +325,51 @@ export function initUI({ viz, objects, conjunctions, time, sensorSites }) {
   });
   canvas.addEventListener('pointerleave', () => { tooltip.hidden = true; });
 
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, select, textarea')) return;
+    if (e.key === 'Escape') selectObject(-1);
+  });
+
   /* ---------------- sensor labels ---------------- */
   const labelsWrap = $('labels');
-  const labelEls = sensorSites.map((s, i) => {
+  const labelEls = sensorSites.map((s) => {
     const el = document.createElement('span');
     el.className = 'slabel';
     el.textContent = s.name;
-    el.title = `Ground view from ${s.name}`;
-    el.addEventListener('click', () => setView(i));
     labelsWrap.appendChild(el);
     return el;
   });
-  const cardinalEls = ['N', 'E', 'S', 'W'].map(() => {
-    const el = document.createElement('span');
-    el.className = 'cardinal';
-    el.style.display = 'none';
-    labelsWrap.appendChild(el);
-    return el;
-  });
-  const selLabel = $('sel-label');
 
-  /* ---------------- per-frame hooks ---------------- */
-  /* Data-pipeline readout: observation rate wanders like a live feed, the
-     track counter follows the filtered population, and every 30 s the
-     "ephemeris refresh" sweeps a brightness pulse across the cloud. */
-  let lastIngest = 0, lastRefreshBucket = -1, streamed = false;
-  function ingestTick(nowReal) {
-    if (nowReal - lastIngest < 400) return;
-    lastIngest = nowReal;
-    const t = nowReal / 1000;
-    const rate = Math.round(168 + 74 * Math.sin(t / 6.4) + 31 * Math.sin(t / 1.9) + 12 * Math.sin(t * 1.3));
-    $('ing-rate').textContent = rate;
-    const shown = shownPerKind[0] + shownPerKind[1] + shownPerKind[2] + shownPerKind[3];
-    if (viz.reveal < 1) {
-      const n = Math.round(viz.reveal * shown);
-      $('ing-tracks').textContent = fmt(n);
-      $('stat-count').textContent = `STREAMING ${fmt(Math.round(viz.reveal * objects.length))} / ${fmt(objects.length)}`;
-      streamed = true;
-    } else {
-      $('ing-tracks').textContent = fmt(shown);
-      if (streamed) { streamed = false; $('stat-count').textContent = `${fmt(objects.length)} OBJECTS`; }
-    }
-    const bucket = Math.floor(Date.now() / 30000);
-    const remain = 30 - Math.floor((Date.now() / 1000) % 30);
-    $('ing-next').textContent = `${remain} s`;
-    if (bucket !== lastRefreshBucket) {
-      if (lastRefreshBucket !== -1) viz.pulse();
-      lastRefreshBucket = bucket;
-    }
+  /* ---------------- per-frame ---------------- */
+  const menuNotes = $('menu-notes');
+  function placeNotes() {
+    const menu = $('menu');
+    const r = menu.hidden ? { bottom: 60 } : menu.getBoundingClientRect();
+    menuNotes.style.top = `${(r.bottom || 60) + 16}px`;
   }
+  placeNotes();
+  window.addEventListener('resize', placeNotes);
 
-  let lastClock = 0, lastLive = 0;
+  let lastClock = 0, lastRefreshBucket = Math.floor(Date.now() / 30000);
   function tick(nowReal) {
-    ingestTick(nowReal);
-    // clock + offset readout at ~5 Hz
     if (nowReal - lastClock > 200) {
       lastClock = nowReal;
-      $('clock').textContent = fmtUtc(viz.simMs);
-      const offMin = (viz.simMs - Date.now()) / 60000;
-      if (!scrubbing) scrub.value = Math.max(-1440, Math.min(1440, offMin));
-      const sign = offMin < -0.02 ? '−' : '+';
-      const am = Math.abs(offMin);
-      const hh = String(Math.floor(am / 60)).padStart(2, '0');
-      const mm = String(Math.floor(am % 60)).padStart(2, '0');
-      $('offset').textContent = `T${sign}${hh}:${mm}`;
-      if (document.activeElement !== jump) {
-        jump.value = new Date(viz.simMs).toISOString().slice(0, 19);
+      $('clock').textContent = fmtUtc(viz.simMs).slice(0, 16) + ' UTC';
+      const displayed = viz.reveal < 1 ? Math.round(viz.reveal * shownCount) : shownCount;
+      $('objcount').textContent = `${displayed} objects displayed`;
+      placeNotes();
+      // auto refresh: periodic ephemeris sweep
+      const bucket = Math.floor(Date.now() / 30000);
+      if (bucket !== lastRefreshBucket) {
+        lastRefreshBucket = bucket;
+        if (state.autoRefresh) viz.pulse();
       }
-      reflectTime();
-    }
-    if (nowReal - lastLive > 300) {
-      lastLive = nowReal;
-      updateLive();
     }
     const w = window.innerWidth, h = window.innerHeight;
-    // sensor labels every frame (cheap: 7 sites)
     for (let s = 0; s < sensorSites.length; s++) {
       const p = viz.sensorScreenPos(s, w, h);
       const el = labelEls[s];
-      if (p.visible && s !== viz.groundView) {
+      if (p.visible) {
         el.style.display = '';
         el.style.left = `${p.x}px`;
         el.style.top = `${p.y}px`;
@@ -569,37 +377,21 @@ export function initUI({ viz, objects, conjunctions, time, sensorSites }) {
         el.style.display = 'none';
       }
     }
-    // ground-view cardinal points
-    const cards = viz.cardinalScreenPos(w, h);
-    for (let c = 0; c < 4; c++) {
-      const el = cardinalEls[c];
-      if (cards && cards[c].visible) {
-        el.style.display = '';
-        el.textContent = cards[c].label;
-        el.style.left = `${cards[c].x}px`;
-        el.style.top = `${cards[c].y}px`;
-      } else {
-        el.style.display = 'none';
-      }
-    }
-    // floating name label on the selection
-    if (selectedIdx >= 0) {
+    if (selectedIdx >= 0 && !popup.hidden) {
       const p = viz.project(selectedIdx, w, h);
       if (p.visible) {
-        selLabel.hidden = false;
-        selLabel.textContent = objects[selectedIdx].name;
-        selLabel.style.left = `${p.x}px`;
-        selLabel.style.top = `${p.y}px`;
+        popup.style.left = `${Math.min(p.x, w - 260)}px`;
+        popup.style.top = `${Math.max(70, Math.min(p.y, h - 160))}px`;
+        popup.style.opacity = '1';
       } else {
-        selLabel.hidden = true;
+        popup.style.opacity = '0.55';
       }
-    } else {
-      selLabel.hidden = true;
     }
   }
 
-  applyFilters();
-  reflectTime();
+  setView('type');
+  applyVis();
+  applySpeed();
   applyHash(true);
   return { tick, selectObject };
 }

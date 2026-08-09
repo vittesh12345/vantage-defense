@@ -4,21 +4,17 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Vantage · Low Earth Orbit Visualization</title>
-<meta name="description" content="An interactive 3D map of the low Earth orbit population: payloads, rocket bodies and debris propagated live, with catalog search, conjunction screening and the Vantage sensor network." />
+<meta name="description" content="An interactive 3D map of the low Earth orbit population: payloads, rocket bodies and debris propagated live over a Blue Marble earth, with radar beam volumes, view modes and filters." />
 <meta name="theme-color" content="#000000" />
 <link rel="canonical" href="https://vantage.industries/visualization/" />
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Vantage" />
 <meta property="og:title" content="Vantage · Low Earth Orbit Visualization" />
-<meta property="og:description" content="An interactive 3D map of the low Earth orbit population: payloads, rocket bodies and debris propagated live, with catalog search and conjunction screening." />
+<meta property="og:description" content="An interactive 3D map of the low Earth orbit population, with radar beam volumes, view modes and filters." />
 <meta property="og:url" content="https://vantage.industries/visualization/" />
 <meta property="og:image" content="https://vantage.industries/assets/og-card.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../styles/tokens.css">
 <link rel="stylesheet" href="viz.css">
 </head>
 <body>
@@ -30,240 +26,117 @@
 
 <div id="hud">
 
-  <!-- ======================= top bar ======================= -->
-  <header class="viz-top">
-    <div class="top-left">
-      <a class="brand" href="../">
-        <span class="mark">
-          <svg width="26" height="26" viewBox="0 0 100 100" fill="#fff" aria-hidden="true" focusable="false">
-            <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
-            <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
-            <polygon points="29.0,66.9 50.0,80.9 71.0,67.1 57.0,68.9 50.0,73.5 43.0,68.9"/>
-            <circle cx="50" cy="49.8" r="6.3"/>
-          </svg>
-        </span>
-        VANTAGE
-      </a>
-      <span class="console-tag">Low Earth Orbit Visualization</span>
+  <!-- ======================= left menu ======================= -->
+  <div class="menu" id="menu">
+    <div class="mrow a-green">
+      <span class="mlabel">Search</span>
+      <input type="search" id="search" placeholder="Enter a satellite name..." autocomplete="off" spellcheck="false" aria-label="Search the catalog" />
     </div>
-    <div class="top-right">
-      <span class="status-pill"><span class="dot" id="live-dot"></span><span id="live-label">LIVE</span></span>
-      <span class="stat-count" id="stat-count">— OBJECTS</span>
-      <button class="icon-btn" id="btn-catalog" type="button" aria-label="Toggle catalog panel" aria-expanded="true">CATALOG</button>
-      <button class="icon-btn" id="btn-panels" type="button" aria-label="Toggle display panels" aria-expanded="true">DISPLAY</button>
-      <button class="icon-btn" id="btn-help" type="button" aria-label="About this tool" aria-haspopup="dialog">?</button>
-      <a class="back-link" href="../demo/">Mission console →</a>
+    <div class="search-results" id="search-results" hidden></div>
+    <div class="mrow a-blue">
+      <span class="mlabel">Speed</span>
+      <input type="range" id="speed" min="0" max="100" step="1" value="25" aria-label="Playback speed" />
+      <span class="mval" id="speed-val">25</span>
     </div>
-  </header>
+    <label class="mrow a-gray check">
+      <span class="mlabel">Debris</span>
+      <input type="checkbox" id="t-debris" aria-label="Show analyst debris" />
+    </label>
+    <label class="mrow a-blue check">
+      <span class="mlabel">Beams</span>
+      <input type="checkbox" id="t-beams" checked aria-label="Show radar beams" />
+    </label>
+    <label class="mrow a-purple check">
+      <span class="mlabel">Instruments</span>
+      <input type="checkbox" id="t-instruments" checked aria-label="Show instruments" />
+    </label>
+    <label class="mrow a-teal check">
+      <span class="mlabel">Follow Earth</span>
+      <input type="checkbox" id="t-follow" checked aria-label="Follow Earth rotation" />
+    </label>
+    <label class="mrow a-purple check">
+      <span class="mlabel">Auto Refresh</span>
+      <input type="checkbox" id="t-refresh" checked aria-label="Auto refresh ephemerides" />
+    </label>
 
-  <!-- ======================= left: catalog ======================= -->
-  <aside class="panel catalog" id="catalog-panel" aria-label="Object catalog">
-    <div class="panel-h">
-      <span class="ttl">Catalog</span>
-      <span class="badge" id="catalog-shown">—</span>
+    <div class="msection">
+      <div class="mhead">Views</div>
+      <div class="vrow sel" data-view="type">Object Type</div>
+      <div class="vrow" data-view="perigee">Perigee</div>
+      <div class="vrow" data-view="period">Period</div>
+      <div class="vrow" data-view="inclination">Inclination</div>
+      <div class="vrow" data-view="country">Country of Origin</div>
     </div>
-    <div class="catalog-body">
-      <input type="search" id="search" class="search" placeholder="Search name or catalog ID"
-             autocomplete="off" spellcheck="false" aria-label="Search the catalog" />
 
-      <div class="fgroup">
-        <span class="flabel">Object type</span>
-        <label class="frow"><input type="checkbox" data-kind="0" checked><span class="kdot k0"></span>Payloads<span class="fcount" id="count-k0"></span></label>
-        <label class="frow"><input type="checkbox" data-kind="1" checked><span class="kdot k1"></span>Rocket bodies<span class="fcount" id="count-k1"></span></label>
-        <label class="frow"><input type="checkbox" data-kind="2" checked><span class="kdot k2"></span>Debris<span class="fcount" id="count-k2"></span></label>
-        <label class="frow"><input type="checkbox" data-kind="3" checked><span class="kdot k3"></span>Unknown<span class="fcount" id="count-k3"></span></label>
-      </div>
-
-      <div class="fgroup">
-        <span class="flabel">Altitude band · km</span>
-        <div class="alt-inputs">
-          <input type="number" id="alt-min" value="150" min="100" max="42000" step="50" aria-label="Minimum altitude, km">
-          <span class="alt-sep">–</span>
-          <input type="number" id="alt-max" value="42000" min="100" max="42000" step="50" aria-label="Maximum altitude, km">
-        </div>
-      </div>
-
-      <div class="fgroup">
-        <span class="flabel">Country / agency</span>
-        <select id="country" aria-label="Filter by country">
-          <option value="">All</option>
+    <div class="msection">
+      <div class="mhead">Filters</div>
+      <div class="frow-filter">
+        <select id="filter-param" aria-label="Filter parameter">
+          <option value="perigee">Perigee</option>
+          <option value="apogee">Apogee</option>
+          <option value="period">Period</option>
+          <option value="inclination">Inclination</option>
+          <option value="year">Launch Year</option>
         </select>
       </div>
-
-      <div class="fgroup">
-        <span class="flabel">Constellation</span>
-        <div class="chips" id="group-chips">
-          <button type="button" class="chip on" data-group="">All</button>
-          <button type="button" class="chip" data-group="starlink">Starlink</button>
-          <button type="button" class="chip" data-group="oneweb">OneWeb</button>
-          <button type="button" class="chip" data-group="iridium">Iridium</button>
-          <button type="button" class="chip" data-group="flagship">Flagships</button>
-        </div>
+      <div class="frow-filter minmax">
+        <input type="number" id="filter-min" placeholder="min" aria-label="Filter minimum" />
+        <input type="number" id="filter-max" placeholder="max" aria-label="Filter maximum" />
       </div>
-
-      <ol class="results" id="results"></ol>
     </div>
-  </aside>
 
-  <!-- ======================= right column ======================= -->
-  <div class="rightcol" id="rightcol">
+    <button class="mhead hide-btn" id="hide-menu" type="button">Hide Menu</button>
+  </div>
+  <button class="show-btn" id="show-menu" type="button" hidden>Show Menu</button>
 
-    <section class="panel details" id="details" hidden aria-label="Selected object">
-      <div class="panel-h">
-        <span class="ttl"><span class="kdot" id="d-dot"></span><span id="d-name">—</span></span>
-        <button class="x" id="d-close" type="button" aria-label="Clear selection">×</button>
-      </div>
-      <div class="d-body">
-        <dl class="kv">
-          <div><dt>Catalog ID</dt><dd id="d-id">—</dd></div>
-          <div><dt>Intl designator</dt><dd id="d-intl">—</dd></div>
-          <div><dt>Type</dt><dd id="d-type">—</dd></div>
-          <div><dt>Country</dt><dd id="d-country">—</dd></div>
-          <div><dt>Launched</dt><dd id="d-year">—</dd></div>
-        </dl>
-        <span class="flabel">Orbit</span>
-        <dl class="kv">
-          <div><dt>Apogee</dt><dd id="d-apo">—</dd></div>
-          <div><dt>Perigee</dt><dd id="d-per">—</dd></div>
-          <div><dt>Inclination</dt><dd id="d-inc">—</dd></div>
-          <div><dt>Period</dt><dd id="d-period">—</dd></div>
-          <div><dt>Eccentricity</dt><dd id="d-ecc">—</dd></div>
-          <div><dt>Velocity</dt><dd id="d-vel">—</dd></div>
-        </dl>
-        <span class="flabel">Live position</span>
-        <dl class="kv">
-          <div><dt>Latitude</dt><dd id="d-lat">—</dd></div>
-          <div><dt>Longitude</dt><dd id="d-lon">—</dd></div>
-          <div><dt>Altitude</dt><dd id="d-alt">—</dd></div>
-          <div><dt>Illumination</dt><dd id="d-sun">—</dd></div>
-        </dl>
-        <span class="flabel">Tracking</span>
-        <dl class="kv">
-          <div><dt>RCS</dt><dd id="d-rcs">—</dd></div>
-          <div><dt>Last tracked</dt><dd id="d-last">—</dd></div>
-          <div><dt>Passes · 24 h</dt><dd id="d-passes">—</dd></div>
-          <div><dt>Next pass</dt><dd id="d-next">—</dd></div>
-        </dl>
-        <div class="d-actions">
-          <button class="chip-btn" id="d-track" type="button" aria-pressed="false">Track camera</button>
-          <button class="chip-btn" id="d-reset" type="button">Reset view</button>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel display-panel" id="display-panel" aria-label="Display settings">
-      <div class="panel-h"><span class="ttl">Display</span></div>
-      <div class="d-body">
-        <div class="fgroup">
-          <span class="flabel">View</span>
-          <select id="view-mode" aria-label="Camera view">
-            <option value="-1">Orbital</option>
-          </select>
-        </div>
-        <label class="frow"><input type="checkbox" id="t-trails" checked>Motion trails</label>
-        <label class="frow"><input type="checkbox" id="t-groundtrack" checked>Ground track</label>
-        <label class="frow"><input type="checkbox" id="t-graticule" checked>Graticule</label>
-        <label class="frow"><input type="checkbox" id="t-terminator" checked>Day / night shading</label>
-        <label class="frow"><input type="checkbox" id="t-atmosphere" checked>Atmosphere</label>
-        <label class="frow"><input type="checkbox" id="t-stars" checked>Star field</label>
-        <label class="frow"><input type="checkbox" id="t-sensors" checked>Sensor network</label>
-        <label class="frow"><input type="checkbox" id="t-coverage">Sensor coverage</label>
-        <label class="frow slider-row">Point size
-          <input type="range" id="t-size" min="0.6" max="2" step="0.1" value="1" aria-label="Point size">
-        </label>
-      </div>
-    </section>
-
-    <section class="panel conj-panel" id="conj-panel" aria-label="Conjunction screening">
-      <div class="panel-h">
-        <span class="ttl">Conjunctions · 48 h</span>
-        <span class="badge" id="conj-count">—</span>
-      </div>
-      <ol class="conj-list" id="conj-list"></ol>
-    </section>
-
+  <div class="menu-notes" id="menu-notes">
+    <div class="note">⚠ Special events are not shown</div>
+    <button class="note linky" id="copy-link" type="button">🔗 Copy link to share</button>
   </div>
 
   <!-- ======================= legend ======================= -->
-  <div class="legend" aria-label="Legend">
-    <div class="legend-row"><span class="kdot k0"></span>Payloads<span class="lcount" id="legend-k0">—</span></div>
-    <div class="legend-row"><span class="kdot k1"></span>Rocket bodies<span class="lcount" id="legend-k1">—</span></div>
-    <div class="legend-row"><span class="kdot k2"></span>Debris<span class="lcount" id="legend-k2">—</span></div>
-    <div class="legend-row"><span class="kdot k3"></span>Unknown<span class="lcount" id="legend-k3">—</span></div>
-    <div class="legend-note">two-body + J2 propagation</div>
+  <div class="legend" id="legend">
+    <div class="legend-head" id="legend-head">Object Type</div>
+    <div class="legend-body" id="legend-body"></div>
   </div>
 
-  <!-- ======================= time bar ======================= -->
-  <div class="timebar" aria-label="Time controls">
-    <div class="clock" id="clock">—</div>
-    <div class="transport">
-      <button class="tbtn" id="tb-back" type="button" aria-label="Back one hour">−1h</button>
-      <button class="tbtn" id="tb-play" type="button" aria-label="Pause">❚❚</button>
-      <button class="tbtn" id="tb-fwd" type="button" aria-label="Forward one hour">+1h</button>
-      <span class="speeds" role="group" aria-label="Playback speed">
-        <button class="sp on" data-speed="1" type="button">1×</button>
-        <button class="sp" data-speed="10" type="button">10×</button>
-        <button class="sp" data-speed="60" type="button">60×</button>
-        <button class="sp" data-speed="300" type="button">300×</button>
-        <button class="sp" data-speed="1000" type="button">1000×</button>
+  <!-- ======================= object popup ======================= -->
+  <div class="popup" id="popup" hidden>
+    <button class="popup-x" id="popup-x" type="button" aria-label="Close">×</button>
+    <div class="popup-name" id="p-name">—</div>
+    <div class="popup-body">
+      <div><span>Catalog ID</span><b id="p-id">—</b></div>
+      <div><span>Type</span><b id="p-type">—</b></div>
+      <div><span>Country</span><b id="p-country">—</b></div>
+      <div><span>Launched</span><b id="p-year">—</b></div>
+      <div><span>Apogee</span><b id="p-apo">—</b></div>
+      <div><span>Perigee</span><b id="p-per">—</b></div>
+      <div><span>Inclination</span><b id="p-inc">—</b></div>
+      <div><span>Period</span><b id="p-period">—</b></div>
+    </div>
+  </div>
+
+  <!-- ======================= brand + credits ======================= -->
+  <div class="brandbox">
+    <a class="brand" href="../">
+      <span class="mark">
+        <svg width="30" height="30" viewBox="0 0 100 100" fill="#fff" aria-hidden="true" focusable="false">
+          <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
+          <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
+          <polygon points="29.0,66.9 50.0,80.9 71.0,67.1 57.0,68.9 50.0,73.5 43.0,68.9"/>
+          <circle cx="50" cy="49.8" r="6.3"/>
+        </svg>
       </span>
-      <button class="tbtn live" id="tb-live" type="button" aria-pressed="true">● LIVE</button>
-    </div>
-    <div class="scrubwrap">
-      <input type="range" id="scrub" min="-1440" max="1440" step="1" value="0" aria-label="Time offset, minutes from now">
-      <span class="offset" id="offset">T+00:00</span>
-      <input type="datetime-local" id="jump" class="jump" step="1" aria-label="Jump to date and time (UTC)" title="Jump to date & time (UTC)">
-    </div>
+      VANTAGE
+    </a>
+    <div class="credits">© 2026 Vantage · Low Earth Orbit Visualization</div>
+    <div class="credits">Earth imagery: NASA Blue Marble · Basemap data: Natural Earth</div>
   </div>
 
-  <!-- ======================= ingest status ======================= -->
-  <div class="ingest" aria-label="Data pipeline status">
-    <span class="ing-dot" id="ing-dot"></span>
-    <span class="ing-seg">INGEST <span class="ing-val" id="ing-rate">—</span> obs/s</span>
-    <span class="ing-seg">TRACKS <span class="ing-val" id="ing-tracks">—</span></span>
-    <span class="ing-seg">EPHEMERIS REFRESH <span class="ing-val" id="ing-next">—</span></span>
-  </div>
-
-  <!-- ======================= ground view chrome ======================= -->
-  <div class="gv-bar" id="gv-bar" hidden>
-    <span class="gv-site" id="gv-site">—</span>
-    <button class="chip-btn" id="gv-exit" type="button">Exit ground view</button>
-  </div>
-
-  <!-- ======================= selected object label ======================= -->
-  <div class="sel-label" id="sel-label" hidden></div>
-
-  <!-- ======================= help modal ======================= -->
-  <div class="modal" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title" hidden>
-    <div class="modal-card panel">
-      <div class="panel-h">
-        <span class="ttl" id="help-title">About this visualization</span>
-        <button class="x" id="help-close" type="button" aria-label="Close">×</button>
-      </div>
-      <div class="d-body help-body">
-        <p>An interactive map of the low Earth orbit population: ~20,300 payloads,
-        rocket bodies and debris fragments, propagated with a two-body + J2 model
-        and colored by object type. The population is a deterministic snapshot
-        shaped like the real catalog — constellation shells, the documented debris
-        clouds and well-known spacecraft at their published elements.</p>
-        <span class="flabel">Getting around</span>
-        <ul>
-          <li><strong>Drag</strong> to rotate · <strong>scroll</strong> to zoom · <strong>click</strong> an object to inspect it</li>
-          <li><strong>Search</strong> by name or catalog ID; filter by type, altitude, country or constellation</li>
-          <li><strong>Conjunctions</strong> — pick an event to jump the clock to closest approach with both orbits drawn</li>
-          <li><strong>Ground view</strong> — choose a sensor site (or click its label) to stand on the ground and watch passes overhead; drag to look around, scroll to zoom</li>
-          <li><strong>Time</strong> — play/pause, 1×–1000×, scrub ±24 h, jump to a date, or return to <strong>LIVE</strong></li>
-          <li>Keys: <strong>Space</strong> play/pause · <strong>L</strong> live · <strong>Esc</strong> clear selection</li>
-        </ul>
-        <span class="flabel">Legend</span>
-        <ul class="help-legend">
-          <li><span class="kdot k0"></span>Payloads — operational and derelict spacecraft</li>
-          <li><span class="kdot k1"></span>Rocket bodies — spent upper stages</li>
-          <li><span class="kdot k2"></span>Debris — fragmentation and collision fragments</li>
-          <li><span class="kdot k3"></span>Unknown — uncorrelated tracks</li>
-        </ul>
-      </div>
-    </div>
+  <!-- ======================= clock ======================= -->
+  <div class="clockbox">
+    <div class="bigclock" id="clock">—</div>
+    <div class="objcount" id="objcount">— objects displayed</div>
   </div>
 
 </div>
@@ -275,7 +148,6 @@
   </div>
 </div>
 
-<script src="vendor/topojson-client.min.js"></script>
 <script type="importmap">
 { "imports": { "three": "./vendor/three.module.min.js" } }
 </script>

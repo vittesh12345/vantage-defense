@@ -1,55 +1,60 @@
-/* Entry point: builds the catalog, stands the scene up, wires the HUD and
-   runs the clock. Everything is static — no backend, no keys, no build. */
+/* Entry point: loads the imagery, builds the catalog, stands the scene up,
+   wires the HUD and runs the clock. Fully static — no backend, no keys. */
 
 import { buildCatalog } from './catalog.js';
 import { createViz } from './scene.js';
-import { buildConjunctions } from './conj.js';
 import { initUI } from './ui.js';
 
 const SENSOR_SITES = [
-  { name: 'South Island NZ', lat: -43.9, lon: 170.45, fov: 75 },
-  { name: 'West Texas US', lat: 31.95, lon: -102.35, fov: 75 },
-  { name: 'Guanacaste CR', lat: 10.62, lon: -85.51, fov: 90 },
-  { name: 'Interior Alaska US', lat: 65.12, lon: -147.47, fov: 75 },
-  { name: 'Azores PT', lat: 37.78, lon: -25.5, fov: 75 },
-  { name: 'Great Sandy AU', lat: -19.9, lon: 120.62, fov: 90 },
-  { name: 'Hokkaido JP', lat: 43.52, lon: 143.0, fov: 75 },
+  { name: 'South Island NZ', lat: -43.9, lon: 170.45, beam: 'star' },
+  { name: 'West Texas US', lat: 31.95, lon: -102.35, beam: 'fan' },
+  { name: 'Guanacaste CR', lat: 10.62, lon: -85.51, beam: 'cone' },
+  { name: 'Interior Alaska US', lat: 65.12, lon: -147.47, beam: 'cone' },
+  { name: 'Azores PT', lat: 37.78, lon: -25.5, beam: 'fan' },
+  { name: 'Great Sandy AU', lat: -19.9, lon: 120.62, beam: 'fan' },
+  { name: 'Hokkaido JP', lat: 43.52, lon: 143.0, beam: 'star' },
 ];
 
 const bootLine = document.getElementById('boot-line');
 
+function loadImage(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null); // the scene tolerates a missing layer
+    img.src = src;
+  });
+}
+
 async function boot() {
-  bootLine.textContent = 'Loading basemap…';
-  const topo = await fetch('data/land-50m.json').then((r) => r.json());
+  bootLine.textContent = 'Loading imagery…';
+  const [earthImg, nightImg] = await Promise.all([
+    loadImage('img/earth-blue-marble.jpg'),
+    loadImage('img/night-sky.png'),
+  ]);
 
   bootLine.textContent = 'Generating resident-object catalog…';
-  await new Promise((r) => setTimeout(r, 0)); // let the splash paint
+  await new Promise((r) => setTimeout(r, 0));
   const objects = buildCatalog();
 
   bootLine.textContent = 'Standing up the scene…';
   const canvas = document.getElementById('globe');
-  const viz = createViz({ canvas, topology: topo, objects, sensorSites: SENSOR_SITES });
+  const viz = createViz({
+    canvas,
+    textures: { earth: earthImg, night: nightImg },
+    objects,
+    sensorSites: SENSOR_SITES,
+  });
 
-  const conjunctions = buildConjunctions(objects, Date.now());
-
-  /* ---- time engine ---- */
+  /* ---- time engine: the clock advances at the Speed slider's multiplier ---- */
   const time = {
-    speed: 1,
-    playing: true,
-    live: true,
+    multiplier: 100,
     simMs: Date.now(),
-    setSpeed(s) { this.speed = s; if (s !== 1) this.live = false; },
-    setPlaying(p) { this.playing = p; if (!p) this.live = false; },
-    goLive() { this.live = true; this.playing = true; this.speed = 1; this.simMs = Date.now(); },
-    nudge(ms) { this.live = false; this.simMs += ms; },
-    scrubToMs(ms) { this.live = false; this.simMs = ms; },
-    update(dtMs) {
-      if (this.live) this.simMs = Date.now();
-      else if (this.playing) this.simMs += dtMs * this.speed;
-    },
+    setMultiplier(m) { this.multiplier = m; },
+    update(dtMs) { this.simMs += dtMs * this.multiplier; },
   };
 
-  const ui = initUI({ viz, objects, conjunctions, time, sensorSites: SENSOR_SITES });
+  const ui = initUI({ viz, objects, time, sensorSites: SENSOR_SITES });
   window.__viz = viz; // console handle, also used by the harness
   window.__time = time;
 
@@ -81,13 +86,10 @@ async function boot() {
     }
     if (revealT < 1) {
       revealT = Math.min(1, revealT + dt / 3400);
-      viz.setReveal(revealT * revealT * (3 - 2 * revealT)); // smoothstep pacing
+      viz.setReveal(revealT * revealT * (3 - 2 * revealT));
     }
 
     time.update(dt);
-    // Trail length follows playback speed so motion reads at every timescale:
-    // ghosts should trail by a few pixels and merge into a streak, not detach.
-    viz.setTrailGap(Math.min(Math.max(3 * (time.live ? 1 : time.speed), 6), 45));
     viz.setTime(time.simMs);
     viz.render();
     ui.tick(now);

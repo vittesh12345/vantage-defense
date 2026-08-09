@@ -295,6 +295,26 @@ function unknowns(rnd) {
   }
 }
 
+/* The analyst debris set: fragments below the public catalog's size floor,
+   revealed by the Debris toggle the way the reference console adds its
+   proprietary small-debris tracks. Sized so the full display reads 27,563. */
+function analystDebris(rnd) {
+  const bands = [[0.3, 96.5, 100.5, 480, 1150], [0.2, 73.8, 74.3, 550, 1100], [0.16, 81.0, 83.2, 550, 1400], [0.14, 51.4, 53.4, 350, 600], [0.1, 86.0, 87.2, 600, 1150], [0.1, 62.8, 65.2, 550, 1400]];
+  const target = 27563;
+  while (objects.length < target) {
+    let x = rnd(), band = bands[0];
+    for (const b of bands) { if (x < b[0]) { band = b; break; } x -= b[0]; }
+    add(rnd, {
+      name: 'UNCAT DEB', kind: KIND.DEBRIS, country: 'TBD',
+      year: 1965 + Math.floor(rnd() * 58),
+      inc: band[1] + rnd() * (band[2] - band[1]),
+      alt: band[3] + Math.pow(rnd(), 1.5) * (band[4] - band[3]),
+      e: 0.002 + rnd() * 0.03,
+      group: 'xdeb',
+    });
+  }
+}
+
 let built = false;
 export function buildCatalog() {
   if (built) return objects;
@@ -305,7 +325,7 @@ export function buildCatalog() {
   rocketBodies(rnd);
   debris(rnd);
   unknowns(rnd);
-  // Give every generated object a unique catalog number, roughly era-sorted.
+  analystDebris(rnd);
   built = true;
   return objects;
 }
