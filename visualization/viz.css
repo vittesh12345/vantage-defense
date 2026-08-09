@@ -1,0 +1,177 @@
+/* Low Earth Orbit Visualization — surface styling matched to the reference
+   console: flat near-black panels, plain sans UI type, colored accent bars on
+   the control rows, a boxed legend top-right and a large clock bottom-right. */
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:#000;
+  color:#fff;
+  font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size:14px;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+a{color:inherit;text-decoration:none}
+
+#globe{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#labels{position:fixed;inset:0;pointer-events:none;z-index:3}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:4}
+#hud > *{pointer-events:auto}
+
+/* ---------- left menu ---------- */
+.menu{
+  position:absolute;top:14px;left:14px;width:300px;
+  display:flex;flex-direction:column;gap:2px;
+}
+.mrow{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(24,24,24,.92);
+  min-height:36px;padding:0 10px 0 14px;
+  position:relative;
+}
+.mrow::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+.a-green::before{background:#3fbf4e}
+.a-blue::before{background:#2f81f7}
+.a-gray::before{background:#9aa0a6}
+.a-purple::before{background:#8a63d2}
+.a-teal::before{background:#39c5cf}
+.mlabel{flex:0 0 auto;font-size:13.5px;color:#eee}
+.mrow.check{cursor:pointer;justify-content:space-between}
+.mrow input[type=checkbox]{width:15px;height:15px;accent-color:#2f81f7;cursor:pointer}
+.mrow input[type=search]{
+  flex:1;min-width:0;background:#333;border:1px solid #444;color:#ddd;
+  font-size:12.5px;padding:5px 8px;border-radius:2px;outline:none;
+}
+.mrow input[type=search]::placeholder{color:#888}
+.mrow input[type=range]{flex:1;accent-color:#2f81f7;height:4px}
+.mval{flex:0 0 34px;text-align:right;background:#333;border:1px solid #444;
+  font-size:12px;color:#ddd;padding:3px 6px;border-radius:2px}
+.search-results{
+  background:rgba(24,24,24,.96);max-height:220px;overflow-y:auto;
+}
+.search-results div{padding:7px 14px;font-size:12.5px;color:#ccc;cursor:pointer;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.search-results div:hover{background:#333;color:#fff}
+
+.msection{margin-top:10px;display:flex;flex-direction:column;gap:2px}
+.mhead{
+  background:rgba(24,24,24,.95);text-align:center;font-weight:700;font-size:14.5px;
+  padding:9px 0;color:#fff;
+}
+.vrow{
+  background:rgba(30,30,30,.92);padding:9px 16px;font-size:13.5px;color:#ddd;cursor:pointer;
+}
+.vrow:hover{background:#333}
+.vrow.sel{background:#4a4a4a;color:#fff}
+.frow-filter{background:rgba(30,30,30,.92);padding:8px 12px}
+.frow-filter select{
+  width:100%;background:#333;border:1px solid #555;color:#eee;font-size:13px;
+  padding:5px 6px;border-radius:2px;outline:none;
+}
+.frow-filter.minmax{display:flex;gap:8px}
+.frow-filter.minmax input{
+  width:50%;background:#2a2a2a;border:1px solid #555;color:#eee;font-size:12.5px;
+  padding:5px 8px;border-radius:2px;outline:none;
+}
+.frow-filter.minmax input::placeholder{color:#777}
+.hide-btn{margin-top:10px;cursor:pointer;width:100%}
+.hide-btn:hover{background:#333}
+.show-btn{
+  position:absolute;top:14px;left:14px;background:rgba(24,24,24,.92);
+  padding:9px 16px;font-weight:700;font-size:13.5px;
+}
+.show-btn:hover{background:#333}
+
+.menu-notes{position:absolute;left:14px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.note{font-size:14.5px;color:#f5f5f5;text-shadow:0 1px 3px rgba(0,0,0,.9)}
+.note.linky{cursor:pointer}
+.note.linky:hover{text-decoration:underline}
+
+/* ---------- legend ---------- */
+.legend{
+  position:absolute;top:14px;right:14px;min-width:172px;
+  background:rgba(34,34,34,.82);border-radius:3px;overflow:hidden;
+}
+.legend-head{
+  background:rgba(70,70,70,.9);text-align:center;font-weight:700;font-size:14.5px;
+  padding:7px 12px;color:#fff;
+}
+.legend-body{padding:9px 14px;display:flex;flex-direction:column;gap:7px}
+.legend-row{display:flex;align-items:center;gap:9px;font-size:13.5px;color:#eee}
+.legend-row .sw{width:13px;height:13px;flex:0 0 auto;border:1px solid rgba(0,0,0,.5)}
+
+/* ---------- popup ---------- */
+.popup{
+  position:fixed;z-index:6;min-width:210px;
+  background:rgba(24,24,24,.95);border:1px solid #444;border-radius:3px;
+  padding:10px 12px;transform:translate(16px,-50%);
+}
+.popup-x{position:absolute;top:2px;right:6px;font-size:16px;color:#999}
+.popup-x:hover{color:#fff}
+.popup-name{font-weight:700;font-size:14px;margin-bottom:7px;padding-right:16px}
+.popup-body{display:flex;flex-direction:column;gap:3px}
+.popup-body div{display:flex;justify-content:space-between;gap:14px;font-size:12px;color:#aaa}
+.popup-body b{color:#eee;font-weight:400;font-variant-numeric:tabular-nums}
+
+/* ---------- brand + credits ---------- */
+.brandbox{position:absolute;left:18px;bottom:16px;display:flex;flex-direction:column;gap:6px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:22px;letter-spacing:.06em;color:#fff}
+.brand .mark{width:30px;height:30px}
+.brand .mark svg{display:block}
+.credits{font-size:11.5px;color:#bbb;text-shadow:0 1px 3px rgba(0,0,0,.9)}
+.credits a{text-decoration:underline}
+
+/* ---------- clock ---------- */
+.clockbox{position:absolute;right:20px;bottom:16px;text-align:right}
+.bigclock{
+  font-size:42px;font-weight:300;color:#e8e8e8;letter-spacing:.01em;
+  font-variant-numeric:tabular-nums;text-shadow:0 1px 4px rgba(0,0,0,.9);
+}
+.objcount{font-size:15px;color:#cfcfcf;margin-top:2px;text-shadow:0 1px 3px rgba(0,0,0,.9)}
+
+/* ---------- tooltip & labels ---------- */
+.tooltip{
+  position:fixed;z-index:6;pointer-events:none;
+  font-size:12px;color:#eee;
+  background:rgba(24,24,24,.92);border:1px solid #444;border-radius:2px;
+  padding:4px 8px;white-space:nowrap;transform:translate(12px,-50%);
+}
+.tooltip .tt-meta{color:#999;font-size:11px}
+.slabel{
+  position:absolute;transform:translate(10px,-50%);
+  font-size:10.5px;letter-spacing:.06em;color:rgba(240,245,250,.85);
+  text-transform:uppercase;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.9);
+  pointer-events:none;
+}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:20;
+  background:rgba(24,24,24,.95);border:1px solid #555;border-radius:3px;
+  color:#eee;font-size:13px;padding:9px 16px;
+  opacity:0;transition:opacity .25s;pointer-events:none;
+}
+.toast.on{opacity:1}
+
+/* ---------- boot splash ---------- */
+.boot{position:fixed;inset:0;z-index:30;background:#000;display:flex;align-items:center;justify-content:center;
+  transition:opacity .6s ease-out}
+.boot.gone{opacity:0;pointer-events:none}
+.boot-inner{display:flex;flex-direction:column;align-items:center;gap:10px}
+.boot-tag{font-size:12px;letter-spacing:.25em;color:#888}
+.boot-line{font-size:13px;color:#bbb}
+
+/* ---------- responsive ---------- */
+@media(max-width:900px){
+  .menu{width:min(272px, 78vw)}
+  .bigclock{font-size:28px}
+  .objcount{font-size:12px}
+  .brand{font-size:17px}
+  .legend{min-width:140px}
+  .menu-notes .note{font-size:12.5px}
+}
+
+.search-results::-webkit-scrollbar{width:8px}
+.search-results::-webkit-scrollbar-thumb{background:#444;border-radius:4px}

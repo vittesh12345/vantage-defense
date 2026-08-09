@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Low Earth Orbit Visualization · Vantage</title>
+<meta name="description" content="An interactive 3D map of the low Earth orbit population: payloads, rocket bodies and debris propagated live over a Blue Marble earth, with radar beam volumes, view modes and filters." />
+<meta name="theme-color" content="#ffffff" />
+<link rel="canonical" href="https://vantage.industries/visualization/" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Vantage" />
+<meta property="og:title" content="Low Earth Orbit Visualization · Vantage" />
+<meta property="og:description" content="An interactive 3D map of the low Earth orbit population, with radar beam volumes, view modes and filters." />
+<meta property="og:url" content="https://vantage.industries/visualization/" />
+<meta property="og:image" content="https://vantage.industries/assets/og-card.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<style>
+  /* The visualization's host page mirrors the reference layout: a plain light
+     document with the page title, a full-window link, and the embedded
+     viewport. The instrument itself stays dark inside its frame. */
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:#ffffff;color:#111;
+    font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+    padding:34px 42px 48px;
+  }
+  h1{font-size:30px;font-weight:700;letter-spacing:-.01em;margin-bottom:18px}
+  .fullwin{
+    display:inline-flex;align-items:center;gap:7px;
+    color:#1668c7;font-size:15.5px;text-decoration:none;margin-bottom:10px;
+  }
+  .fullwin:hover{text-decoration:underline}
+  .fullwin svg{display:block}
+  .frame{
+    width:100%;max-width:1790px;aspect-ratio:1790/1100;
+    border:0;display:block;background:#000;
+  }
+  .foot{margin-top:14px;font-size:12.5px;color:#666}
+  .foot a{color:#1668c7}
+  @media(max-width:760px){
+    body{padding:18px 14px 32px}
+    h1{font-size:23px}
+    .frame{aspect-ratio:4/5}
+  }
+</style>
+</head>
+<body>
+
+<h1>Low Earth Orbit Visualization</h1>
+
+<a class="fullwin" id="fullwin" href="full.html">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+    <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+  </svg>
+  Full-window version
+</a>
+
+<iframe class="frame" id="frame" src="full.html" title="Low Earth Orbit Visualization"
+        allow="fullscreen" loading="eager"></iframe>
+
+<div class="foot">
+  A <a href="../">Vantage</a> instrument · Earth imagery: NASA Blue Marble ·
+  Deep links select a catalog object (e.g. <a href="#25544">#25544</a>).
+</div>
+
+<script>
+  /* Deep links land on this page; pass the object hash through to the app,
+     and keep the full-window link carrying it too. */
+  (function () {
+    var frame = document.getElementById("frame");
+    var fullwin = document.getElementById("fullwin");
+    function sync() {
+      var h = location.hash || "";
+      frame.src = "full.html" + h;
+      fullwin.href = "full.html" + h;
+    }
+    if (location.hash) sync();
+    addEventListener("hashchange", sync);
+  })();
+</script>
+
+</body>
+</html>
