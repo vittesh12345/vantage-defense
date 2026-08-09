@@ -6,7 +6,7 @@
 import * as THREE from '../vendor/three.module.min.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import {
-  gmst, sunEci, eciPosition, sceneFromEci, latLonToScene,
+  gmst, sunEci, eciPosition, sceneFromEci, latLonToScene, eciToLatLon,
   KM_TO_UNITS, R_MEAN, TAU,
 } from './orbits.js';
 
@@ -283,7 +283,7 @@ function buildCloud(objects) {
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * mv;
         float base = vKind < 0.5 ? 2.9 : (vKind < 1.5 ? 3.1 : (vKind < 2.5 ? 2.0 : 2.5));
-        float att = clamp(pow(16.0 / max(length(mv.xyz), 1.0), 0.42), 0.62, 1.9);
+        float att = clamp(pow(16.0 / max(length(mv.xyz), 0.05), 0.42), 0.62, 3.4);
         gl_PointSize = base * att * uPr * uSize * (vVis > 0.5 ? 1.0 : 0.0);
       }`,
     fragmentShader: /* glsl */`
@@ -334,6 +334,37 @@ function fillOrbitLine(line, el, t) {
   }
   line.geometry.attributes.position.needsUpdate = true;
   line.visible = true;
+}
+
+/* Ground track: the selection's sub-satellite path, drawn on the rotating
+   earth (so it lives in the earth-fixed group, not ECI). */
+function makeGroundTrack() {
+  const N = 288;
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((N + 1) * 3), 3));
+  const mat = new THREE.LineBasicMaterial({
+    color: PALETTE.orbit, transparent: true, opacity: 0.45, depthWrite: false,
+  });
+  const line = new THREE.Line(geo, mat);
+  line.visible = false;
+  line.frustumCulled = false;
+  line.userData.N = N;
+  return line;
+}
+
+function fillGroundTrack(line, el, t, simMs) {
+  const N = line.userData.N;
+  const arr = line.geometry.attributes.position.array;
+  const period = TAU / el.n;
+  const p = [0, 0, 0], s = [0, 0, 0];
+  for (let i = 0; i <= N; i++) {
+    const dtau = (i / N - 0.2) * period; // a bit of past, most of it ahead
+    eciPosition(el, t + dtau, p);
+    const g = eciToLatLon(p, simMs + dtau * 1000);
+    latLonToScene(g.lat, g.lon, R_MEAN * 1.0025, s);
+    arr[i * 3] = s[0]; arr[i * 3 + 1] = s[1]; arr[i * 3 + 2] = s[2];
+  }
+  line.geometry.attributes.position.needsUpdate = true;
 }
 
 function ringTexture(hollow) {
@@ -390,6 +421,7 @@ function buildSensors(sites) {
   const group = new THREE.Group();
   const dTex = diamondTexture();
   const pulses = [];
+  const markers = [];
   const cones = new THREE.Group();
   for (const site of sites) {
     const pos = latLonToScene(site.lat, site.lon, R_MEAN * 1.004);
@@ -400,6 +432,7 @@ function buildSensors(sites) {
     marker.position.copy(v);
     marker.scale.setScalar(0.2);
     group.add(marker);
+    markers.push(marker);
 
     // pulse ring lying on the surface
     const ring = new THREE.Mesh(
@@ -431,7 +464,7 @@ function buildSensors(sites) {
     cones.add(cone);
   }
   group.add(cones);
-  return { group, pulses, cones, sites };
+  return { group, pulses, markers, cones, sites };
 }
 
 /* ------------------------------------------------------------------ */
@@ -466,7 +499,21 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
   earthGroup.add(graticule);
   const sensors = buildSensors(sensorSites);
   earthGroup.add(sensors.group);
+  const groundTrack = makeGroundTrack();
+  earthGroup.add(groundTrack);
   scene.add(earthGroup);
+
+  // Ground-view horizon: a faint ring in the local tangent plane of a site.
+  const horizon = new THREE.Mesh(
+    new THREE.RingGeometry(2.55, 2.585, 96),
+    new THREE.MeshBasicMaterial({
+      color: 0x8fb8c9, transparent: true, opacity: 0.35,
+      side: THREE.DoubleSide, depthWrite: false, depthTest: false,
+    })
+  );
+  horizon.visible = false;
+  horizon.renderOrder = 5;
+  earthGroup.add(horizon);
 
   const atmosphere = buildAtmosphere();
   scene.add(atmosphere);
@@ -558,22 +605,27 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
     if (tca > 0 && tca < 1) {
       occluded = camPos.clone().addScaledVector(toObj, tca).length() < R * 0.995;
     }
+    const inFront = v3.clone().applyMatrix4(camera.matrixWorldInverse).z < 0;
     v3.project(camera);
     return {
       x: (v3.x * 0.5 + 0.5) * w,
       y: (-v3.y * 0.5 + 0.5) * h,
-      visible: !occluded && v3.z < 1,
+      visible: !occluded && inFront,
     };
   }
 
+  let groundTrackOn = true;
   function select(i, sec = -1) {
     selected = i; secondary = sec;
     if (i >= 0) {
       fillOrbitLine(orbitLine, objects[i].el, tSec());
+      fillGroundTrack(groundTrack, objects[i].el, tSec(), simMs);
+      groundTrack.visible = groundTrackOn;
       marker.visible = true;
       cloud.material.uniforms.uDim.value = 0.32;
     } else {
       orbitLine.visible = false;
+      groundTrack.visible = false;
       marker.visible = false;
       tracking = false;
       cloud.material.uniforms.uDim.value = 1;
@@ -587,8 +639,100 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
     }
   }
 
+  /* ---------------- ground view ---------------- */
+  let atmosphereOn = true;
+  let groundView = -1; // sensor site index, -1 = orbital view
+  let gvYaw = 0, gvPitch = 0.5; // azimuth from north (eastward), elevation
+  const gvUp = new THREE.Vector3(), gvNorth = new THREE.Vector3(), gvEast = new THREE.Vector3();
+  const worldY = new THREE.Vector3(0, 1, 0);
+
+  function siteWorldPos(idx, rScale, out) {
+    const s = sensorSites[idx];
+    const p = latLonToScene(s.lat, s.lon, R_MEAN * rScale);
+    out.set(p[0], p[1], p[2]);
+    out.applyAxisAngle(worldY, earthGroup.rotation.y);
+    return out;
+  }
+
+  function enterGroundView(idx) {
+    groundView = idx;
+    tracking = false;
+    flyAnim = null;
+    controls.enabled = false;
+    // From inside the shell the additive atmosphere would wash out the sky,
+    // and the site's own marker sprite would fill the frame at point-blank.
+    atmosphere.visible = false;
+    sensors.markers.forEach((m, k) => { m.visible = k !== idx; });
+    sensors.pulses.forEach((p, k) => { p.visible = k !== idx; });
+    sensors.cones.children.forEach((c, k) => { c.visible = k !== idx; });
+    camera.near = 0.0008;
+    camera.updateProjectionMatrix();
+    gvYaw = 0; gvPitch = 0.5;
+    const s = sensorSites[idx];
+    const p = latLonToScene(s.lat, s.lon, R_MEAN * 1.0006);
+    horizon.position.set(p[0], p[1], p[2]);
+    horizon.lookAt(new THREE.Vector3(p[0], p[1], p[2]).multiplyScalar(2));
+    horizon.visible = true;
+  }
+
+  function exitGroundView() {
+    groundView = -1;
+    horizon.visible = false;
+    atmosphere.visible = atmosphereOn;
+    sensors.markers.forEach((m) => { m.visible = true; });
+    sensors.pulses.forEach((p) => { p.visible = true; });
+    sensors.cones.children.forEach((c) => { c.visible = true; });
+    controls.enabled = true;
+    camera.near = 0.05;
+    camera.fov = 42;
+    camera.updateProjectionMatrix();
+    camera.position.set(11.5, 6.4, 22.5);
+    camera.up.set(0, 1, 0);
+  }
+
+  // Look-around and FOV zoom, active only on the ground.
+  let gvDrag = null;
+  canvas.addEventListener('pointerdown', (e) => {
+    if (groundView >= 0) gvDrag = [e.clientX, e.clientY];
+  });
+  window.addEventListener('pointerup', () => { gvDrag = null; });
+  canvas.addEventListener('pointermove', (e) => {
+    if (groundView < 0 || !gvDrag) return;
+    gvYaw -= (e.clientX - gvDrag[0]) * 0.0035 * (camera.fov / 42);
+    gvPitch += (e.clientY - gvDrag[1]) * 0.0035 * (camera.fov / 42);
+    gvPitch = Math.max(-0.12, Math.min(1.55, gvPitch));
+    gvDrag = [e.clientX, e.clientY];
+  });
+  canvas.addEventListener('wheel', (e) => {
+    if (groundView < 0) return;
+    e.preventDefault();
+    camera.fov = Math.max(18, Math.min(70, camera.fov + e.deltaY * 0.03));
+    camera.updateProjectionMatrix();
+  }, { passive: false });
+
+  /* Screen positions of the cardinal points on the ground-view horizon. */
+  function cardinalScreenPos(w, h) {
+    if (groundView < 0) return null;
+    siteWorldPos(groundView, 1.0006, v3);
+    gvUp.copy(v3).normalize();
+    gvNorth.copy(worldY).addScaledVector(gvUp, -worldY.dot(gvUp)).normalize();
+    gvEast.crossVectors(gvNorth, gvUp);
+    const out = [];
+    const dirs = [
+      ['N', gvNorth.clone()], ['E', gvEast.clone()],
+      ['S', gvNorth.clone().negate()], ['W', gvEast.clone().negate()],
+    ];
+    for (const [label, d] of dirs) {
+      const p = v3.clone().addScaledVector(d, 2.56);
+      const inFront = p.clone().applyMatrix4(camera.matrixWorldInverse).z < 0;
+      const q = p.project(camera);
+      out.push({ label, x: (q.x * 0.5 + 0.5) * w, y: (-q.y * 0.5 + 0.5) * h, visible: inFront });
+    }
+    return out;
+  }
+
   function flyTo(i, dist) {
-    if (i < 0) return;
+    if (i < 0 || groundView >= 0) return;
     objectScenePos(i, tmpS);
     v3.set(tmpS[0], tmpS[1], tmpS[2]).normalize();
     const d = dist || Math.max(camera.position.length(), 13);
@@ -612,11 +756,12 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
     if (tca > 0 && tca < 1) {
       occluded = camPos.clone().addScaledVector(toObj, tca).length() < R * 0.995;
     }
+    const inFront = v3.clone().applyMatrix4(camera.matrixWorldInverse).z < 0;
     v3.project(camera);
     return {
       x: (v3.x * 0.5 + 0.5) * w,
       y: (-v3.y * 0.5 + 0.5) * h,
-      visible: !occluded && v3.z < 1,
+      visible: !occluded && inFront,
     };
   }
 
@@ -632,6 +777,7 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
     // Orbit lines drift with J2; refresh occasionally and when scrubbing.
     if (selected >= 0 && Math.abs(simMs - lastOrbitRefresh) > 60000) {
       fillOrbitLine(orbitLine, objects[selected].el, t);
+      if (groundTrackOn) fillGroundTrack(groundTrack, objects[selected].el, t, simMs);
       if (secondary >= 0) fillOrbitLine(orbitLine2, objects[secondary].el, t);
       lastOrbitRefresh = simMs;
     }
@@ -643,7 +789,22 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
     const dt = Math.min((nowF - lastFrame) / 1000, 0.25);
     lastFrame = nowF;
 
-    if (flyAnim) {
+    if (groundView >= 0) {
+      // Stand at the site, which rotates with the earth; re-derive the local
+      // ENU frame every frame so the view co-rotates with the ground.
+      earthGroup.rotation.y = gmst(simMs);
+      siteWorldPos(groundView, 1.0006, camera.position);
+      gvUp.copy(camera.position).normalize();
+      gvNorth.copy(worldY).addScaledVector(gvUp, -worldY.dot(gvUp)).normalize();
+      gvEast.crossVectors(gvNorth, gvUp);
+      const cp = Math.cos(gvPitch), sp = Math.sin(gvPitch);
+      const cy = Math.cos(gvYaw), sy = Math.sin(gvYaw);
+      v3.copy(gvNorth).multiplyScalar(cp * cy)
+        .addScaledVector(gvEast, cp * sy)
+        .addScaledVector(gvUp, sp);
+      camera.up.copy(gvUp);
+      camera.lookAt(v3.add(camera.position));
+    } else if (flyAnim) {
       flyAnim.t += dt / 0.9;
       const k = flyAnim.t >= 1 ? 1 : 1 - Math.pow(1 - flyAnim.t, 3);
       camera.position.lerpVectors(flyAnim.from, flyAnim.to, k);
@@ -653,7 +814,7 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
       v3.set(tmpS[0], tmpS[1], tmpS[2]).normalize().multiplyScalar(camera.position.length());
       camera.position.lerp(v3, Math.min(1, dt * 3.2));
     }
-    controls.update();
+    if (groundView < 0) controls.update();
 
     if (selected >= 0) {
       objectScenePos(selected, tmpS);
@@ -693,14 +854,20 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
     tOf(ms) { return (ms - epochMs) / 1000; },
     set tracking(v) { tracking = v; },
     get tracking() { return tracking; },
+    enterGroundView, exitGroundView, cardinalScreenPos,
+    get groundView() { return groundView; },
     setVis(updateFn) {
       const arr = cloud.geometry.attributes.aVis.array;
       updateFn(arr);
       cloud.geometry.attributes.aVis.needsUpdate = true;
     },
     toggles: {
+      groundtrack: (v) => {
+        groundTrackOn = v;
+        groundTrack.visible = v && selected >= 0;
+      },
       graticule: (v) => { graticule.visible = v; },
-      atmosphere: (v) => { atmosphere.visible = v; },
+      atmosphere: (v) => { atmosphereOn = v; if (groundView < 0) atmosphere.visible = v; },
       stars: (v) => { stars.visible = v; },
       sensors: (v) => { sensors.group.visible = v; },
       coverage: (v) => { sensors.cones.visible = v; },

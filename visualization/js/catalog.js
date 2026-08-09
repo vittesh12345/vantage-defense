@@ -23,6 +23,9 @@ function mulberry32(seed) {
 
 const objects = [];
 let nextNorad = 900;
+/* Real catalog numbers used by the flagship entries: the generator must never
+   hand one of these to a generated object, or deep links would be ambiguous. */
+const reservedIds = new Set();
 
 function gauss(rnd) {
   return Math.sqrt(-2 * Math.log(1 - rnd())) * Math.cos(TAU * rnd());
@@ -43,7 +46,14 @@ function add(rnd, o) {
   const rates = j2Rates(el.a, el.e, el.inc);
   el.raanDot = rates.raanDot;
   el.argpDot = rates.argpDot;
-  const id = o.id != null ? o.id : (nextNorad += 1 + Math.floor(rnd() * 2));
+  let id;
+  if (o.id != null) {
+    id = o.id;
+    reservedIds.add(id);
+  } else {
+    do { nextNorad += 1 + Math.floor(rnd() * 2); } while (reservedIds.has(nextNorad));
+    id = nextNorad;
+  }
   objects.push({
     id,
     name: o.name,

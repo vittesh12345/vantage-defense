@@ -118,6 +118,15 @@ export function latLonToScene(latDeg, lonDeg, rKm, out) {
   return out;
 }
 
+/* Is an ECI position sunlit? Cylindrical shadow model: in eclipse when the
+   point is behind the terminator plane and inside the earth's shadow tube. */
+export function isSunlit(p, sun) {
+  const d = p[0] * sun[0] + p[1] * sun[1] + p[2] * sun[2];
+  if (d > 0) return true;
+  const px = p[0] - sun[0] * d, py = p[1] - sun[1] * d, pz = p[2] - sun[2] * d;
+  return Math.hypot(px, py, pz) > R_EARTH;
+}
+
 export function fmtUtc(ms) {
   const d = new Date(ms);
   const p = (n, w = 2) => String(n).padStart(w, '0');
