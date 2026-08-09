@@ -80,9 +80,13 @@ async function boot() {
     last = now;
 
     if (introT < 1) {
-      introT = Math.min(1, introT + dt / 2400);
-      const k = 1 - Math.pow(1 - introT, 3);
-      viz.camera.position.lerpVectors(introFrom, introTo, k);
+      // a selection during the pull-in takes the camera over — stop animating
+      if (viz.selected >= 0) introT = 1;
+      else {
+        introT = Math.min(1, introT + dt / 2400);
+        const k = 1 - Math.pow(1 - introT, 3);
+        viz.camera.position.lerpVectors(introFrom, introTo, k);
+      }
     }
     if (revealT < 1) {
       revealT = Math.min(1, revealT + dt / 3400);
