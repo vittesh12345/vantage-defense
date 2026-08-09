@@ -66,6 +66,34 @@ export function initUI({ viz, objects, time, sensorSites }) {
   let selectedIdx = -1;
   let shownCount = 0;
 
+  /* ---------------- Vantage assessment layer ----------------
+     The product's call on every object: NOMINAL until the pipeline flags
+     it. A seeded event set carries the picture — one shadowing threat and
+     a few watches — and six assets sit under protection. */
+  const byId = new Map();
+  for (let i = 0; i < n; i++) if (!byId.has(objects[i].id)) byId.set(objects[i].id, i);
+  const assess = new Uint8Array(n); // 0 nominal · 1 watch · 2 threat
+  const assessTag = new Map();
+  const assessReason = new Map();
+  const flagIdx = [];
+  const seedFlag = (idx, level, tag, reason) => {
+    if (idx == null || idx < 0) return;
+    assess[idx] = level;
+    assessTag.set(idx, tag);
+    assessReason.set(idx, reason);
+    flagIdx.push(idx);
+  };
+  seedFlag(byId.get(58119), 2, 'SHADOWING', 'One-sided Δv, closing on a protected asset');
+  seedFlag(byId.get(52084), 1, 'Δv DETECTED', 'Residual thrust 0.42 m/s · pattern break');
+  seedFlag(byId.get(54878), 1, 'Δv DETECTED', 'Plane change outside launch dispersion');
+  seedFlag(objects.findIndex((o) => o.kind === 3), 1, 'UNCORRELATED', 'New track · no catalog correlation');
+  seedFlag(objects.findIndex((o) => o.name === 'SL-16 R/B'), 1, 'TUMBLE CHANGE', 'Spin-state change on radar returns');
+  const watchCount = flagIdx.filter((i) => assess[i] === 1).length;
+  const threatCount = flagIdx.filter((i) => assess[i] === 2).length;
+  const PROTECTED = [25544, 20580, 43013, 40697, 49260, 25994]
+    .map((id) => byId.get(id)).filter((i) => i != null);
+  const ASSESS_RGB = [[0.33, 0.37, 0.43], [1.0, 0.79, 0.086], [1.0, 0.42, 0.37]];
+
   /* ---------------- visibility ---------------- */
   const paramValue = (i) => {
     switch (state.filterParam) {
@@ -121,6 +149,17 @@ export function initUI({ viz, objects, time, sensorSites }) {
       title: 'Object Type',
       color: (i) => TYPE_RGB[objects[i].kind],
       legend: () => legendRows(KIND_NAME.map((name, k) => [TYPE_RGB[k], name === 'Rocket body' ? 'Rocket Body' : name])),
+    },
+    assessment: {
+      // the Vantage view: the catalog goes quiet slate and the pipeline's
+      // calls carry the picture
+      title: 'Assessment',
+      color: (i) => ASSESS_RGB[assess[i]],
+      legend: () => legendRows([
+        [ASSESS_RGB[0], 'Nominal'],
+        [ASSESS_RGB[1], 'Watch'],
+        [ASSESS_RGB[2], 'Threat'],
+      ]),
     },
     perigee: {
       title: 'Perigee',
@@ -242,6 +281,7 @@ export function initUI({ viz, objects, time, sensorSites }) {
       return;
     }
     const o = objects[i];
+    $('p-headname').textContent = o.name;
     $('p-name').textContent = o.name;
     $('p-catnum').textContent = `L${o.id}`;
     $('p-id').textContent = o.id;
@@ -250,6 +290,19 @@ export function initUI({ viz, objects, time, sensorSites }) {
     $('p-per').textContent = `${Math.round(perigee[i])} km`;
     $('p-apo').textContent = `${Math.round(apogee[i])} km`;
     $('p-period').textContent = `${period[i].toFixed(1)} min`;
+    // Vantage's call on the object
+    const level = assess[i];
+    const chip = $('p-assess');
+    chip.textContent = level === 2 ? 'THREAT' : level === 1 ? 'WATCH' : 'NOMINAL';
+    chip.className = `assess ${level === 2 ? 'assess-threat' : level === 1 ? 'assess-watch' : 'assess-nominal'}`;
+    const reason = $('p-reason');
+    if (level > 0) {
+      reason.textContent = `${assessTag.get(i)} · ${assessReason.get(i)}`;
+      reason.className = level === 2 ? 'selcard-note threat' : 'selcard-note';
+      reason.hidden = false;
+    } else {
+      reason.hidden = true;
+    }
     selcard.hidden = false;
     history.replaceState(null, '', `#${o.id}`);
     if (fly) viz.flyTo(i);
@@ -345,6 +398,30 @@ export function initUI({ viz, objects, time, sensorSites }) {
     if (e.key === 'Escape') selectObject(-1);
   });
 
+  /* ---------------- assessment flags + protected markers ---------------- */
+  const flagsWrap = $('flags');
+  const flagEls = flagIdx.map((idx) => {
+    const el = document.createElement('span');
+    el.className = assess[idx] === 2 ? 'flag flag-threat' : 'flag flag-watch';
+    const ring = document.createElement('span'); ring.className = 'flag-ring';
+    const dot = document.createElement('span'); dot.className = 'flag-dot';
+    const chip = document.createElement('span'); chip.className = 'flag-chip';
+    chip.textContent = assessTag.get(idx);
+    el.append(ring, dot, chip);
+    flagsWrap.appendChild(el);
+    return { idx, el };
+  });
+  const pmarkEls = PROTECTED.map((idx) => {
+    const el = document.createElement('span');
+    el.className = 'pmark';
+    const d = document.createElement('span'); d.className = 'pmark-d';
+    const l = document.createElement('span'); l.className = 'pmark-l';
+    l.textContent = objects[idx].name;
+    el.append(d, l);
+    flagsWrap.appendChild(el);
+    return { idx, el };
+  });
+
   /* ---------------- per-frame ---------------- */
   const menuNotes = $('menu-notes');
   function placeNotes() {
@@ -362,6 +439,11 @@ export function initUI({ viz, objects, time, sensorSites }) {
       $('clock').textContent = fmtUtc(viz.simMs).slice(0, 16) + ' UTC';
       const displayed = viz.reveal < 1 ? Math.round(viz.reveal * shownCount) : shownCount;
       $('objcount').textContent = `${displayed} objects displayed`;
+      $('statusline').innerHTML =
+        `TRACKED ${displayed.toLocaleString()} · ` +
+        `<span class="s-watch">WATCH ${watchCount}</span> · ` +
+        `<span class="s-threat">THREAT ${threatCount}</span> · ` +
+        `<span class="s-nom">PROTECTED ${PROTECTED.length}</span>`;
       placeNotes();
       // auto refresh: periodic ephemeris sweep
       const bucket = Math.floor(Date.now() / 30000);
@@ -379,6 +461,28 @@ export function initUI({ viz, objects, time, sensorSites }) {
         halo.style.top = `${p.y}px`;
       } else {
         halo.hidden = true;
+      }
+    }
+    // assessment flags and protected markers track their objects
+    const w2 = window.innerWidth, h2 = window.innerHeight;
+    for (const f of flagEls) {
+      const p = viz.project(f.idx, w2, h2);
+      if (p.visible) {
+        f.el.style.display = '';
+        f.el.style.left = `${p.x}px`;
+        f.el.style.top = `${p.y}px`;
+      } else {
+        f.el.style.display = 'none';
+      }
+    }
+    for (const m of pmarkEls) {
+      const p = viz.project(m.idx, w2, h2);
+      if (p.visible) {
+        m.el.style.display = '';
+        m.el.style.left = `${p.x}px`;
+        m.el.style.top = `${p.y}px`;
+      } else {
+        m.el.style.display = 'none';
       }
     }
   }
