@@ -131,15 +131,16 @@ function buildEarth(tex) {
 
 /* Procedural wispy cloud layer, drifting slowly against the ground. */
 function buildClouds() {
-  const gw = 256, gh = 128;
+  const gw = 1024, gh = 512; // must exceed the largest octave span (44 × 2⁴)
   let s = 1234;
   const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
   const grid = new Float32Array(gw * gh);
   for (let i = 0; i < grid.length; i++) grid[i] = rnd();
-  const sample = (x, y) => {
+  // sx/sy make each octave wrap exactly at the texture edges (no antimeridian seam)
+  const sample = (x, y, sx, sy) => {
     const xi = Math.floor(x), yi = Math.floor(y);
     const fx = x - xi, fy = y - yi;
-    const g = (ix, iy) => grid[((iy % gh + gh) % gh) * gw + ((ix % gw + gw) % gw)];
+    const g = (ix, iy) => grid[((iy % sy + sy) % sy) * gw + ((ix % sx + sx) % sx)];
     const a = g(xi, yi), b = g(xi + 1, yi), c = g(xi, yi + 1), d = g(xi + 1, yi + 1);
     const ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
     return a + (b - a) * ux + (c - a) * uy + (a - b - c + d) * ux * uy;
@@ -151,20 +152,21 @@ function buildClouds() {
   const img = ctx.createImageData(w, h);
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
-      // stretched fBm: clouds smear along latitude bands
-      let n = 0, amp = 1, fx = x / w * 46, fy = y / h * 32;
+      // stretched fBm: clouds smear along latitude bands; every octave is
+      // periodic across the antimeridian (span doubles, wraps at the span)
+      let n = 0, amp = 1, sx = 44, sy = 30;
       for (let o = 0; o < 5; o++) {
-        n += sample(fx, fy) * amp;
-        fx *= 2.03; fy *= 1.94; amp *= 0.52;
+        n += sample((x / w) * sx, (y / h) * sy, sx, sy) * amp;
+        sx *= 2; sy *= 2; amp *= 0.52;
       }
       n /= 1.95;
       const lat = Math.abs(y / h - 0.5) * 2;
       const belt = 0.92 + 0.25 * Math.sin(lat * 9.0); // storm belts
-      let a = Math.max(0, (n - 0.55) * 3.2) * belt;
+      let a = Math.max(0, (n - 0.57) * 3.2) * belt;
       a = Math.min(1, a * a * 1.5);
       const k = (y * w + x) * 4;
       img.data[k] = 255; img.data[k + 1] = 255; img.data[k + 2] = 255;
-      img.data[k + 3] = Math.round(a * 150);
+      img.data[k + 3] = Math.round(a * 128);
     }
   }
   ctx.putImageData(img, 0, 0);

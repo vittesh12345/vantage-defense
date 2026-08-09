@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vantage · Low Earth Orbit Visualization</title>
+<meta name="description" content="An interactive 3D map of the low Earth orbit population: payloads, rocket bodies and debris propagated live over a Blue Marble earth, with radar beam volumes, view modes and filters." />
+<meta name="theme-color" content="#000000" />
+<link rel="canonical" href="https://vantage.industries/visualization/full.html" />
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Vantage" />
+<meta property="og:title" content="Vantage · Low Earth Orbit Visualization" />
+<meta property="og:description" content="An interactive 3D map of the low Earth orbit population, with radar beam volumes, view modes and filters." />
+<meta property="og:url" content="https://vantage.industries/visualization/" />
+<meta property="og:image" content="https://vantage.industries/assets/og-card.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="stylesheet" href="viz.css">
+</head>
+<body>
+
+<canvas id="globe" aria-label="3D visualization of the low Earth orbit population"></canvas>
+
+<div id="labels" aria-hidden="true"></div>
+<div id="tooltip" class="tooltip" hidden></div>
+
+<div id="hud">
+
+  <!-- ======================= left menu ======================= -->
+  <div class="menu" id="menu">
+    <div class="mrow a-green">
+      <span class="mlabel">Search</span>
+      <input type="search" id="search" placeholder="Enter a satellite name..." autocomplete="off" spellcheck="false" aria-label="Search the catalog" />
+    </div>
+    <div class="search-results" id="search-results" hidden></div>
+    <div class="mrow a-blue">
+      <span class="mlabel">Speed</span>
+      <input type="range" id="speed" min="0" max="100" step="1" value="25" aria-label="Playback speed" />
+      <span class="mval" id="speed-val">25</span>
+    </div>
+    <label class="mrow a-gray check">
+      <span class="mlabel">Debris</span>
+      <input type="checkbox" id="t-debris" aria-label="Show analyst debris" />
+    </label>
+    <label class="mrow a-blue check">
+      <span class="mlabel">Beams</span>
+      <input type="checkbox" id="t-beams" checked aria-label="Show radar beams" />
+    </label>
+    <label class="mrow a-purple check">
+      <span class="mlabel">Instruments</span>
+      <input type="checkbox" id="t-instruments" checked aria-label="Show instruments" />
+    </label>
+    <label class="mrow a-teal check">
+      <span class="mlabel">Follow Earth</span>
+      <input type="checkbox" id="t-follow" checked aria-label="Follow Earth rotation" />
+    </label>
+    <label class="mrow a-purple check">
+      <span class="mlabel">Auto Refresh</span>
+      <input type="checkbox" id="t-refresh" checked aria-label="Auto refresh ephemerides" />
+    </label>
+
+    <div class="msection">
+      <div class="mhead">Views</div>
+      <div class="vrow sel" data-view="type">Object Type</div>
+      <div class="vrow" data-view="perigee">Perigee</div>
+      <div class="vrow" data-view="period">Period</div>
+      <div class="vrow" data-view="inclination">Inclination</div>
+      <div class="vrow" data-view="country">Country of Origin</div>
+    </div>
+
+    <div class="msection">
+      <div class="mhead">Filters</div>
+      <div class="frow-filter">
+        <select id="filter-param" aria-label="Filter parameter">
+          <option value="perigee">Perigee</option>
+          <option value="apogee">Apogee</option>
+          <option value="period">Period</option>
+          <option value="inclination">Inclination</option>
+          <option value="year">Launch Year</option>
+        </select>
+      </div>
+      <div class="frow-filter minmax">
+        <input type="number" id="filter-min" placeholder="min" aria-label="Filter minimum" />
+        <input type="number" id="filter-max" placeholder="max" aria-label="Filter maximum" />
+      </div>
+    </div>
+
+    <button class="mhead hide-btn" id="hide-menu" type="button">Hide Menu</button>
+  </div>
+  <button class="show-btn" id="show-menu" type="button" hidden>Show Menu</button>
+
+  <div class="menu-notes" id="menu-notes">
+    <div class="note">⚠ Special events are not shown</div>
+    <button class="note linky" id="copy-link" type="button">🔗 Copy link to share</button>
+  </div>
+
+  <!-- ======================= legend ======================= -->
+  <div class="legend" id="legend">
+    <div class="legend-head" id="legend-head">Object Type</div>
+    <div class="legend-body" id="legend-body"></div>
+  </div>
+
+  <!-- ======================= object popup ======================= -->
+  <div class="popup" id="popup" hidden>
+    <button class="popup-x" id="popup-x" type="button" aria-label="Close">×</button>
+    <div class="popup-name" id="p-name">—</div>
+    <div class="popup-body">
+      <div><span>Catalog ID</span><b id="p-id">—</b></div>
+      <div><span>Type</span><b id="p-type">—</b></div>
+      <div><span>Country</span><b id="p-country">—</b></div>
+      <div><span>Launched</span><b id="p-year">—</b></div>
+      <div><span>Apogee</span><b id="p-apo">—</b></div>
+      <div><span>Perigee</span><b id="p-per">—</b></div>
+      <div><span>Inclination</span><b id="p-inc">—</b></div>
+      <div><span>Period</span><b id="p-period">—</b></div>
+    </div>
+  </div>
+
+  <!-- ======================= brand + credits ======================= -->
+  <div class="brandbox">
+    <a class="brand" href="../">
+      <span class="mark">
+        <svg width="30" height="30" viewBox="0 0 100 100" fill="#fff" aria-hidden="true" focusable="false">
+          <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
+          <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
+          <polygon points="29.0,66.9 50.0,80.9 71.0,67.1 57.0,68.9 50.0,73.5 43.0,68.9"/>
+          <circle cx="50" cy="49.8" r="6.3"/>
+        </svg>
+      </span>
+      VANTAGE
+    </a>
+    <div class="credits">© 2026 Vantage · Low Earth Orbit Visualization</div>
+    <div class="credits">Earth imagery: NASA Blue Marble · Basemap data: Natural Earth</div>
+  </div>
+
+  <!-- ======================= clock ======================= -->
+  <div class="clockbox">
+    <div class="bigclock" id="clock">—</div>
+    <div class="objcount" id="objcount">— objects displayed</div>
+  </div>
+
+</div>
+
+<div id="boot" class="boot">
+  <div class="boot-inner">
+    <span class="boot-tag">VANTAGE · LEO VISUALIZATION</span>
+    <span class="boot-line" id="boot-line">Initializing catalog…</span>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.min.js" } }
+</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
