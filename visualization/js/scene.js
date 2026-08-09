@@ -573,6 +573,41 @@ function buildObjects(objects) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Orbit path line for the selection                                   */
+/* ------------------------------------------------------------------ */
+/* One full revolution of the selected object's orbit, drawn as a thin
+   white line hugging the globe — depth-tested, so it wraps behind the
+   Earth like the reference. Refreshed as sim time advances so J2
+   precession keeps the ring honest. */
+function makeOrbitLine() {
+  const N = 384;
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array((N + 1) * 3), 3));
+  const mat = new THREE.LineBasicMaterial({
+    color: 0xffffff, transparent: true, opacity: 0.85, depthWrite: false,
+  });
+  const line = new THREE.Line(geo, mat);
+  line.visible = false;
+  line.frustumCulled = false;
+  line.userData.N = N;
+  return line;
+}
+
+function fillOrbitLine(line, el, t) {
+  const N = line.userData.N;
+  const arr = line.geometry.attributes.position.array;
+  const period = TAU / el.n;
+  const p = [0, 0, 0], s = [0, 0, 0];
+  for (let i = 0; i <= N; i++) {
+    eciPosition(el, t + (i / N) * period, p);
+    sceneFromEci(p, s);
+    arr[i * 3] = s[0]; arr[i * 3 + 1] = s[1]; arr[i * 3 + 2] = s[2];
+  }
+  line.geometry.attributes.position.needsUpdate = true;
+  line.visible = true;
+}
+
+/* ------------------------------------------------------------------ */
 /* Sensor sites and their beam volumes                                 */
 /* ------------------------------------------------------------------ */
 function diamondTexture() {
@@ -760,6 +795,9 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
   scene.add(cloudObj.group);
   const eachCloudMat = (fn) => cloudObj.parts.forEach((p) => { fn(p.mat); fn(p.emat); });
 
+  const orbitLine = makeOrbitLine();
+  scene.add(orbitLine);
+
   let epochMs = Date.now();
   let simMs = epochMs;
   let selected = -1;
@@ -866,10 +904,13 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
       selected = i;
       trackAnim = { phase: 'in', t: 0, from: controls.target.clone() };
       controls.minDistance = TRACK_MIN;
+      fillOrbitLine(orbitLine, objects[i].el, tSec());
+      lastOrbitRefresh = simMs;
     } else {
       selected = -1;
       if (trackAnim) trackAnim = { phase: 'out', t: 0, from: controls.target.clone() };
       controls.minDistance = R + 0.001;
+      orbitLine.visible = false;
     }
   }
 
@@ -902,11 +943,16 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
     };
   }
 
+  let lastOrbitRefresh = 0;
   function setTime(ms) {
     simMs = ms;
     if (Math.abs(tSec()) > 3 * 86400) rebase();
     const t = tSec();
     eachCloudMat((m) => { m.uniforms.uTime.value = t; });
+    if (selected >= 0 && Math.abs(simMs - lastOrbitRefresh) > 60000) {
+      fillOrbitLine(orbitLine, objects[selected].el, t);
+      lastOrbitRefresh = simMs;
+    }
     const g = gmst(simMs);
     if (followEarth) {
       // keep the camera fixed over the ground: rotate it with the planet —
