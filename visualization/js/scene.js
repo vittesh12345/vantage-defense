@@ -475,7 +475,7 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
   controls.enableDamping = true;
   controls.dampingFactor = 0.06;
   controls.rotateSpeed = 0.42;
-  controls.minDistance = 7.4;
+  controls.minDistance = 6.62; // ~250 km up: in among the objects, like the reference
   controls.maxDistance = 120;
   controls.zoomSpeed = 0.7;
   controls.enablePan = false;
