@@ -162,9 +162,12 @@ export function initUI({ viz, objects, time, sensorSites }) {
   const speedEl = $('speed');
   const speedVal = $('speed-val');
   function applySpeed() {
+    // The slider value IS the multiplier: 25 means 25x real time, so a ~95 min
+    // LEO orbit completes in ~3.8 real minutes and the shell visibly churns
+    // while individual objects crawl. 0 pauses.
     const v = +speedEl.value;
     speedVal.textContent = v;
-    time.setMultiplier(v === 0 ? 0 : Math.max(1, (v * v) / 6.25));
+    time.setMultiplier(v);
   }
   speedEl.addEventListener('input', applySpeed);
 

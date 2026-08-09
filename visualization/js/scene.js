@@ -212,11 +212,13 @@ function buildAtmosphere() {
 /* ------------------------------------------------------------------ */
 /* Catalog as instanced, velocity-aligned boxes                        */
 /* ------------------------------------------------------------------ */
-/* Each catalog category renders with its own silhouette, instanced per kind:
-   payloads are a bus with two solar wings, rocket bodies are spent cylinders,
-   debris are jagged shards (each with a fixed random roll), unknowns are
-   octahedra. All share one SGP-shaped vertex shader: per-instance elements in,
-   velocity-aligned basis out, sun-lit flat shading. */
+/* Five glyph archetypes, instanced: Starlink-style flat slabs (upright, face
+   perpendicular to nadir, so the shell reads as a band of standing panels at
+   the limb), a classic bus with two solar wings, rocket bodies as cylinders
+   with an engine bell, debris as jagged shards with a fixed random roll, and
+   unknowns as chunks. Every glyph draws twice — a dark sun-lit fill plus a
+   bright edge outline in the instance color — so objects read over ocean and
+   space alike. */
 
 function boxPart(w, h, d, tx, ty, tz) {
   const g = new THREE.BoxGeometry(w, h, d).toNonIndexed();
@@ -241,28 +243,74 @@ function concatGeoms(geoms) {
   return out;
 }
 
-function kindGeometries() {
+function archetypeGeometries() {
   // x = along-track, y = cross-track, z = radial (matches the shader basis)
-  const payload = concatGeoms([
-    boxPart(0.85, 0.42, 0.42, 0, 0, 0),      // bus
-    boxPart(0.5, 0.85, 0.06, 0, 0.65, 0),    // +y solar wing
-    boxPart(0.5, 0.85, 0.06, 0, -0.65, 0),   // −y solar wing
+  const slab = new THREE.BoxGeometry(0.95, 0.07, 1.5).toNonIndexed();
+  const bus = concatGeoms([
+    boxPart(0.85, 0.42, 0.42, 0, 0, 0),
+    boxPart(0.5, 0.85, 0.06, 0, 0.65, 0),
+    boxPart(0.5, 0.85, 0.06, 0, -0.65, 0),
   ]);
-  const rb = new THREE.CylinderGeometry(0.26, 0.26, 1.5, 10);
-  rb.rotateZ(Math.PI / 2); // axis along the direction of travel
+  const tube = new THREE.CylinderGeometry(0.26, 0.26, 1.25, 10);
+  tube.rotateZ(Math.PI / 2);
+  const bell = new THREE.CylinderGeometry(0.22, 0.4, 0.38, 10, 1, true);
+  bell.rotateZ(-Math.PI / 2); // flare opens aft
+  bell.translate(-0.8, 0, 0);
+  const rb = concatGeoms([tube.toNonIndexed(), bell.toNonIndexed()]);
   const debris = new THREE.TetrahedronGeometry(0.62);
-  debris.scale(1.2, 0.65, 0.9); // a flattened, jagged shard
+  debris.scale(1.2, 0.65, 0.9);
   const unknown = new THREE.OctahedronGeometry(0.48);
-  return [payload, rb.toNonIndexed(), debris.toNonIndexed(), unknown.toNonIndexed()];
+  const fills = [slab, bus, rb, debris.toNonIndexed(), unknown.toNonIndexed()];
+  return fills.map((g) => ({ fill: g, edges: new THREE.EdgesGeometry(g, 12) }));
 }
+
+const ORBIT_GLSL = /* glsl */`
+  attribute vec4 iE1; // a(km), e, inc, raan
+  attribute vec4 iE2; // argp, m0, n, raanDot
+  attribute float iE3; // argpDot
+  attribute float iVis;
+  attribute float iRand;
+  attribute vec3 iColor;
+  uniform float uTime;
+  uniform float uReveal;
+  uniform float uScale;
+  uniform float uLen;
+  uniform float uRoll;
+  varying vec3 vCol;
+  const float KM = 0.001;
+  vec3 orbitPos(float t) {
+    float a = iE1.x, e = iE1.y, inc = iE1.z;
+    float raan = iE1.w + iE2.w * t;
+    float argp = iE2.x + iE3 * t;
+    float M = iE2.y + iE2.z * t;
+    float E = M;
+    for (int k = 0; k < 6; k++) {
+      E = E - (E - e * sin(E) - M) / (1.0 - e * cos(E));
+    }
+    float cE = cos(E), sE = sin(E);
+    float xp = a * (cE - e);
+    float yp = a * sqrt(1.0 - e * e) * sE;
+    float cO = cos(raan), sO = sin(raan);
+    float cw = cos(argp), sw = sin(argp);
+    float ci = cos(inc), si = sin(inc);
+    float x1 = cw * xp - sw * yp;
+    float y1 = sw * xp + cw * yp;
+    return vec3(
+      (cO * x1 - sO * ci * y1) * KM,
+      (si * y1) * KM,
+      -(sO * x1 + cO * ci * y1) * KM
+    );
+  }`;
 
 function buildObjects(objects) {
   const n = objects.length;
-  const byKind = [[], [], [], []];
-  for (let i = 0; i < n; i++) byKind[objects[i].kind].push(i);
-  const bases = kindGeometries();
-  const uLen = [1.0, 0.95, 0.62, 0.7];   // relative size per kind
-  const roll = [0, 0, 1, 1];             // shards & unknowns get a random roll
+  // archetype: 0 slab (Starlink), 1 bus, 2 rocket body, 3 debris, 4 unknown
+  const archOf = (o) => (o.kind === 0 ? (o.group === 'starlink' ? 0 : 1) : o.kind + 1);
+  const byArch = [[], [], [], [], []];
+  for (let i = 0; i < n; i++) byArch[archOf(objects[i])].push(i);
+  const bases = archetypeGeometries();
+  const uLen = [0.8, 1.0, 0.95, 0.62, 0.7];
+  const roll = [0, 0, 0, 1, 1];
 
   const group = new THREE.Group();
   const parts = [];
@@ -272,62 +320,30 @@ function buildObjects(objects) {
   let seed = 77;
   const nextRand = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
 
-  const makeMat = (len, rollOn) => new THREE.ShaderMaterial({
-    uniforms: {
+  const shared = {
+    uniforms: (len, rollOn) => ({
       uTime: { value: 0 },
       uReveal: { value: 1 },
       uDim: { value: 1 },
       uFlash: { value: 0 },
-      uScale: { value: 0.052 }, // ~52 km: exaggerated like the reference
+      uScale: { value: 0.052 },
       uLen: { value: len },
       uRoll: { value: rollOn },
       uSunDir: { value: new THREE.Vector3(1, 0, 0) },
-    },
-    vertexShader: /* glsl */`
-      attribute vec4 iE1; // a(km), e, inc, raan
-      attribute vec4 iE2; // argp, m0, n, raanDot
-      attribute float iE3; // argpDot
-      attribute float iVis;
-      attribute float iRand;
-      attribute vec3 iColor;
-      uniform float uTime;
-      uniform float uReveal;
-      uniform float uScale;
-      uniform float uLen;
-      uniform float uRoll;
+    }),
+  };
+
+  const makeFillMat = (len, rollOn) => new THREE.ShaderMaterial({
+    uniforms: shared.uniforms(len, rollOn),
+    vertexShader: ORBIT_GLSL + /* glsl */`
       uniform vec3 uSunDir;
-      varying vec3 vCol;
-      const float KM = 0.001;
-      vec3 orbitPos(float t) {
-        float a = iE1.x, e = iE1.y, inc = iE1.z;
-        float raan = iE1.w + iE2.w * t;
-        float argp = iE2.x + iE3 * t;
-        float M = iE2.y + iE2.z * t;
-        float E = M;
-        for (int k = 0; k < 6; k++) {
-          E = E - (E - e * sin(E) - M) / (1.0 - e * cos(E));
-        }
-        float cE = cos(E), sE = sin(E);
-        float xp = a * (cE - e);
-        float yp = a * sqrt(1.0 - e * e) * sE;
-        float cO = cos(raan), sO = sin(raan);
-        float cw = cos(argp), sw = sin(argp);
-        float ci = cos(inc), si = sin(inc);
-        float x1 = cw * xp - sw * yp;
-        float y1 = sw * xp + cw * yp;
-        return vec3(
-          (cO * x1 - sO * ci * y1) * KM,
-          (si * y1) * KM,
-          -(sO * x1 + cO * ci * y1) * KM
-        );
-      }
       void main() {
         float on = iVis * step(iRand, uReveal);
         vec3 c0 = orbitPos(uTime);
         vec3 c1 = orbitPos(uTime + 2.0);
-        vec3 f = normalize(c1 - c0);          // along-track
-        vec3 up = normalize(c0);              // radial
-        vec3 s = normalize(cross(f, up));     // cross-track
+        vec3 f = normalize(c1 - c0);
+        vec3 up = normalize(c0);
+        vec3 s = normalize(cross(f, up));
         vec3 u2 = cross(s, f);
         vec3 lp = position;
         vec3 ln = normal;
@@ -340,8 +356,8 @@ function buildObjects(objects) {
         float sc = uScale * (0.75 + iRand * 0.55) * uLen * on;
         vec3 wpos = c0 + (f * lp.x + s * lp.y + u2 * lp.z) * sc;
         vec3 nrm = normalize(f * ln.x + s * ln.y + u2 * ln.z);
-        float light = 0.52 + 0.58 * max(dot(nrm, uSunDir), 0.0);
-        vCol = iColor * light;
+        float light = 0.5 + 0.5 * max(dot(nrm, uSunDir), 0.0);
+        vCol = iColor * light * 0.42; // dark fill; the outline carries the color
         gl_Position = projectionMatrix * modelViewMatrix * vec4(wpos, 1.0);
       }`,
     fragmentShader: /* glsl */`
@@ -353,40 +369,80 @@ function buildObjects(objects) {
       }`,
   });
 
-  for (let k = 0; k < 4; k++) {
-    const idx = byKind[k];
+  const makeEdgeMat = (len, rollOn) => new THREE.ShaderMaterial({
+    uniforms: shared.uniforms(len, rollOn),
+    vertexShader: ORBIT_GLSL + /* glsl */`
+      void main() {
+        float on = iVis * step(iRand, uReveal);
+        vec3 c0 = orbitPos(uTime);
+        vec3 c1 = orbitPos(uTime + 2.0);
+        vec3 f = normalize(c1 - c0);
+        vec3 up = normalize(c0);
+        vec3 s = normalize(cross(f, up));
+        vec3 u2 = cross(s, f);
+        vec3 lp = position;
+        if (uRoll > 0.5) {
+          float th = iRand * 6.28318;
+          float cr = cos(th), sr = sin(th);
+          lp = vec3(lp.x, lp.y * cr - lp.z * sr, lp.y * sr + lp.z * cr);
+        }
+        float sc = uScale * (0.75 + iRand * 0.55) * uLen * on;
+        vec3 wpos = c0 + (f * lp.x + s * lp.y + u2 * lp.z) * sc;
+        vCol = iColor;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(wpos, 1.0);
+      }`,
+    fragmentShader: /* glsl */`
+      uniform float uDim;
+      uniform float uFlash;
+      varying vec3 vCol;
+      void main() {
+        gl_FragColor = vec4(vCol * (1.0 + uFlash * 0.6) * uDim, 1.0);
+      }`,
+  });
+
+  for (let k = 0; k < 5; k++) {
+    const idx = byArch[k];
     const m = idx.length;
-    const geo = new THREE.InstancedBufferGeometry();
-    geo.setAttribute('position', bases[k].attributes.position);
-    geo.setAttribute('normal', bases[k].attributes.normal);
-    geo.instanceCount = m;
-    const e1 = new Float32Array(m * 4);
-    const e2 = new Float32Array(m * 4);
-    const e3 = new Float32Array(m);
-    const vis = new Float32Array(m).fill(1);
-    const rand = new Float32Array(m);
-    const color = new Float32Array(m * 3);
+    const e1 = new THREE.InstancedBufferAttribute(new Float32Array(m * 4), 4);
+    const e2 = new THREE.InstancedBufferAttribute(new Float32Array(m * 4), 4);
+    const e3 = new THREE.InstancedBufferAttribute(new Float32Array(m), 1);
+    const vis = new THREE.InstancedBufferAttribute(new Float32Array(m).fill(1), 1);
+    const rand = new THREE.InstancedBufferAttribute(new Float32Array(m), 1);
+    const color = new THREE.InstancedBufferAttribute(new Float32Array(m * 3), 3);
     for (let j = 0; j < m; j++) {
       const g = idx[j];
       const el = objects[g].el;
-      e1[j * 4] = el.a; e1[j * 4 + 1] = el.e; e1[j * 4 + 2] = el.inc; e1[j * 4 + 3] = el.raan;
-      e2[j * 4] = el.argp; e2[j * 4 + 1] = el.m0; e2[j * 4 + 2] = el.n; e2[j * 4 + 3] = el.raanDot;
-      e3[j] = el.argpDot;
-      rand[j] = nextRand();
+      e1.array[j * 4] = el.a; e1.array[j * 4 + 1] = el.e; e1.array[j * 4 + 2] = el.inc; e1.array[j * 4 + 3] = el.raan;
+      e2.array[j * 4] = el.argp; e2.array[j * 4 + 1] = el.m0; e2.array[j * 4 + 2] = el.n; e2.array[j * 4 + 3] = el.raanDot;
+      e3.array[j] = el.argpDot;
+      rand.array[j] = nextRand();
       slotK[g] = k;
       slotJ[g] = j;
     }
-    geo.setAttribute('iE1', new THREE.InstancedBufferAttribute(e1, 4));
-    geo.setAttribute('iE2', new THREE.InstancedBufferAttribute(e2, 4));
-    geo.setAttribute('iE3', new THREE.InstancedBufferAttribute(e3, 1));
-    geo.setAttribute('iVis', new THREE.InstancedBufferAttribute(vis, 1));
-    geo.setAttribute('iRand', new THREE.InstancedBufferAttribute(rand, 1));
-    geo.setAttribute('iColor', new THREE.InstancedBufferAttribute(color, 3));
-    geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 80);
-    const mesh = new THREE.Mesh(geo, makeMat(uLen[k], roll[k]));
+    const wire = (geoBase, withNormals) => {
+      const geo = new THREE.InstancedBufferGeometry();
+      geo.setAttribute('position', geoBase.attributes.position);
+      if (withNormals) geo.setAttribute('normal', geoBase.attributes.normal);
+      geo.instanceCount = m;
+      // fill and edges share the same per-instance attribute objects, so one
+      // scatter pass updates both draws
+      geo.setAttribute('iE1', e1);
+      geo.setAttribute('iE2', e2);
+      geo.setAttribute('iE3', e3);
+      geo.setAttribute('iVis', vis);
+      geo.setAttribute('iRand', rand);
+      geo.setAttribute('iColor', color);
+      geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 80);
+      return geo;
+    };
+    const fillGeo = wire(bases[k].fill, true);
+    const edgeGeo = wire(bases[k].edges, false);
+    const mesh = new THREE.Mesh(fillGeo, makeFillMat(uLen[k], roll[k]));
+    const edges = new THREE.LineSegments(edgeGeo, makeEdgeMat(uLen[k], roll[k]));
     mesh.frustumCulled = false;
-    group.add(mesh);
-    parts.push({ mesh, geo, mat: mesh.material });
+    edges.frustumCulled = false;
+    group.add(mesh, edges);
+    parts.push({ mesh, geo: fillGeo, mat: mesh.material, emat: edges.material });
   }
 
   return { group, parts, slotK, slotJ, masterVis };
@@ -576,7 +632,7 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
 
   const cloudObj = buildObjects(objects);
   scene.add(cloudObj.group);
-  const eachCloudMat = (fn) => cloudObj.parts.forEach((p) => fn(p.mat));
+  const eachCloudMat = (fn) => cloudObj.parts.forEach((p) => { fn(p.mat); fn(p.emat); });
 
   const orbitLine = makeOrbitLine(0xffffff);
   scene.add(orbitLine);
