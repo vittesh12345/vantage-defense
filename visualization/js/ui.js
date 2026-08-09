@@ -322,6 +322,7 @@ export function initUI({ viz, objects, conjunctions, time, sensorSites }) {
     fn(init);
     el.addEventListener('change', () => fn(el.checked));
   };
+  wire('t-trails', viz.toggles.trails, true);
   wire('t-groundtrack', viz.toggles.groundtrack, true);
   wire('t-graticule', viz.toggles.graticule, true);
   wire('t-terminator', viz.toggles.terminator, true);
@@ -503,8 +504,38 @@ export function initUI({ viz, objects, conjunctions, time, sensorSites }) {
   const selLabel = $('sel-label');
 
   /* ---------------- per-frame hooks ---------------- */
+  /* Data-pipeline readout: observation rate wanders like a live feed, the
+     track counter follows the filtered population, and every 30 s the
+     "ephemeris refresh" sweeps a brightness pulse across the cloud. */
+  let lastIngest = 0, lastRefreshBucket = -1, streamed = false;
+  function ingestTick(nowReal) {
+    if (nowReal - lastIngest < 400) return;
+    lastIngest = nowReal;
+    const t = nowReal / 1000;
+    const rate = Math.round(168 + 74 * Math.sin(t / 6.4) + 31 * Math.sin(t / 1.9) + 12 * Math.sin(t * 1.3));
+    $('ing-rate').textContent = rate;
+    const shown = shownPerKind[0] + shownPerKind[1] + shownPerKind[2] + shownPerKind[3];
+    if (viz.reveal < 1) {
+      const n = Math.round(viz.reveal * shown);
+      $('ing-tracks').textContent = fmt(n);
+      $('stat-count').textContent = `STREAMING ${fmt(Math.round(viz.reveal * objects.length))} / ${fmt(objects.length)}`;
+      streamed = true;
+    } else {
+      $('ing-tracks').textContent = fmt(shown);
+      if (streamed) { streamed = false; $('stat-count').textContent = `${fmt(objects.length)} OBJECTS`; }
+    }
+    const bucket = Math.floor(Date.now() / 30000);
+    const remain = 30 - Math.floor((Date.now() / 1000) % 30);
+    $('ing-next').textContent = `${remain} s`;
+    if (bucket !== lastRefreshBucket) {
+      if (lastRefreshBucket !== -1) viz.pulse();
+      lastRefreshBucket = bucket;
+    }
+  }
+
   let lastClock = 0, lastLive = 0;
   function tick(nowReal) {
+    ingestTick(nowReal);
     // clock + offset readout at ~5 Hz
     if (nowReal - lastClock > 200) {
       lastClock = nowReal;

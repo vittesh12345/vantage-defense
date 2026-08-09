@@ -50,10 +50,17 @@ async function boot() {
   };
 
   const ui = initUI({ viz, objects, conjunctions, time, sensorSites: SENSOR_SITES });
+  window.__viz = viz; // console handle, also used by the harness
+  window.__time = time;
 
   const resize = () => viz.resize(window.innerWidth, window.innerHeight);
   window.addEventListener('resize', resize);
   resize();
+
+  // The catalog streams in over the first seconds, the way a live feed pages
+  // object states down to the client.
+  viz.setReveal(0);
+  let revealT = 0;
 
   /* ---- intro pull-in ---- */
   const introFrom = viz.camera.position.clone().normalize().multiplyScalar(64);
@@ -72,8 +79,15 @@ async function boot() {
       const k = 1 - Math.pow(1 - introT, 3);
       viz.camera.position.lerpVectors(introFrom, introTo, k);
     }
+    if (revealT < 1) {
+      revealT = Math.min(1, revealT + dt / 3400);
+      viz.setReveal(revealT * revealT * (3 - 2 * revealT)); // smoothstep pacing
+    }
 
     time.update(dt);
+    // Trail length follows playback speed so motion reads at every timescale:
+    // ghosts should trail by a few pixels and merge into a streak, not detach.
+    viz.setTrailGap(Math.min(Math.max(3 * (time.live ? 1 : time.speed), 6), 45));
     viz.setTime(time.simMs);
     viz.render();
     ui.tick(now);

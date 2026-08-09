@@ -213,11 +213,15 @@ function buildCloud(objects) {
   const e2 = new Float32Array(n * 4); // argp, m0, n(rad/s), raanDot
   const e3 = new Float32Array(n * 2); // argpDot, kind
   const vis = new Float32Array(n).fill(1);
+  const rand = new Float32Array(n);
+  let seed = 77;
   for (let i = 0; i < n; i++) {
     const el = objects[i].el;
     e1[i * 4] = el.a; e1[i * 4 + 1] = el.e; e1[i * 4 + 2] = el.inc; e1[i * 4 + 3] = el.raan;
     e2[i * 4] = el.argp; e2[i * 4 + 1] = el.m0; e2[i * 4 + 2] = el.n; e2[i * 4 + 3] = el.raanDot;
     e3[i * 2] = el.argpDot; e3[i * 2 + 1] = objects[i].kind;
+    seed = (seed * 16807) % 2147483647;
+    rand[i] = seed / 2147483647; // reveal order for the streaming load
   }
   const geo = new THREE.BufferGeometry();
   // Position attribute is required by three's bounding logic; unused in shader.
@@ -226,16 +230,21 @@ function buildCloud(objects) {
   geo.setAttribute('aE2', new THREE.BufferAttribute(e2, 4));
   geo.setAttribute('aE3', new THREE.BufferAttribute(e3, 2));
   geo.setAttribute('aVis', new THREE.BufferAttribute(vis, 1));
+  geo.setAttribute('aRand', new THREE.BufferAttribute(rand, 1));
   geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 60);
 
-  const mat = new THREE.ShaderMaterial({
+  const makeMat = () => new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
+    blending: THREE.AdditiveBlending,
     uniforms: {
       uTime: { value: 0 },
       uPr: { value: 1 },
       uDim: { value: 1 },
       uSize: { value: 1 },
+      uReveal: { value: 1 },
+      uGhost: { value: 1 },   // alpha multiplier: 1 = live draw, <1 = trail ghost
+      uFlash: { value: 0 },   // ephemeris refresh sweep
       uPalette: { value: [
         new THREE.Color(PALETTE.payload),
         new THREE.Color(PALETTE.rocket),
@@ -248,15 +257,17 @@ function buildCloud(objects) {
       attribute vec4 aE2; // argp, m0, n, raanDot
       attribute vec2 aE3; // argpDot, kind
       attribute float aVis;
+      attribute float aRand;
       uniform float uTime;
       uniform float uPr;
       uniform float uSize;
+      uniform float uReveal;
       varying float vKind;
       varying float vVis;
       const float KM = 0.001;
       void main() {
         vKind = aE3.y;
-        vVis = aVis;
+        vVis = aVis * step(aRand, uReveal);
         float a = aE1.x, e = aE1.y, inc = aE1.z;
         float raan = aE1.w + aE2.w * uTime;
         float argp = aE2.x + aE3.x * uTime;
@@ -282,27 +293,55 @@ function buildCloud(objects) {
         );
         vec4 mv = modelViewMatrix * vec4(p, 1.0);
         gl_Position = projectionMatrix * mv;
-        float base = vKind < 0.5 ? 2.9 : (vKind < 1.5 ? 3.1 : (vKind < 2.5 ? 2.0 : 2.5));
-        float att = clamp(pow(16.0 / max(length(mv.xyz), 0.05), 0.42), 0.62, 3.4);
+        float base = vKind < 0.5 ? 3.1 : (vKind < 1.5 ? 3.5 : (vKind < 2.5 ? 2.2 : 2.7));
+        float att = clamp(pow(16.0 / max(length(mv.xyz), 0.05), 0.5), 0.62, 4.0);
         gl_PointSize = base * att * uPr * uSize * (vVis > 0.5 ? 1.0 : 0.0);
       }`,
     fragmentShader: /* glsl */`
       uniform vec3 uPalette[4];
       uniform float uDim;
+      uniform float uGhost;
+      uniform float uFlash;
       varying float vKind;
       varying float vVis;
       void main() {
         if (vVis < 0.5) discard;
-        vec2 d = gl_PointCoord - 0.5;
-        float r = length(d);
-        if (r > 0.5) discard;
-        float a = smoothstep(0.5, 0.18, r);
-        vec3 col = uPalette[int(vKind + 0.5)];
-        float alpha = (vKind < 2.5 && vKind > 1.5) ? 0.62 : 0.88; // debris dimmer
-        gl_FragColor = vec4(col, a * alpha * uDim);
+        vec2 p = gl_PointCoord - 0.5;
+        // Distinct glyph per type, readable once a point grows past ~6 px:
+        // payload = disc, rocket body = triangle, debris = diamond,
+        // unknown = ring. f < 0 is inside.
+        float f;
+        if (vKind < 0.5) {
+          f = length(p) - 0.38;
+        } else if (vKind < 1.5) {
+          vec2 v = vec2(p.x, -p.y); // y up, apex on top
+          f = max(v.y - 0.42, max(-0.38 - v.y, abs(v.x) - (0.42 - v.y) * 0.60));
+        } else if (vKind < 2.5) {
+          f = abs(p.x) + abs(p.y) - 0.40;
+        } else {
+          f = abs(length(p) - 0.32) - 0.10;
+        }
+        float core = smoothstep(0.035, -0.035, f);
+        // soft halo so dense shells read as a glow
+        float halo = smoothstep(0.5, 0.05, length(p)) * 0.16;
+        vec3 col = uPalette[int(vKind + 0.5)] * (1.0 + uFlash * 0.9);
+        float typeAlpha = (vKind > 1.5 && vKind < 2.5) ? 0.60 : 0.85;
+        float a = (core + halo * (1.0 - core)) * typeAlpha * uDim * uGhost;
+        if (a < 0.004) discard;
+        gl_FragColor = vec4(col, a);
       }`,
   });
-  return new THREE.Points(geo, mat);
+  const cloud = new THREE.Points(geo, makeMat());
+  // Motion trails: the same geometry re-drawn at earlier times with fading
+  // alpha. Three draws of 20k GPU-solved points is cheap.
+  const ghosts = [0.34, 0.14].map((alpha) => {
+    const g = new THREE.Points(geo, makeMat());
+    g.material.uniforms.uGhost.value = alpha;
+    g.renderOrder = -1;
+    g.frustumCulled = false;
+    return g;
+  });
+  return { cloud, ghosts };
 }
 
 /* ------------------------------------------------------------------ */
@@ -387,9 +426,32 @@ function ringTexture(hollow) {
   return tex;
 }
 
-function makeMarker(color) {
+/* Corner-bracket reticle for the primary selection. */
+function bracketTexture() {
+  const s = 128, m = 18, L = 34, w = 8;
+  const cv = document.createElement('canvas');
+  cv.width = s; cv.height = s;
+  const ctx = cv.getContext('2d');
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = w;
+  ctx.lineCap = 'square';
+  const corner = (x, y, dx, dy) => {
+    ctx.beginPath();
+    ctx.moveTo(x + dx * L, y);
+    ctx.lineTo(x, y);
+    ctx.lineTo(x, y + dy * L);
+    ctx.stroke();
+  };
+  corner(m, m, 1, 1);
+  corner(s - m, m, -1, 1);
+  corner(m, s - m, 1, -1);
+  corner(s - m, s - m, -1, -1);
+  return new THREE.CanvasTexture(cv);
+}
+
+function makeMarker(color, tex) {
   const mat = new THREE.SpriteMaterial({
-    map: ringTexture(true), color, transparent: true,
+    map: tex || ringTexture(true), color, transparent: true,
     depthTest: false, depthWrite: false,
   });
   const sp = new THREE.Sprite(mat);
@@ -520,15 +582,18 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
   const stars = buildStars();
   scene.add(stars);
 
-  const cloud = buildCloud(objects);
-  cloud.material.uniforms.uPr.value = pr;
+  const { cloud, ghosts } = buildCloud(objects);
+  const allMats = [cloud.material, ...ghosts.map((g) => g.material)];
+  const eachMat = (fn) => allMats.forEach(fn);
+  eachMat((m) => { m.uniforms.uPr.value = pr; });
   stars.material.uniforms.uPr.value = pr;
-  scene.add(cloud);
+  scene.add(cloud, ...ghosts);
+  let trailGap = 8; // seconds between trail ghosts, scaled to sim speed
 
   const orbitLine = makeOrbitLine(PALETTE.orbit);
   const orbitLine2 = makeOrbitLine(PALETTE.orbitSecondary);
   scene.add(orbitLine, orbitLine2);
-  const marker = makeMarker(PALETTE.select);
+  const marker = makeMarker(PALETTE.select, bracketTexture());
   const marker2 = makeMarker(PALETTE.orbitSecondary);
   scene.add(marker, marker2);
 
@@ -622,13 +687,13 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
       fillGroundTrack(groundTrack, objects[i].el, tSec(), simMs);
       groundTrack.visible = groundTrackOn;
       marker.visible = true;
-      cloud.material.uniforms.uDim.value = 0.32;
+      eachMat((m) => { m.uniforms.uDim.value = 0.32; });
     } else {
       orbitLine.visible = false;
       groundTrack.visible = false;
       marker.visible = false;
       tracking = false;
-      cloud.material.uniforms.uDim.value = 1;
+      eachMat((m) => { m.uniforms.uDim.value = 1; });
     }
     if (sec >= 0) {
       fillOrbitLine(orbitLine2, objects[sec].el, tSec());
@@ -771,6 +836,8 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
     if (Math.abs(tSec()) > 3 * 86400) rebase();
     const t = tSec();
     cloud.material.uniforms.uTime.value = t;
+    ghosts[0].material.uniforms.uTime.value = t - trailGap;
+    ghosts[1].material.uniforms.uTime.value = t - trailGap * 2;
     earthGroup.rotation.y = gmst(simMs);
     const s = sunEci(simMs);
     earth.material.uniforms.uSunDir.value.set(s[0], s[2], -s[1]);
@@ -836,6 +903,11 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
       ring.material.opacity = 0.5 * (1 - ph);
     }
 
+    // decay the ephemeris refresh sweep
+    const fl = cloud.material.uniforms.uFlash.value;
+    if (fl > 0.002) eachMat((m) => { m.uniforms.uFlash.value = fl * Math.exp(-dt * 3.2); });
+    else if (fl !== 0) eachMat((m) => { m.uniforms.uFlash.value = 0; });
+
     renderer.render(scene, camera);
   }
 
@@ -872,7 +944,12 @@ export function createViz({ canvas, topology, objects, sensorSites }) {
       sensors: (v) => { sensors.group.visible = v; },
       coverage: (v) => { sensors.cones.visible = v; },
       terminator: (v) => { earth.material.uniforms.uNight.value = v ? 1 : 0; },
+      trails: (v) => { ghosts.forEach((g) => { g.visible = v; }); },
     },
-    setPointSize(v) { cloud.material.uniforms.uSize.value = v; },
+    setPointSize(v) { eachMat((m) => { m.uniforms.uSize.value = v; }); },
+    setTrailGap(sec) { trailGap = sec; },
+    setReveal(v) { eachMat((m) => { m.uniforms.uReveal.value = v; }); },
+    get reveal() { return cloud.material.uniforms.uReveal.value; },
+    pulse() { eachMat((m) => { m.uniforms.uFlash.value = 1; }); },
   };
 }

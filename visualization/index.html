@@ -160,6 +160,7 @@
             <option value="-1">Orbital</option>
           </select>
         </div>
+        <label class="frow"><input type="checkbox" id="t-trails" checked>Motion trails</label>
         <label class="frow"><input type="checkbox" id="t-groundtrack" checked>Ground track</label>
         <label class="frow"><input type="checkbox" id="t-graticule" checked>Graticule</label>
         <label class="frow"><input type="checkbox" id="t-terminator" checked>Day / night shading</label>
@@ -213,6 +214,14 @@
       <span class="offset" id="offset">T+00:00</span>
       <input type="datetime-local" id="jump" class="jump" step="1" aria-label="Jump to date and time (UTC)" title="Jump to date & time (UTC)">
     </div>
+  </div>
+
+  <!-- ======================= ingest status ======================= -->
+  <div class="ingest" aria-label="Data pipeline status">
+    <span class="ing-dot" id="ing-dot"></span>
+    <span class="ing-seg">INGEST <span class="ing-val" id="ing-rate">—</span> obs/s</span>
+    <span class="ing-seg">TRACKS <span class="ing-val" id="ing-tracks">—</span></span>
+    <span class="ing-seg">EPHEMERIS REFRESH <span class="ing-val" id="ing-next">—</span></span>
   </div>
 
   <!-- ======================= ground view chrome ======================= -->

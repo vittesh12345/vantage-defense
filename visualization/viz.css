@@ -71,12 +71,15 @@ ol{list-style:none}
 .chip-btn:hover{border-color:var(--text-primary);color:var(--text-primary)}
 .chip-btn[aria-pressed="true"]{color:#9be8f2;border-color:rgba(53,214,232,.55)}
 
-/* ---------- type dots ---------- */
+/* ---------- type markers ----------
+   Shapes mirror the glyphs the renderer draws: payload disc, rocket-body
+   triangle, debris diamond, unknown ring. */
 .kdot{display:inline-block;width:8px;height:8px;border-radius:50%;flex:0 0 auto}
 .kdot.k0{background:#35d6e8}
-.kdot.k1{background:#ffca16}
-.kdot.k2{background:#8d97a5}
-.kdot.k3{background:#8f6fe8}
+.kdot.k1{width:0;height:0;border-radius:0;background:transparent;
+  border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #ffca16}
+.kdot.k2{background:#8d97a5;border-radius:1px;transform:rotate(45deg);width:7px;height:7px}
+.kdot.k3{background:transparent;border:2px solid #8f6fe8;width:7px;height:7px}
 
 /* ---------- catalog panel ---------- */
 .catalog{
@@ -189,6 +192,21 @@ select{font-family:var(--font-mono);font-size:12px;color:var(--text-body);backgr
   border:1px solid var(--rule-hairline);border-radius:var(--radius-xs);padding:4px 6px;outline:none;
   color-scheme:dark;width:172px}
 .jump:focus{border-color:rgba(53,214,232,.55)}
+
+/* ---------- ingest status ---------- */
+.ingest{
+  position:absolute;right:var(--spacing-16);bottom:var(--spacing-16);
+  display:flex;align-items:center;gap:var(--spacing-12);
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;color:var(--text-faint);
+  background:rgba(0,0,0,.55);border:1px solid var(--rule-hairline);border-radius:var(--radius-sm);
+  padding:8px var(--spacing-12);backdrop-filter:blur(10px);
+}
+.ing-seg{white-space:nowrap}
+.ing-val{color:var(--text-muted)}
+.ing-dot{width:6px;height:6px;border-radius:50%;background:var(--status-nominal);animation:ingblink 2s infinite}
+@keyframes ingblink{0%,100%{opacity:1}50%{opacity:.25}}
+@media(prefers-reduced-motion: reduce){.ing-dot{animation:none}}
+@media(max-width:1250px){.ingest{display:none}}
 
 /* ---------- ground view ---------- */
 .gv-bar{
