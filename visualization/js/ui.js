@@ -1,6 +1,7 @@
 /* HUD wiring for the reference-style console: the left menu (search, speed,
-   layer toggles, view modes, filters), the boxed legend, the object popup,
-   the big clock and the objects-displayed counter. */
+   layer toggles, view modes, filters), the boxed legend with the fixed
+   Selected Object card beneath it, the tracking selection halo, the hover
+   chips, the big clock and the objects-displayed counter. */
 
 import { KIND_NAME } from './catalog.js';
 import {
@@ -10,10 +11,10 @@ import {
 const $ = (id) => document.getElementById(id);
 
 const TYPE_RGB = [
-  [0.21, 0.77, 0.09],  // payload — green
-  [0.79, 0.74, 0.17],  // rocket body — olive yellow
-  [0.83, 0.20, 0.20],  // debris — red
-  [0.17, 0.25, 0.83],  // unknown — blue
+  [0.18, 0.91, 0.24],  // payload — vivid green
+  [0.95, 0.78, 0.25],  // rocket body — gold
+  [1.00, 0.18, 0.24],  // debris — bright crimson
+  [0.25, 0.49, 1.00],  // unknown — bright blue
 ];
 
 const COUNTRY_COLORS = {
@@ -162,18 +163,18 @@ export function initUI({ viz, objects, time, sensorSites }) {
   const speedEl = $('speed');
   const speedVal = $('speed-val');
   function applySpeed() {
+    // The slider value IS the multiplier: 25 means 25x real time, so a ~95 min
+    // LEO orbit completes in ~3.8 real minutes and the shell visibly churns
+    // while individual objects crawl. 0 pauses.
     const v = +speedEl.value;
     speedVal.textContent = v;
-    time.setMultiplier(v === 0 ? 0 : Math.max(1, (v * v) / 6.25));
+    time.setMultiplier(v);
   }
   speedEl.addEventListener('input', applySpeed);
 
   $('t-debris').addEventListener('change', (e) => { state.debris = e.target.checked; applyVis(); });
   $('t-beams').addEventListener('change', (e) => viz.toggles.beams(e.target.checked));
-  $('t-instruments').addEventListener('change', (e) => {
-    viz.toggles.instruments(e.target.checked);
-    $('labels').style.display = e.target.checked ? '' : 'none';
-  });
+  $('t-instruments').addEventListener('change', (e) => viz.toggles.instruments(e.target.checked));
   $('t-follow').addEventListener('change', (e) => viz.toggles.follow(e.target.checked));
   $('t-refresh').addEventListener('change', (e) => { state.autoRefresh = e.target.checked; });
 
@@ -228,31 +229,31 @@ export function initUI({ viz, objects, time, sensorSites }) {
     }
   });
 
-  /* ---------------- selection popup ---------------- */
-  const popup = $('popup');
+  /* ---------------- selection: fixed card + tracking halo ---------------- */
+  const selcard = $('selcard');
+  const halo = $('halo');
   function selectObject(i, { fly = false } = {}) {
     selectedIdx = i;
     viz.select(i);
     if (i < 0) {
-      popup.hidden = true;
+      selcard.hidden = true;
+      halo.hidden = true;
       history.replaceState(null, '', location.pathname + location.search);
       return;
     }
     const o = objects[i];
     $('p-name').textContent = o.name;
+    $('p-catnum').textContent = `L${o.id}`;
     $('p-id').textContent = o.id;
     $('p-type').textContent = KIND_NAME[o.kind];
-    $('p-country').textContent = COUNTRY_NAMES[o.country] || o.country;
-    $('p-year').textContent = o.year;
-    $('p-apo').textContent = `${Math.round(apogee[i])} km`;
-    $('p-per').textContent = `${Math.round(perigee[i])} km`;
     $('p-inc').textContent = `${incDeg[i].toFixed(2)}°`;
+    $('p-per').textContent = `${Math.round(perigee[i])} km`;
+    $('p-apo').textContent = `${Math.round(apogee[i])} km`;
     $('p-period').textContent = `${period[i].toFixed(1)} min`;
-    popup.hidden = false;
+    selcard.hidden = false;
     history.replaceState(null, '', `#${o.id}`);
     if (fly) viz.flyTo(i);
   }
-  $('popup-x').addEventListener('click', () => selectObject(-1));
 
   /* ---------------- deep link ---------------- */
   const idIndex = new Map();
@@ -285,9 +286,10 @@ export function initUI({ viz, objects, time, sensorSites }) {
     }
   });
 
-  /* ---------------- canvas picking & tooltip ---------------- */
+  /* ---------------- canvas picking & hover chips ---------------- */
   const canvas = $('globe');
-  const tooltip = $('tooltip');
+  const hoverwrap = $('hoverwrap');
+  const hoverChips = $('hover-chips');
   let downXY = null;
   canvas.addEventListener('pointerdown', (e) => { downXY = [e.clientX, e.clientY]; });
   canvas.addEventListener('pointerup', (e) => {
@@ -296,48 +298,51 @@ export function initUI({ viz, objects, time, sensorSites }) {
     downXY = null;
     if (moved > 5) return;
     const i = viz.pick(e.clientX, e.clientY, window.innerWidth, window.innerHeight);
-    selectObject(i);
+    selectObject(i); // empty-space click deselects
   });
+  // Single-line "L####: NAME" chips: nearest bold with the double-ring
+  // reticle, neighbors fainter beneath, everything lingering and fading out
+  // over ~1.3 s so camera sweeps leave a ghost trail.
   let hoverTimer = 0;
+  let hoverFadeTimer = 0;
   canvas.addEventListener('pointermove', (e) => {
     if (hoverTimer) return;
     hoverTimer = setTimeout(() => {
       hoverTimer = 0;
-      const i = viz.pick(e.clientX, e.clientY, window.innerWidth, window.innerHeight);
-      if (i >= 0) {
-        const o = objects[i];
-        tooltip.hidden = false;
-        tooltip.textContent = '';
-        const strong = document.createElement('div');
-        strong.textContent = o.name;
-        const meta = document.createElement('div');
-        meta.className = 'tt-meta';
-        meta.textContent = `${KIND_NAME[o.kind]} · ${o.id}`;
-        tooltip.append(strong, meta);
-        tooltip.style.left = `${e.clientX}px`;
-        tooltip.style.top = `${e.clientY}px`;
+      const found = viz.pickMulti(e.clientX, e.clientY, window.innerWidth, window.innerHeight, 18, 4);
+      if (found.length) {
+        clearTimeout(hoverFadeTimer);
+        hoverFadeTimer = 0;
+        hoverChips.textContent = '';
+        found.forEach((idx, k) => {
+          const o = objects[idx];
+          const chip = document.createElement('div');
+          chip.className = k === 0 ? 'chip b' : 'chip dim';
+          chip.textContent = `L${o.id}: ${o.name}`;
+          hoverChips.appendChild(chip);
+        });
+        hoverwrap.hidden = false;
+        hoverwrap.classList.remove('fading');
+        hoverwrap.style.left = `${e.clientX}px`;
+        hoverwrap.style.top = `${e.clientY}px`;
         canvas.style.cursor = 'pointer';
+      } else if (!hoverwrap.hidden && !hoverFadeTimer) {
+        hoverwrap.classList.add('fading');
+        hoverFadeTimer = setTimeout(() => {
+          hoverFadeTimer = 0;
+          hoverwrap.hidden = true;
+          hoverwrap.classList.remove('fading');
+        }, 1350);
+        canvas.style.cursor = '';
       } else {
-        tooltip.hidden = true;
         canvas.style.cursor = '';
       }
-    }, 90);
+    }, 80);
   });
-  canvas.addEventListener('pointerleave', () => { tooltip.hidden = true; });
 
   document.addEventListener('keydown', (e) => {
     if (e.target.matches('input, select, textarea')) return;
     if (e.key === 'Escape') selectObject(-1);
-  });
-
-  /* ---------------- sensor labels ---------------- */
-  const labelsWrap = $('labels');
-  const labelEls = sensorSites.map((s) => {
-    const el = document.createElement('span');
-    el.className = 'slabel';
-    el.textContent = s.name;
-    labelsWrap.appendChild(el);
-    return el;
   });
 
   /* ---------------- per-frame ---------------- */
@@ -365,26 +370,15 @@ export function initUI({ viz, objects, time, sensorSites }) {
         if (state.autoRefresh) viz.pulse();
       }
     }
-    const w = window.innerWidth, h = window.innerHeight;
-    for (let s = 0; s < sensorSites.length; s++) {
-      const p = viz.sensorScreenPos(s, w, h);
-      const el = labelEls[s];
+    // pulsing double-ring halo rides on the selected object
+    if (selectedIdx >= 0) {
+      const p = viz.project(selectedIdx, window.innerWidth, window.innerHeight);
       if (p.visible) {
-        el.style.display = '';
-        el.style.left = `${p.x}px`;
-        el.style.top = `${p.y}px`;
+        halo.hidden = false;
+        halo.style.left = `${p.x}px`;
+        halo.style.top = `${p.y}px`;
       } else {
-        el.style.display = 'none';
-      }
-    }
-    if (selectedIdx >= 0 && !popup.hidden) {
-      const p = viz.project(selectedIdx, w, h);
-      if (p.visible) {
-        popup.style.left = `${Math.min(p.x, w - 260)}px`;
-        popup.style.top = `${Math.max(70, Math.min(p.y, h - 160))}px`;
-        popup.style.opacity = '1';
-      } else {
-        popup.style.opacity = '0.55';
+        halo.hidden = true;
       }
     }
   }

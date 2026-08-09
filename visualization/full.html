@@ -21,8 +21,18 @@
 
 <canvas id="globe" aria-label="3D visualization of the low Earth orbit population"></canvas>
 
-<div id="labels" aria-hidden="true"></div>
-<div id="tooltip" class="tooltip" hidden></div>
+<div id="hoverwrap" class="hoverwrap" hidden>
+  <svg class="hover-ring" width="38" height="38" aria-hidden="true">
+    <circle cx="19" cy="19" r="9" fill="none" stroke="#ffffff" stroke-width="1.6"/>
+    <circle cx="19" cy="19" r="15" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.45"/>
+  </svg>
+  <div class="hover-chips" id="hover-chips"></div>
+</div>
+<div id="halo" class="halo" hidden>
+  <span class="halo-ping"></span>
+  <span class="halo-mid"></span>
+  <span class="halo-core"></span>
+</div>
 
 <div id="hud">
 
@@ -94,25 +104,25 @@
     <button class="note linky" id="copy-link" type="button">🔗 Copy link to share</button>
   </div>
 
-  <!-- ======================= legend ======================= -->
-  <div class="legend" id="legend">
-    <div class="legend-head" id="legend-head">Object Type</div>
-    <div class="legend-body" id="legend-body"></div>
-  </div>
+  <!-- ============ right column: legend + selected object card ============ -->
+  <div class="rightcol">
+    <div class="legend" id="legend">
+      <div class="legend-head" id="legend-head">Object Type</div>
+      <div class="legend-body" id="legend-body"></div>
+    </div>
 
-  <!-- ======================= object popup ======================= -->
-  <div class="popup" id="popup" hidden>
-    <button class="popup-x" id="popup-x" type="button" aria-label="Close">×</button>
-    <div class="popup-name" id="p-name">—</div>
-    <div class="popup-body">
-      <div><span>Catalog ID</span><b id="p-id">—</b></div>
-      <div><span>Type</span><b id="p-type">—</b></div>
-      <div><span>Country</span><b id="p-country">—</b></div>
-      <div><span>Launched</span><b id="p-year">—</b></div>
-      <div><span>Apogee</span><b id="p-apo">—</b></div>
-      <div><span>Perigee</span><b id="p-per">—</b></div>
-      <div><span>Inclination</span><b id="p-inc">—</b></div>
-      <div><span>Period</span><b id="p-period">—</b></div>
+    <!-- fixed Selected Object card, directly under the legend -->
+    <div class="selcard" id="selcard" hidden>
+      <div class="selcard-body">
+        <div><span>Name</span><b id="p-name">—</b></div>
+        <div><span>Catalog number</span><b id="p-catnum">—</b></div>
+        <div><span>NORAD ID</span><b id="p-id">—</b></div>
+        <div><span>Type</span><b id="p-type">—</b></div>
+        <div><span>Inclination</span><b id="p-inc">—</b></div>
+        <div><span>Perigee</span><b id="p-per">—</b></div>
+        <div><span>Apogee</span><b id="p-apo">—</b></div>
+        <div><span>Period</span><b id="p-period">—</b></div>
+      </div>
     </div>
   </div>
 

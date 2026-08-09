@@ -295,24 +295,35 @@ function unknowns(rnd) {
   }
 }
 
-/* The analyst debris set: fragments below the public catalog's size floor,
-   revealed by the Debris toggle the way the reference console adds its
-   proprietary small-debris tracks. Sized so the full display reads 27,563. */
+/* Catalogued small debris filling the tracked population out to the full
+   public count: these are baseline objects — red with the Debris box
+   unchecked, exactly like the reference console — so the default display
+   reads 27,572. On top of that, the analyst layer: fragments below the
+   public catalog's size floor, revealed by the Debris toggle the way the
+   reference console adds its proprietary small-debris tracks. */
+const DEB_BANDS = [[0.3, 96.5, 100.5, 480, 1150], [0.2, 73.8, 74.3, 550, 1100], [0.16, 81.0, 83.2, 550, 1400], [0.14, 51.4, 53.4, 350, 600], [0.1, 86.0, 87.2, 600, 1150], [0.1, 62.8, 65.2, 550, 1400]];
+
+function bandDebris(rnd, name, group) {
+  let x = rnd(), band = DEB_BANDS[0];
+  for (const b of DEB_BANDS) { if (x < b[0]) { band = b; break; } x -= b[0]; }
+  add(rnd, {
+    name, kind: KIND.DEBRIS, country: 'TBD',
+    year: 1965 + Math.floor(rnd() * 58),
+    inc: band[1] + rnd() * (band[2] - band[1]),
+    alt: band[3] + Math.pow(rnd(), 1.5) * (band[4] - band[3]),
+    e: 0.002 + rnd() * 0.03,
+    group,
+  });
+}
+
+function smallDebris(rnd) {
+  const baseline = 27572;
+  while (objects.length < baseline) bandDebris(rnd, 'UNCAT DEB', null);
+}
+
 function analystDebris(rnd) {
-  const bands = [[0.3, 96.5, 100.5, 480, 1150], [0.2, 73.8, 74.3, 550, 1100], [0.16, 81.0, 83.2, 550, 1400], [0.14, 51.4, 53.4, 350, 600], [0.1, 86.0, 87.2, 600, 1150], [0.1, 62.8, 65.2, 550, 1400]];
-  const target = 27563;
-  while (objects.length < target) {
-    let x = rnd(), band = bands[0];
-    for (const b of bands) { if (x < b[0]) { band = b; break; } x -= b[0]; }
-    add(rnd, {
-      name: 'UNCAT DEB', kind: KIND.DEBRIS, country: 'TBD',
-      year: 1965 + Math.floor(rnd() * 58),
-      inc: band[1] + rnd() * (band[2] - band[1]),
-      alt: band[3] + Math.pow(rnd(), 1.5) * (band[4] - band[3]),
-      e: 0.002 + rnd() * 0.03,
-      group: 'xdeb',
-    });
-  }
+  const extended = 4437; // the Debris checkbox adds these on top
+  for (let i = 0; i < extended; i++) bandDebris(rnd, 'ANALYST DEB', 'xdeb');
 }
 
 let built = false;
@@ -325,6 +336,7 @@ export function buildCatalog() {
   rocketBodies(rnd);
   debris(rnd);
   unknowns(rnd);
+  smallDebris(rnd);
   analystDebris(rnd);
   built = true;
   return objects;
