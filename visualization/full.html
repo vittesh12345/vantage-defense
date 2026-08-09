@@ -21,6 +21,9 @@
 
 <canvas id="globe" aria-label="3D visualization of the low Earth orbit population"></canvas>
 
+<!-- assessment flags + protected-asset markers ride over the canvas -->
+<div id="flags" aria-hidden="true"></div>
+
 <div id="hoverwrap" class="hoverwrap" hidden>
   <svg class="hover-ring" width="38" height="38" aria-hidden="true">
     <circle cx="19" cy="19" r="9" fill="none" stroke="#ffffff" stroke-width="1.6"/>
@@ -72,6 +75,7 @@
     <div class="msection">
       <div class="mhead">Views</div>
       <div class="vrow sel" data-view="type">Object Type</div>
+      <div class="vrow" data-view="assessment">Assessment</div>
       <div class="vrow" data-view="perigee">Perigee</div>
       <div class="vrow" data-view="period">Period</div>
       <div class="vrow" data-view="inclination">Inclination</div>
@@ -100,7 +104,7 @@
   <button class="show-btn" id="show-menu" type="button" hidden>Show Menu</button>
 
   <div class="menu-notes" id="menu-notes">
-    <div class="note">⚠ Special events are not shown</div>
+    <div class="note">⚠ Synthetic catalog · assessments simulated</div>
     <button class="note linky" id="copy-link" type="button">🔗 Copy link to share</button>
   </div>
 
@@ -111,8 +115,13 @@
       <div class="legend-body" id="legend-body"></div>
     </div>
 
-    <!-- fixed Selected Object card, directly under the legend -->
+    <!-- fixed Selected Object card, directly under the legend. The header
+         carries Vantage's call on the object; the rows stay catalog facts. -->
     <div class="selcard" id="selcard" hidden>
+      <div class="selcard-head">
+        <span class="assess assess-nominal" id="p-assess">NOMINAL</span>
+        <span class="selcard-title" id="p-headname">—</span>
+      </div>
       <div class="selcard-body">
         <div><span>Name</span><b id="p-name">—</b></div>
         <div><span>Catalog number</span><b id="p-catnum">—</b></div>
@@ -123,6 +132,8 @@
         <div><span>Apogee</span><b id="p-apo">—</b></div>
         <div><span>Period</span><b id="p-period">—</b></div>
       </div>
+      <div class="selcard-note" id="p-reason" hidden>—</div>
+      <a class="selcard-cta" href="../demo/">Open in mission console →</a>
     </div>
   </div>
 
@@ -139,6 +150,7 @@
       </span>
       VANTAGE
     </a>
+    <div class="vtag">Orbital picture · synthetic live feed</div>
     <div class="credits">© 2026 Vantage · Low Earth Orbit Visualization</div>
     <div class="credits">Earth imagery: NASA Blue Marble · Basemap data: Natural Earth</div>
   </div>
@@ -147,13 +159,14 @@
   <div class="clockbox">
     <div class="bigclock" id="clock">—</div>
     <div class="objcount" id="objcount">— objects displayed</div>
+    <div class="statusline" id="statusline">—</div>
   </div>
 
 </div>
 
 <div id="boot" class="boot">
   <div class="boot-inner">
-    <span class="boot-tag">VANTAGE · LEO VISUALIZATION</span>
+    <span class="boot-tag">VANTAGE · ORBITAL PICTURE</span>
     <span class="boot-line" id="boot-line">Initializing catalog…</span>
   </div>
 </div>
