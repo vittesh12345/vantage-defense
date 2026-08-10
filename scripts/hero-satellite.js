@@ -859,18 +859,46 @@
 
   /* Boot ------------------------------------------------------------------- */
   sizeCanvas();
-  /* A tab opened in the background never gets a rAF, so the intro would sit
-     un-started behind a full-viewport veil until the head script's backstop
-     tore it down, and would then try to play the moment the visitor finally
-     switched to it. Opening in a new tab is a normal thing to do with a link,
-     so that path skips the intro outright rather than deferring it. */
-  if (armed && document.hidden) {
-    root.classList.remove('intro-armed');
+
+  /* A tab that loads in the background gets no animation frames, so running
+     the intro now would leave it frozen behind a full-viewport veil.
+
+     It used to be discarded outright on that path, and marked seen with it,
+     which meant a page opened in a background tab, restored with a session, or
+     prerendered from the address bar never showed the intro at all, not even
+     once it was brought forward. That over-corrected: the thing worth avoiding
+     is the intro ambushing someone mid-read, not the intro happening.
+
+     So it is held rather than dropped. The veil stays up while the tab is
+     hidden, which costs nothing because nobody is looking at it, and the head
+     script's stranding backstop is suspended and restarted on first sight, so
+     it measures time the visitor could actually see rather than wall time. */
+  var held = armed && document.hidden && !reduceMQ.matches;
+
+  if (held) {
     clearTimeout(window.__vantageIntroBackstop);
-    armed = false;
-    markDone();
-  }
-  if (armed && !reduceMQ.matches) {
+    document.addEventListener('visibilitychange', function onFirstSight() {
+      if (document.hidden) return;
+      document.removeEventListener('visibilitychange', onFirstSight);
+      window.__vantageIntroBackstop = setTimeout(function () {
+        root.classList.remove('intro-armed');
+      }, 6000);
+
+      /* Only from the top of the page. At scrollY 0 nobody is mid-read, so
+         there is nothing for the veil to interrupt; below that, the visitor
+         has already engaged and the intro has missed its moment. */
+      if (scrollY > 4) {
+        root.classList.remove('intro-armed');
+        clearTimeout(window.__vantageIntroBackstop);
+        markDone();
+        draw();
+        start();
+        acquire();
+        return;
+      }
+      requestAnimationFrame(function () { requestAnimationFrame(runIntro); });
+    });
+  } else if (armed && !reduceMQ.matches) {
     /* Give layout and the web fonts a frame to settle before measuring. */
     requestAnimationFrame(function () { requestAnimationFrame(runIntro); });
   } else {
@@ -879,11 +907,11 @@
     markDone();
     draw();
     start();
-    /* Returning visitors, reduced motion, and background-tab loads all skip the
-       intro, but they should still get the acquisition once: it is what makes
-       the Δv marker findable, and it is the only thing that shows the observed
-       track separating from the model. The hero is at the top of the page, so
-       there is nothing to wait for. */
+    /* Returning visitors and reduced motion skip the intro, but they should
+       still get the acquisition once: it is what makes the Δv marker findable,
+       and it is the only thing that shows the observed track separating from
+       the model. The hero is at the top of the page, so there is nothing to
+       wait for. */
     acquire();
   }
 

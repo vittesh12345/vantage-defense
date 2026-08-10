@@ -309,7 +309,11 @@ The rect is full width in the markup, so the no-script and reduced-motion paths 
 ### Hero intro
 The opening view, and the system's single largest motion. On the first load of a session the stage is pinned at its natural rect, transformed out to the centre of the viewport over a star field, held, then transitioned back to identity so it lands exactly in its frame. The hero copy is held and released as it flies, so the two arrive together.
 
-Constraints it is built to respect: it plays **once per session** (`sessionStorage`), never under `prefers-reduced-motion`, and any input skips it. Scroll is locked for its duration because the stage is positioned against a rect measured at rest.
+Constraints it is built to respect: it plays **once per session** (`sessionStorage`, so a reload in the same tab does not replay it), never under `prefers-reduced-motion`, and any input skips it. Scroll is locked for its duration because the stage is positioned against a rect measured at rest.
+
+**A tab that loads in the background holds the intro rather than losing it.** A hidden tab gets no animation frames, so starting the intro there would freeze it behind the veil. That path used to discard the intro *and* mark it seen, which meant a page opened with ctrl-click, restored with a session, or prerendered from the address bar never showed the intro at all, not even once it was brought forward. That over-corrected: **the thing worth avoiding is the intro ambushing someone mid-read, not the intro happening.**
+
+So the veil stays up while the tab is hidden, which costs nothing because nobody is looking, and the head script's stranding backstop is suspended and restarted on first sight, so it measures time the visitor could actually see rather than wall time. On first sight the decision is made on scroll position alone: at the top of the page there is nothing to interrupt and it plays; below it the visitor has already engaged and the intro has missed its moment, so it is marked seen and only the acquisition runs.
 
 The star field is the one decorative surface in the system, and it is deliberately thin: sparse authored points in `--text-faint` at low alpha with cursor parallax, no glow and no nebula. It exists only while the intro is on screen and is `display:none` before and after.
 
