@@ -194,6 +194,15 @@
   .statement-line{font-weight:var(--font-weight-medium);color:var(--text-primary);font-size:var(--text-statement);line-height:1.3;letter-spacing:var(--tracking-tight);max-width:46ch}
   .statement-line .dim{color:var(--text-muted)}
   .statement-line em{font-style:italic}
+  /* A link inside display type. It cannot use the ghost-button treatment and
+     it must not shout, so it carries a hairline underline that lifts on hover:
+     enough to read as a link at 34px, quiet enough not to break the sentence
+     it lives in. Inherits .dim's colour so the first clause stays recessive. */
+  .statement-link{
+    color:inherit;border-bottom:1px solid var(--rule-edge);
+    transition:color var(--motion-fast) var(--motion-ease-out),border-color var(--motion-fast) var(--motion-ease-out);
+  }
+  .statement-link:hover,.statement-link:focus-visible{color:var(--text-primary);border-bottom-color:var(--text-primary)}
 
   /* ---------- METRIC RAIL ----------
      Deliberately not a card grid: hairline-divided cells hanging off one
@@ -712,7 +721,12 @@
       <span class="eyebrow reveal">Capabilities</span>
 
       <div class="sec-statement">
-        <p class="statement-line reveal"><span class="dim">Everyone can see <em>that</em> a satellite moved. The tracking data is public.</span> Vantage is the layer that tells you <em>why</em>.</p>
+        <!-- "The tracking data is public" is a description of the LEO
+             visualization, so it links to it. That makes the map the evidence
+             for the setup and the console the evidence for the payoff, which
+             is the strongest placement available: no new section, no new
+             component, and the link sits on the words it is about. -->
+        <p class="statement-line reveal"><span class="dim">Everyone can see <em>that</em> a satellite moved. <a class="statement-link" href="visualization/">The tracking data is public.</a></span> Vantage is the layer that tells you <em>why</em>.</p>
       </div>
 
       <ol class="ledger">
