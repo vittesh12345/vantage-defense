@@ -1,25 +1,15 @@
-/* Vantage orbital picture — HUD skinned to the site's design system:
+/* Vantage orbit map — HUD skinned to the site's design system:
    layered dark surfaces, hairline rules, IBM Plex Mono labels, and the
    three status colors (nominal / watch / threat) that each mean exactly
    one thing. Same element contract as before; only the skin changed. */
 
-:root{
-  --surface-canvas:#000000;
-  --surface-band:#0c0f14;
-  --surface-panel:#151a22;
-  --surface-chrome:#1e242e;
-  --rule-hairline:#3d4552;
-  --rule-edge:#525a66;
-  --text-primary:#ffffff;
-  --text-body:#d5d7d9;
-  --text-muted:#a1a4a5;
-  --text-faint:#878c95;
-  --status-nominal:#3ad389;
-  --status-watch:#ffca16;
-  --status-threat:#ff6b5f;
-  --font-sans:'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --font-mono:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
+/* The tokens come from styles/tokens.css, which full.html links ahead of this
+   file. They used to be redeclared here, and the copy had already drifted in
+   two places: --text-body was #d5d7d9 against the system's #e8eaec, and
+   --font-sans was Helvetica Neue rather than Space Grotesk, so the instrument
+   set its prose in a face the rest of the site does not use. That is the
+   failure mode a duplicated palette always has, and it had already happened,
+   so there is one source of truth now. */
 
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}

@@ -3,18 +3,26 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Vantage · Low Earth Orbit Visualization</title>
+<title>Vantage · Orbit map</title>
 <meta name="description" content="An interactive 3D map of the low Earth orbit population: payloads, rocket bodies and debris propagated live over a Blue Marble earth, with radar beam volumes, view modes and filters." />
 <meta name="theme-color" content="#000000" />
 <link rel="canonical" href="https://vantage.industries/visualization/full.html" />
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Vantage" />
-<meta property="og:title" content="Vantage · Low Earth Orbit Visualization" />
+<meta property="og:title" content="Vantage · Orbit map" />
 <meta property="og:description" content="An interactive 3D map of the low Earth orbit population, with radar beam volumes, view modes and filters." />
 <meta property="og:url" content="https://vantage.industries/visualization/" />
 <meta property="og:image" content="https://vantage.industries/assets/og-card.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
+<!-- The instrument declared --font-mono as IBM Plex Mono but never loaded it,
+     so every mono label here was falling back to whatever the OS supplies.
+     tokens.css is linked ahead of viz.css because viz.css now consumes those
+     tokens rather than redeclaring them. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/tokens.css">
 <link rel="stylesheet" href="viz.css">
 </head>
 <body>
@@ -150,8 +158,8 @@
       </span>
       VANTAGE
     </a>
-    <div class="vtag">Orbital picture · synthetic live feed</div>
-    <div class="credits">© 2026 Vantage · Low Earth Orbit Visualization</div>
+    <div class="vtag">Orbit map · synthetic live feed</div>
+    <div class="credits">© 2026 Vantage · Orbit map</div>
     <div class="credits">Earth imagery: NASA Blue Marble · Basemap data: Natural Earth</div>
   </div>
 
@@ -166,7 +174,7 @@
 
 <div id="boot" class="boot">
   <div class="boot-inner">
-    <span class="boot-tag">VANTAGE · ORBITAL PICTURE</span>
+    <span class="boot-tag">VANTAGE · ORBIT MAP</span>
     <span class="boot-line" id="boot-line">Initializing catalog…</span>
   </div>
 </div>
