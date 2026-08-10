@@ -3,80 +3,188 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Low Earth Orbit Visualization · Vantage</title>
+<title>Orbit map · Vantage</title>
 <meta name="description" content="An interactive 3D map of the low Earth orbit population: payloads, rocket bodies and debris propagated live over a Blue Marble earth, with radar beam volumes, view modes and filters." />
-<meta name="theme-color" content="#ffffff" />
+<meta name="theme-color" content="#000000" />
 <link rel="canonical" href="https://vantage.industries/visualization/" />
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Vantage" />
-<meta property="og:title" content="Low Earth Orbit Visualization · Vantage" />
+<meta property="og:title" content="Orbit map · Vantage" />
 <meta property="og:description" content="An interactive 3D map of the low Earth orbit population, with radar beam volumes, view modes and filters." />
 <meta property="og:url" content="https://vantage.industries/visualization/" />
 <meta property="og:image" content="https://vantage.industries/assets/og-card.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../styles/tokens.css">
+<link rel="stylesheet" href="../styles/site.css">
+<!-- Scripting reveals content on scroll. Without it, show everything immediately. -->
+<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
 <style>
-  /* The visualization's host page mirrors the reference layout: a plain light
-     document with the page title, a full-window link, and the embedded
-     viewport. The instrument itself stays dark inside its frame. */
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{
-    background:#ffffff;color:#111;
-    font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
-    padding:34px 42px 48px;
+  /* This page hosts the instrument; it is not the instrument. It used to be a
+     plain white document in Helvetica with #1668c7 links and no stylesheets at
+     all, carried over from the layout it was modelled on. That made the one
+     URL every link on the site points at, and the one in the sitemap, look
+     like a different product from the site that sends people to it.
+
+     Everything here now comes from the shared shell. The only local rules are
+     the viewport's aspect ratio and the attribution line under it. */
+  .viz-head{padding:var(--spacing-128) 0 var(--spacing-32)}
+  .viz-head h1{
+    font-weight:var(--font-weight-medium);color:var(--text-primary);
+    font-size:var(--text-h2);line-height:1.15;letter-spacing:var(--tracking-display);
+    margin:var(--spacing-20) 0 var(--spacing-16);max-width:20ch;
   }
-  h1{font-size:30px;font-weight:700;letter-spacing:-.01em;margin-bottom:18px}
-  .fullwin{
-    display:inline-flex;align-items:center;gap:7px;
-    color:#1668c7;font-size:15.5px;text-decoration:none;margin-bottom:10px;
+  .viz-head p{color:var(--text-muted);font-size:var(--text-body-md);max-width:62ch}
+  .viz-actions{display:flex;gap:var(--spacing-16);flex-wrap:wrap;margin-top:var(--spacing-32)}
+
+  /* The instrument sits in the same framed figure the console screenshot and
+     the hero schematic use, so a picture of the system is always in the same
+     chrome wherever it appears. */
+  .viz-frame{margin-bottom:var(--spacing-24)}
+  .viz-stage{position:relative;aspect-ratio:1790/1100;background:var(--surface-canvas)}
+  .viz-stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+
+  .viz-note{
+    padding-bottom:var(--section-pad);
+    font-family:var(--font-mono);font-size:var(--text-caption);
+    color:var(--text-muted);line-height:1.7;max-width:78ch;
   }
-  .fullwin:hover{text-decoration:underline}
-  .fullwin svg{display:block}
-  .frame{
-    width:100%;max-width:1790px;aspect-ratio:1790/1100;
-    border:0;display:block;background:#000;
-  }
-  .foot{margin-top:14px;font-size:12.5px;color:#666}
-  .foot a{color:#1668c7}
-  @media(max-width:760px){
-    body{padding:18px 14px 32px}
-    h1{font-size:23px}
-    .frame{aspect-ratio:4/5}
+  .viz-note a{color:var(--text-body);border-bottom:1px solid var(--rule-hairline)}
+  .viz-note a:hover{color:var(--text-primary);border-bottom-color:var(--text-primary)}
+
+  @media(max-width:900px){
+    .viz-head{padding-top:var(--spacing-96)}
+    /* The console layout inside needs height more than width once the column
+       narrows, so the viewport goes portrait rather than letterbox. */
+    .viz-stage{aspect-ratio:4/5}
   }
 </style>
 </head>
 <body>
 
-<h1>Low Earth Orbit Visualization</h1>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header id="hdr">
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="../">
+        <span class="mark">
+          <svg width="26" height="26" viewBox="0 0 100 100" fill="#fff" aria-hidden="true" focusable="false">
+            <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
+            <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
+            <polygon points="29.0,66.9 50.0,80.9 71.0,67.1 57.0,68.9 50.0,73.5 43.0,68.9"/>
+            <circle cx="50" cy="49.8" r="6.3"/>
+          </svg>
+        </span>
+        VANTAGE
+      </a>
+      <div class="navlinks" id="primary-nav">
+        <a href="../#platform">Platform</a>
+        <a href="../#capabilities">Capabilities</a>
+        <a href="../#assurance">Assurance</a>
+        <a href="../#segments">Who it's for</a>
+        <a class="nav-viz" href="./">Orbit map</a>
+        <a class="nav-contact" href="../contact/">Request a briefing</a>
+      </div>
+      <a href="./" class="btn nav-cta" aria-current="page">Orbit map</a>
+      <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-nav">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
 
-<a class="fullwin" id="fullwin" href="full.html">
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
-    <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
-  </svg>
-  Full-window version
-</a>
+<main id="main">
+  <div class="wrap">
 
-<iframe class="frame" id="frame" src="full.html" title="Low Earth Orbit Visualization"
-        allow="fullscreen" loading="eager"></iframe>
+    <div class="viz-head">
+      <span class="eyebrow reveal">Orbit map</span>
+      <h1 class="reveal">Everything up there, at once.</h1>
+      <p class="reveal">The tracked low Earth orbit population, propagated live: payloads, rocket bodies and debris, with sensor beam volumes and per-object catalog detail. This is the picture Vantage reads behavior out of.</p>
+      <div class="viz-actions reveal">
+        <a href="full.html" id="fullwin" class="btn btn-primary">Open full window →</a>
+        <a href="../demo/" class="btn">Open the live demo →</a>
+      </div>
+    </div>
 
-<div class="foot">
-  A <a href="../">Vantage</a> instrument · Earth imagery: NASA Blue Marble ·
-  Deep links select a catalog object (e.g. <a href="#25544">#25544</a>).
-</div>
+    <div class="frame viz-frame reveal">
+      <div class="frame-bar">
+        <span>vantage.industries/visualization</span>
+        <span class="grow">Synthetic catalog · assessments simulated</span>
+      </div>
+      <div class="viz-stage">
+        <iframe id="frame" src="full.html" title="Orbit map" allow="fullscreen" loading="eager"></iframe>
+      </div>
+    </div>
 
+    <p class="viz-note reveal">
+      Earth imagery: NASA Blue Marble · Basemap data: Natural Earth.
+      Deep links select a catalog object, for example <a href="#25544">#25544</a>.
+    </p>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a class="brand footer-brand" href="../">
+          <span class="mark">
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="#fff" aria-hidden="true" focusable="false">
+              <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
+              <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
+              <polygon points="29.0,66.9 50.0,80.9 71.0,67.1 57.0,68.9 50.0,73.5 43.0,68.9"/>
+              <circle cx="50" cy="49.8" r="6.3"/>
+            </svg>
+          </span>
+          VANTAGE
+        </a>
+        <p>The intelligence layer for space defense: understand what a satellite is doing, and what it's trying to accomplish, from public orbital data.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Platform</h5>
+        <a href="../#platform">Platform</a>
+        <a href="../#capabilities">Capabilities</a>
+        <a href="../#assurance">Assurance</a>
+        <a href="../demo/">Live demo</a>
+        <a href="./">Orbit map</a>
+      </div>
+      <div class="foot-col">
+        <h5>Who it's for</h5>
+        <a href="../#defense">Defense &amp; intelligence</a>
+        <a href="../#operators">Satellite operators</a>
+        <a href="../#orbital-compute">Orbital compute</a>
+      </div>
+      <div class="foot-col">
+        <h5>Contact</h5>
+        <a href="../contact/">Request a briefing</a>
+        <span class="plain">contact@vantage.industries</span>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <p>© 2026 Vantage · Assured Space Intelligence</p>
+      <span class="badge">SEALED EVIDENCE · HUMAN-ON-THE-LOOP</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../scripts/site.js" defer></script>
 <script>
-  /* Deep links land on this page; pass the object hash through to the app,
-     and keep the full-window link carrying it too. */
+  /* Deep links land on this page; pass the object hash through to the app, and
+     keep the full-window link carrying it too. */
   (function () {
-    var frame = document.getElementById("frame");
-    var fullwin = document.getElementById("fullwin");
+    var frame = document.getElementById('frame');
+    var fullwin = document.getElementById('fullwin');
     function sync() {
-      var h = location.hash || "";
-      frame.src = "full.html" + h;
-      fullwin.href = "full.html" + h;
+      var h = location.hash || '';
+      frame.src = 'full.html' + h;
+      fullwin.href = 'full.html' + h;
     }
     if (location.hash) sync();
-    addEventListener("hashchange", sync);
+    addEventListener('hashchange', sync);
   })();
 </script>
 
