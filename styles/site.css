@@ -75,10 +75,13 @@ header nav{display:flex;align-items:center;justify-content:space-between;height:
    written into the markup, and aria-current="location" written by the
    scrollspy in site.js as the visitor moves through the landing page. */
 .navlinks a:hover,.navlinks a[aria-current]{color:var(--text-primary)}
-/* Only surfaces below 560px, where .nav-cta is hidden and the menu would
-   otherwise contain no route to the contact path. Selector is kept at the
-   same specificity as `.navlinks a` so the responsive rules below win. */
-.navlinks a.nav-contact{display:none}
+/* Two links that exist only for the collapsed menu, because the header button
+   can carry exactly one destination and it carries the orbit map. `.nav-contact`
+   surfaces as soon as the menu becomes a dropdown, so the briefing path is
+   never absent from the menu; `.nav-viz` surfaces only below 560px, where the
+   button itself is hidden and the map would otherwise have no header route.
+   Kept at the same specificity as `.navlinks a` so the responsive rules win. */
+.navlinks a.nav-contact,.navlinks a.nav-viz{display:none}
 
 /* --- Buttons --------------------------------------------------------------
    Every action is a ghost outline. Priority is carried by border and label
@@ -143,6 +146,9 @@ footer{border-top:1px solid var(--rule-edge);background:var(--surface-band);padd
   .navlinks{display:none;position:absolute;top:var(--header-height);left:0;right:0;padding:var(--spacing-8) var(--spacing-28) var(--spacing-20);background:rgba(0,0,0,.97);border-bottom:1px solid var(--rule-edge);flex-direction:column;align-items:stretch;gap:0}
   header.menu-open .navlinks{display:flex}
   .navlinks a{display:flex;align-items:center;min-height:48px;border-top:1px solid var(--rule-hairline)}
+  /* The header button now carries the orbit map, so the briefing path has to
+     live in the menu from the moment the menu appears. */
+  .navlinks a.nav-contact{display:flex}
 }
 @media(max-width:900px){
   .foot-top{grid-template-columns:1fr 1fr}
@@ -156,7 +162,8 @@ footer{border-top:1px solid var(--rule-edge);background:var(--surface-band);padd
   .wrap{padding-left:var(--spacing-20);padding-right:var(--spacing-20)}
   .navlinks{padding-left:var(--spacing-20);padding-right:var(--spacing-20)}
   .nav-cta{display:none}
-  .navlinks a.nav-contact{display:flex}
+  /* The button is gone at this width, so its destination joins the menu. */
+  .navlinks a.nav-viz{display:flex}
   .sec,.sec-wide{padding:var(--section-pad-tight) 0}
   .foot-top{grid-template-columns:1fr}
 }

@@ -508,20 +508,35 @@
         </span>
         VANTAGE
       </a>
+      <!-- In-page anchors only. The live demo and the orbit map are
+           separate pages, and mixing them in here made the nav two lists
+           wearing the same clothes: four links that scroll and two that
+           navigate away, with nothing to tell them apart.
+
+           It also broke the position indicator. The scrollspy lights the
+           section you are in, and a page link can never be the current
+           section, so two of six entries could never highlight and the
+           indicator read as defective.
+
+           Nothing is orphaned by this. `Platform` is still here and it is the
+           section that holds both product surfaces, so the nav still routes to
+           them; the demo also keeps the hero's secondary button, the closing
+           CTA and the footer, and the visualization keeps its frame and the
+           footer. The nav says where you are on this page. The button says
+           what to do. Anything else belongs in the content or the footer. -->
       <div class="navlinks" id="primary-nav">
         <a href="#platform">Platform</a>
         <a href="#capabilities">Capabilities</a>
         <a href="#assurance">Assurance</a>
         <a href="#segments">Who it's for</a>
-        <a href="demo/">Live demo</a>
-        <a href="visualization/">LEO map</a>
+        <a class="nav-viz" href="visualization/">Orbit map</a>
         <a class="nav-contact" href="contact/">Request a briefing</a>
       </div>
       <!-- Deliberately not .btn-primary. It is the only button in a 68px
            header, so placement already carries its priority, and two primary
            controls for the same action visible at once made "primary" a
            default rather than a hierarchy. -->
-      <a href="contact/" class="btn nav-cta">Request a briefing</a>
+      <a href="visualization/" class="btn nav-cta">Orbit map</a>
       <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-nav">
         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
