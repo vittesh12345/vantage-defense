@@ -342,6 +342,29 @@ Verified by replaying the tick state machine against a synthetic clock, with the
 
 The test both failed is the one the proposal itself named: *product reveal, not sci-fi movie UI*. A sweep and an acquisition readout are the sci-fi parts. **If motion here cannot be traced to something the engine actually does, it does not ship.**
 
+### Navigation
+**The link list carries in-page anchors and nothing else. The button carries exactly one destination.** The links say where you are on this page; the button says where else to go. Everything beyond those two lives in the content and the footer.
+
+**The button carries the orbit map, not the briefing.** On first load the header used to show `Request a briefing` while the hero showed `Request a briefing` again eight hundred pixels below it: three buttons above the fold and only two destinations between them. The header button now points at `/visualization/`, so the first screen offers three distinct things, and the map gets the persistent route it lost when the link list was cut back.
+
+The cost is real and was taken deliberately: the header is `position: fixed`, so that button was the only conversion affordance visible while scrolling, and roughly 70% of the page now has no persistent briefing button. What catches people in that stretch is the `Talk to us about…` link on each mission card, the closing CTA, and the footer. **If conversion suffers, this is the first thing to put back.**
+
+Two menu-only links exist because of that, and they are why `.nav-contact` and `.nav-viz` are in the shell rather than in a page:
+
+| viewport | header button | link list |
+|---|---|---|
+| >1040px | Orbit map | 4 anchors |
+| 560–1040px | Orbit map | 4 anchors + Request a briefing |
+| ≤560px | hidden | 4 anchors + Orbit map + Request a briefing |
+
+**Both destinations stay reachable from the header at every width.** A future page added to the header has to satisfy that table or it does not go in.
+
+That rule exists because the nav briefly held both. `Live demo` and `LEO visualization` sat alongside four section anchors with nothing to tell them apart, so it was two lists wearing the same clothes: four links that scroll and two that navigate away. It also broke the position indicator below, since a page link can never be the current section, so two of six entries could never highlight and the indicator read as defective rather than empty.
+
+Removing them orphans nothing, and that is the test to apply to the next candidate: **`Platform` is still in the nav and it is the section that holds both product surfaces**, so the nav still routes to them one level in. The demo additionally keeps the hero's secondary button, the closing CTA and the footer; the visualization keeps its framed figure and the footer. A destination that cannot be reached without a nav entry is a content problem, not a nav problem.
+
+The cost, accepted: the visualization has no above-the-fold route, because the hero's secondary button belongs to the demo. If that ever needs fixing, the answer is to make the visualization the first of the two figures in `#platform`, wide angle before close-up, not to put it back in the nav.
+
 ### Navigation state
 The nav reports where the visitor is, not only where they can go. `site.css` had styled a current-link state for some time that nothing ever set, so the rule was dead; the scrollspy in `site.js` now writes it.
 
@@ -455,6 +478,27 @@ This table replaces a "three pages, not two" framing that was wrong twice over: 
 `404.html` had a `:root` of its own on a `#05070a` canvas, Inter at weight 700, a `#4da3ff` fourth accent used as a CTA color, a masked two-gradient grid texture, a filled button, a 2px button radius, and it linked neither stylesheet. That is the demo page's old sin verbatim, and a 404 is disproportionately where a stale link from a briefing email lands, which makes it a first impression for exactly the buyer this site is written for. It is now composed entirely from shared primitives, with `.eyebrow` carrying `Error 404` (a machine label, which is what the eyebrow is for) and about six lines of page-specific CSS for vertical centering.
 
 **A utility page earns no exceptions.** Low traffic is a reason to spend little effort on it, not a licence to run a second design system in it.
+
+## The orbit map (`/visualization/`)
+
+The third product surface: the whole tracked population, propagated live and explorable. `/visualization/` hosts the instrument in a framed figure; `full.html` is the instrument itself and is what the iframe loads.
+
+**The host page is a marketing page and gets no exceptions.** It shipped as a plain white document in Helvetica with `#1668c7` links and no stylesheets at all, carried over from the layout it was modelled on. That made the one URL every link on the site points at, and the one in the sitemap, look like a different product from the site that sends people to it. It is now the shared shell like every other route.
+
+**The instrument consumes `tokens.css`; it does not restate it.** `viz.css` used to redeclare the whole palette locally, and the copy had already drifted in two places: `--text-body` was `#d5d7d9` against the system's `#e8eaec`, and `--font-sans` was Helvetica Neue, so the instrument set its prose in a face the site does not use. `full.html` also declared `--font-mono: IBM Plex Mono` without ever loading it, so every mono label fell back to whatever the OS supplied. **A duplicated palette does not stay a copy.**
+
+**Where it is reached from**, and why it is not in the nav: the statement line in `#capabilities` links it, because *"The tracking data is public"* is a description of this page and the link belongs on the words it is about. That makes the map the evidence for the setup and the console the evidence for the payoff. It also opens `#platform` as the section's wide shot, and it is in the footer. It is deliberately not in the nav, per §Navigation.
+
+**The still stays a still.** The console screenshot gets a live embed; this one does not, and that asymmetry is correct rather than an oversight. The instrument is 1.6MB and belongs behind a deliberate click, not auto-loaded into every visit to the landing page.
+
+**Imagery weight is a standing constraint here.** The two sky textures were 2.3MB of a 3.13MB page. Both are WebP now with the originals kept as a fallback:
+
+| | before | after | |
+|---|---|---|---|
+| Earth | 1428KB jpg | **648KB** webp q82 | 40.7dB PSNR, no visible change |
+| Starfield | 883KB png | **143KB** webp lossless | |
+
+The starfield is **lossless** because it is almost entirely flat black with small bright points; encoding it lossily made the file *larger* while smearing the stars. Page total went 3.13MB → 1.64MB, a 47% cut. Any browser that can run WebGL can decode WebP, so the fallback should never fire.
 
 ## The demo console (`/demo/`)
 
