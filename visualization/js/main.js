@@ -26,11 +26,27 @@ function loadImage(src) {
   });
 }
 
+/* The two sky textures were 2.3MB of a 3.2MB page, which is most of what a
+   visitor waits for. Both are WebP now, with the originals kept as a fallback:
+
+     earth   1428KB jpg -> 648KB webp q82   (40.7dB PSNR, no visible change)
+     night    883KB png -> 143KB webp lossless
+
+   The starfield is lossless because it is almost entirely flat black with
+   small bright points, which lossless compresses to a sixth of the PNG.
+   Encoding it lossily made the file *larger* while smearing the stars.
+
+   Any browser that can run WebGL can decode WebP, so the fallback should never
+   fire. It costs one line and the scene already tolerates a null layer. */
+async function loadTexture(webp, original) {
+  return (await loadImage(webp)) || (await loadImage(original));
+}
+
 async function boot() {
   bootLine.textContent = 'Loading imagery…';
   const [earthImg, nightImg] = await Promise.all([
-    loadImage('img/earth-blue-marble.jpg'),
-    loadImage('img/night-sky.png'),
+    loadTexture('img/earth-blue-marble.webp', 'img/earth-blue-marble.jpg'),
+    loadTexture('img/night-sky.webp', 'img/night-sky.png'),
   ]);
 
   bootLine.textContent = 'Generating resident-object catalog…';
