@@ -630,7 +630,19 @@
     </div>
   </section>
 
-  <!-- PLATFORM: the console first, then the pipeline behind it -->
+  <!-- PLATFORM: the console first, then the pipeline behind it.
+
+       This section briefly carried the orbit map as a second framed
+       figure. Two of them made it 2093px, 2.4 screens and the tallest section
+       on the page, with 62% of its height given to picture frames identical in
+       size, chrome and aspect. They read as a repeat rather than as two
+       things, which is the rule about changing primitive as the page goes.
+
+       The visualization is also not part of this argument. This section is the
+       pipeline, and the map is the population the pipeline runs against, not
+       an output of it. It is reached from the statement line in #capabilities,
+       where "The tracking data is public" is literally a description of it,
+       from the footer, and from its own page. -->
   <section class="sec sec-wide band" id="platform">
     <div class="wrap">
       <div class="sec-head reveal">
@@ -664,6 +676,7 @@
           <img src="assets/demo-console.png" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage mission console: a live LEO feed flags a foreign inspector maneuvering to shadow an orbital AI data center, with the evidence panel showing the signals behind the call, the one-sidedness discriminator, and a sealed assurance PASS." />
         </div>
       </a>
+
       <!-- The rail reads as a sequence, so the stages reveal one after another
            rather than as a block, and the rule they hang from draws left to
            right at the same rate. `.reveal` on the container is not a fade
@@ -676,18 +689,6 @@
         <div class="stage reveal"><span class="sn">03 · Assess</span><h4>Name the behavior</h4><p>Six models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life.</p></div>
         <div class="stage reveal"><span class="sn">04 · Report</span><h4>Into the analyst queue</h4><p>The event arrives with the signals behind it attached, ranked so the calls that need a human get one first.</p></div>
       </div>
-
-      <!-- The LEO visualization is the platform's other product surface: the
-           whole tracked population the pipeline above runs against, live and
-           explorable. Same frame pattern as the console shot so the two read
-           as siblings; no #shot-stage id, so console-preview.js leaves it as
-           the still. -->
-      <a class="frame shot reveal" href="visualization/">
-        <div class="frame-bar"><span>vantage.industries/visualization</span><span class="grow">Open the LEO visualization ↗</span></div>
-        <div class="shot-stage">
-          <img src="assets/leo-visualization.jpg" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage low Earth orbit visualization: 27,572 tracked objects rendered as colored 3D models around a natural-color Earth, with radar beam volumes rising from sensor sites, a selected satellite's orbit path drawn around the globe, and its catalog details in a fixed card." />
-        </div>
-      </a>
     </div>
   </section>
 
