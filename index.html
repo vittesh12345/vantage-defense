@@ -404,11 +404,11 @@
   .shot-stage.live iframe{opacity:1}
 
   /* ---------- ONE-SIDEDNESS DISCRIMINATOR ----------
-     Promoted out of ledger row 03 to close the capabilities section. This is
-     the discriminator the whole proximity claim rests on, so it gets its own
-     figure. Labelled as a schematic and deliberately given no console chrome:
-     per the system rule, anything that looks like product output must be
-     product output. */
+     Promoted out of ledger row 03. This is the discriminator the whole
+     proximity claim rests on, so it gets its own figure; the response figure
+     below it now closes the section. Labelled as a schematic and deliberately
+     given no console chrome: per the system rule, anything that looks like
+     product output must be product output. */
   .disc-figure{margin-top:var(--spacing-64);padding-top:var(--spacing-40);border-top:1px solid var(--rule-edge)}
   .disc-lead{display:inline-flex;align-items:center;gap:var(--spacing-8);font-family:var(--font-mono);font-size:var(--text-caption);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint);margin-bottom:var(--spacing-24)}
   .disc{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24)}
@@ -431,6 +431,16 @@
   .disc-figure.in .disc-wipe{width:42px;transition:width 420ms linear 260ms}
   .disc-label{opacity:0}
   .disc-figure.in .disc-label{opacity:1;transition:opacity 260ms var(--motion-ease-out) 720ms}
+
+  /* ---------- RESPONSE FIGURE ----------
+     Promoted out of ledger row 06 to close the capabilities section, the same
+     rule that promoted the discriminator out of row 03. Deliberately a single
+     wide chart rather than a second side-by-side pair, so the section does not
+     repeat the discriminator's primitive back to back. Shares the figure
+     scaffolding (.disc-figure border, lead, note) and the .disc-label reveal,
+     which the <noscript> override already releases. */
+  .resp-chart{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);padding:var(--spacing-24)}
+  .resp-chart svg{display:block;width:100%;height:auto}
 
   /* ---------- MISSION CARDS (the only card grid on the page) ---------- */
   .dom-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24)}
@@ -800,6 +810,17 @@
           </details>
           <div class="metric"><span class="val">1,039</span><span class="key">baselines<br>scored pre-event</span></div>
         </li>
+        <li class="reveal">
+          <span class="idx">06</span>
+          <details>
+            <summary>
+              <h3>Defensive maneuver response</h3>
+              <span class="disclose" aria-hidden="true"></span>
+            </summary>
+            <p>Tells you what to do about it: the smallest engine burn that keeps a threatened asset outside its keep-out volume, within the propellant it actually has left. The solver blocks an approach before it enters the volume, or opens the range when the intruder is already inside, and a pass that already clears draws no recommendation at all. Every dodge carries its burn direction, execution time, fuel cost, and the miss distance it buys, shown in the figure below. Scored on the replayed reconstruction corpus: three labelled-synthetic campaigns and two benign controls.</p>
+          </details>
+          <div class="metric"><span class="val">0.15 m/s</span><span class="key">median dodge Δv<br>2/2 neutralized · 0 spurious</span></div>
+        </li>
       </ol>
 
       <div class="disc-figure reveal">
@@ -850,6 +871,40 @@
           </div>
         </div>
         <p class="disc-note">Same geometry in both cases, same separation, same closing rate. The only difference is which side is spending propellant to be there, and on the seeded scenarios that difference alone carries the call at 100%.</p>
+      </div>
+
+      <!-- The payoff of the row above it: detection separates the shadower,
+           and this is what the system says to do about one. One overlaid chart
+           rather than a second side-by-side pair, so the section does not run
+           the discriminator's primitive twice in a row. The diamond is the
+           same Δv mark, in the same watch color, that the hero orbit track and
+           the residual trace already use. -->
+      <div class="disc-figure resp-figure reveal">
+        <span class="disc-lead">Schematic · defensive maneuver response</span>
+        <div class="resp-chart">
+          <svg viewBox="0 0 560 200" role="img" aria-label="Range between a protected asset and a closing object over 24 hours, shown twice on one chart. Left alone, the range dips to 3 kilometers, deep inside a shaded 25 kilometer keep-out band. After a 1.3 meter-per-second retrograde burn ten minutes in, the range holds at the keep-out boundary instead.">
+            <!-- keep-out volume: the one region on the chart that is a state -->
+            <rect x="16" y="122" width="528" height="50" fill="rgba(255,107,95,.06)"/>
+            <line x1="16" y1="122" x2="544" y2="122" stroke="#ff6b5f" stroke-opacity=".55" stroke-width="1" stroke-dasharray="4 3"/>
+            <text x="22" y="136" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10">KEEP-OUT · 25 KM</text>
+            <!-- time axis -->
+            <line x1="16" y1="172" x2="544" y2="172" stroke="#3d4552" stroke-width="1"/>
+            <text x="16" y="188" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10">0 h</text>
+            <text x="240" y="188" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="middle">T+6 h</text>
+            <text x="544" y="188" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">24 h</text>
+            <!-- do nothing: the violating trajectory -->
+            <path d="M16 40 Q140 62 240 164 Q340 62 544 30" fill="none" stroke="#ff6b5f" stroke-width="1.6"/>
+            <circle cx="240" cy="164" r="3.5" fill="none" stroke="#ff6b5f" stroke-width="1.4"/>
+            <text class="disc-label" x="254" y="168" fill="#ff6b5f" font-family="IBM Plex Mono, monospace" font-size="10">3 KM</text>
+            <text class="disc-label" x="540" y="22" fill="#ff6b5f" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">DO NOTHING</text>
+            <!-- the recommended burn, and the trajectory it buys -->
+            <path d="M70 49 L76 55 L70 61 L64 55 Z" fill="#ffca16"/>
+            <text class="disc-label" x="84" y="44" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10">1.3 M/S RETROGRADE · T+10 MIN</text>
+            <path d="M70 55 Q200 76 320 90 Q440 104 544 118" fill="none" stroke="#3ad389" stroke-width="1.6"/>
+            <text class="disc-label" x="540" y="96" fill="#3ad389" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">AFTER THE BURN</text>
+          </svg>
+        </div>
+        <p class="disc-note">One synthetic encounter, computed by the same solver the console runs: left alone the pass reaches 3 km at T+6 h, and a 1.3 m/s retrograde burn ten minutes in holds it at the 25 km boundary. Replayed across the reconstruction corpus (three labelled-synthetic campaigns, two benign controls), the responder neutralized both keep-out breaches inside their truth windows at a median 0.15 m/s, spent nothing on the campaign that parked outside the volume, and recommended zero burns on the controls with it armed across their entire span.</p>
       </div>
     </div>
   </section>
