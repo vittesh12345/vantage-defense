@@ -442,6 +442,40 @@
   .resp-chart{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);padding:var(--spacing-24)}
   .resp-chart svg{display:block;width:100%;height:auto}
 
+  /* ---------- CAPABILITY DEMOS ----------
+     The learned engines running, replaying real exported output. One tabbed
+     figure rather than three stacked ones, so the section does not end in a run
+     of near-identical charts. The tab row is the ledger's disclosure interaction
+     in another form (a selector on a schematic), not a new primitive. Everything
+     is drawn from tokens; the SVG itself is built by scripts/capability-demos.js.
+     Default state is the text fallback, which is what a no-script visitor keeps. */
+  .demo-tabs{display:flex;flex-wrap:wrap;gap:var(--spacing-8);margin-bottom:var(--spacing-16)}
+  .demo-tab{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-xs);
+    padding:8px 14px;min-height:44px;font-family:var(--font-sans);font-size:var(--text-body-sm);
+    color:var(--text-muted);cursor:pointer;transition:color var(--motion-fast) var(--motion-ease-out),border-color var(--motion-fast) var(--motion-ease-out)}
+  .demo-tab:hover{color:var(--text-body);border-color:var(--rule-hairline)}
+  .demo-tab.is-active{color:var(--text-primary);border-color:rgba(255,255,255,.42)}
+  .demo-stage{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);padding:var(--spacing-20)}
+  .demo-svg{display:block;width:100%;height:auto}
+  /* markers and labels fade in once the wipe that reveals the trace completes */
+  .demo-svg .demo-mk{opacity:0}
+  .demo-svg.demo-done .demo-mk{opacity:1;transition:opacity 260ms var(--motion-ease-out)}
+  .demo-chips{display:flex;flex-wrap:wrap;gap:var(--spacing-8);margin-top:var(--spacing-12)}
+  .demo-chip{background:transparent;border:1px solid var(--rule-hairline);border-radius:var(--radius-xs);
+    padding:4px 10px;min-height:44px;font-family:var(--font-mono);font-size:var(--text-micro);
+    text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);cursor:pointer;
+    transition:color var(--motion-fast) var(--motion-ease-out),border-color var(--motion-fast) var(--motion-ease-out)}
+  .demo-chip:hover{color:var(--text-muted)}
+  .demo-chip.is-active{color:var(--text-body);border-color:var(--rule-edge)}
+  .demo-note{margin-top:var(--spacing-16)}
+  /* the no-script fallback: honest numbers, no figure */
+  .demo-fallback{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);padding:var(--spacing-24)}
+  .demo-fallback p{color:var(--text-body);font-size:var(--text-body-sm);margin-bottom:var(--spacing-12)}
+  .demo-fallback ul{list-style:none;display:grid;gap:var(--spacing-12)}
+  .demo-fallback li{color:var(--text-muted);font-size:var(--text-body-sm);padding-left:var(--spacing-16);border-left:1px solid var(--rule-hairline)}
+  .demo-fallback b{color:var(--text-body);font-weight:var(--font-weight-semibold)}
+  @media(prefers-reduced-motion:reduce){.demo-svg .demo-mk{opacity:1}}
+
   /* ---------- MISSION CARDS (the only card grid on the page) ---------- */
   .dom-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24)}
   .dom{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);padding:var(--card-padding);display:flex;flex-direction:column}
@@ -928,6 +962,24 @@
         </div>
         <p class="disc-note">One synthetic encounter, computed by the same solver the console runs: left alone the pass reaches 3 km at T+6 h, and a 1.3 m/s retrograde burn ten minutes in holds it at the 25 km boundary. Replayed across the reconstruction corpus (three labelled-synthetic campaigns, two benign controls), the responder neutralized both keep-out breaches inside their truth windows at a median 0.15 m/s, spent nothing on the campaign that parked outside the volume, and recommended zero burns on the controls with it armed across their entire span.</p>
       </div>
+
+      <!-- The learned engines, running. scripts/capability-demos.js replaces the
+           text fallback below with an interactive figure that replays the REAL
+           output the engines produced on their held-out splits (exported by the
+           console's `npm run export:demos` into assets/demos.js). No script, or
+           no data, and the honest headline numbers still stand in the fallback. -->
+      <div class="disc-figure demo-figure reveal" id="engine-demos">
+        <span class="disc-lead">Schematic · learned engines running on labelled-synthetic data</span>
+        <div class="demo-fallback">
+          <p>Three of the learned engines, on their held-out splits:</p>
+          <ul>
+            <li><b>Pattern of life</b> reads a satellite's drift and re-station and the electric propulsion type the fixed rules misread, scoring F<sub>2</sub> 1.00 versus 0.00 on the sampled object under the public SPLID evaluator.</li>
+            <li><b>Sensor tasking</b> matches the strong greedy scheduler across the catalogue and both beat naive tasking, while holding the worst-tracked object 15% tighter than greedy (13.7 vs 16.0 km).</li>
+            <li><b>Health monitoring</b>, fit only on healthy telemetry, scores the healthy segment below its threshold and every anomalous one well above it, in the shape of the public OPS-SAT benchmark.</li>
+          </ul>
+        </div>
+        <p class="disc-note">Real engine output, replayed. Every marker, curve, and score is a value an engine returned on data it was not trained on, exported from the console and rendered here; the input is labelled-synthetic, the same data the benchmarks score.</p>
+      </div>
     </div>
   </section>
 
@@ -1095,5 +1147,10 @@
 <script src="scripts/site.js" defer></script>
 <script src="scripts/hero-satellite.js" defer></script>
 <script src="scripts/console-preview.js" defer></script>
+<!-- Real engine output for the capability demos, exported by the console's
+     `npm run export:demos`. Deferred data + renderer; the figure ships a text
+     fallback so no-script visitors keep the honest numbers. -->
+<script src="assets/demos.js" defer></script>
+<script src="scripts/capability-demos.js" defer></script>
 </body>
 </html>
