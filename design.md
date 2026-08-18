@@ -170,14 +170,26 @@ Where the other two went, and why each landed there:
 
 The three cells are not interchangeable and are not three of a kind. Two are **outputs** computed on named public objects, which is what gets a meeting; the third is a **calibration input** for a different reader, the evaluator who has to sign off. Replacing the rail with the calibration figure alone was considered and rejected: it is the only one of the three that already appears elsewhere on the page (ledger row 04 twice, and the assurance panel), and it is the one that answers the later question rather than the first one.
 
-| # | Section | Surface | Padding |
-|---|---------|---------|---------|
-| 1 | Hero `#top` | canvas | 144 / 96 |
-| 2 | Platform `#platform` | band | 128 |
-| 3 | Capabilities `#capabilities` | canvas | 96 |
-| 4 | Assurance `#assurance` | band | 128 |
-| 5 | Who it's for `#segments` | canvas | 96 |
-| 6 | Closing CTA `#contact` | band | 128 |
+| # | Section | Surface | Padding | Height |
+|---|---------|---------|---------|--------|
+| 1 | Hero `#top` | canvas | 144 / 96 | 1.00 |
+| 2 | Platform `#platform` | band | 128 | 1.64 |
+| 3 | Capabilities `#capabilities` | canvas | 96 | 1.63 |
+| 4 | Evidence `#assurance` | band | 128 | 1.68 |
+| 5 | Who it's for `#segments` | canvas | 96 | 1.27 |
+| 6 | Closing CTA `#contact` | band | 128 | 0.78 |
+
+Height is in viewports, measured at 1707×892 with every reveal released. **The `id` stays `assurance` while the label says Evidence**, so briefing emails and any other inbound link to `/#assurance` keep working; nothing in this system requires an id to match its eyebrow, and §Pages already treats a stale link landing badly as a real cost.
+
+### The section budget
+
+**No section may exceed roughly twice the median section height.** At the numbers above that is a ceiling near 2.5 screens, and nothing currently comes close to it.
+
+This rule exists because every other rule in this file is *local*, and a section can therefore fail while every individual decision inside it passes. `#capabilities` reached **4.01 screens, 41% of the page and 2.5× the next largest section**, by admitting two figures that were each correctly argued against the primitive-repetition rule. Neither argument was wrong. There was simply nothing that looked at the section as a whole. The full record is under §Removed: the response figure and the capability demos.
+
+The check is a measurement, not a judgment: total the section heights, take the median, and compare. **Run it before adding a block to a section that already carries one**, which is the only situation in which this has ever been breached.
+
+When a section does breach it, the order to try is: move the block to a section that is under budget (which is what the discriminator did), then cut it, then split the section. Splitting is last because §Section separation's table is load-bearing and a seventh row has to alternate surface *and* padding tier against both neighbours, which cascades exactly the way moving `#segments` does.
 
 This order is load-bearing and **section 5 does not move**. The full cost of moving it, and the signpost that reaches the same goal without touching this table, are recorded under §Audience signpost.
 
@@ -228,7 +240,9 @@ Links rather than buttons, so neither the ghost-button hierarchy nor the one-car
 ### Capability ledger
 Full-width rows on a shared rule: a mono index column, a prose column, and a right-aligned mono metric column. Rows divided by `--rule-hairline`, the set bounded top and bottom by `--rule-edge`. Not a card grid, and deliberately so: it replaced three stacked bordered grids. Rows without a headline figure show the mono sub-label alone.
 
-**Rows stay uniform.** The one-sidedness discriminator was previously embedded inside row 03, which made that row roughly three times the height of every other one and buried the sharpest idea in the product inside a list item. Anything that wants more room than a row is not a row: promote it to a figure below the ledger. Prose here is `--text-body-md` on `--text-body`; at 14px muted, five stacked rows were the densest thing on the page.
+**Rows stay uniform.** The one-sidedness discriminator was previously embedded inside row 03, which made that row roughly three times the height of every other one and buried the sharpest idea in the product inside a list item. Anything that wants more room than a row is not a row: promote it to a figure. Prose here is `--text-body-md` on `--text-body`; at 14px muted, five stacked rows were the densest thing on the page.
+
+**A promoted figure does not have to stay in this section, and the pointer has to follow it.** The discriminator was promoted out of row 03 to a figure below the ledger, and later moved again to `#assurance` under §The section budget. Row 03's prose said "shown below" throughout, which stopped being true on the second move: it now links `#assurance` by name. `.ledger p a` exists for exactly that link, a hairline underline that lifts on hover, scoped so it cannot leak into other prose. **If a figure moves, grep the ledger for "below" before shipping.**
 
 A figure headline only earns the `.val` slot if the number is **new**. `84%` and `100%` appear in the hero metric rail, so rows 01 and 03 carry a mono sub-label instead of restating them. Rows 04 and 05 keep their figures because those numbers appear nowhere else.
 
@@ -280,7 +294,11 @@ The four gate cells are a **tally of one run**, not a sequence of steps. The pip
 
 A sweep across the hash "as if the bundle is being cryptographically finalized" is refused on the same grounds as the sensor sweep in §Acquisition: the bundle was sealed on release. Animating the act of sealing at scroll time dramatises an operation that is not happening.
 
-The page's focal moment. Framed figure chrome at full width, a chrome header carrying the policy name and the verdict chip, then a two-column body: the statement plus the four-cell gate readout on the left, the explanation plus the sealed hash on the right. The gate cells use `--status-nominal` for PASS and `--status-watch` for MONITOR; FAIL and SKIP stay faint because nothing fired.
+**The section is labelled Evidence and holds two blocks, in this order: the discriminator, then this panel.** The discriminator is the evidence behind *one call*, the gate is the evidence behind *every release*, and naming the section for the pair is what earns them a single home. Specific before general, so the section still ends on the seal and the link into the console, which is what makes this the focal moment rather than the schematic above it. The sec-head paragraph names both, in that order, so the reader is told what is coming.
+
+The discriminator arrived here from `#capabilities` as the first remedy in §The section budget: move an over-budget block to a section under budget. `#assurance` was the page's shortest body section at 1.04 screens and is now 1.68, which is inside the ceiling.
+
+The panel itself: framed figure chrome at full width, a chrome header carrying the policy name and the verdict chip, then a two-column body: the statement plus the four-cell gate readout on the left, the explanation plus the sealed hash on the right. The gate cells use `--status-nominal` for PASS and `--status-watch` for MONITOR; FAIL and SKIP stay faint because nothing fired.
 
 ### Stage rail
 Four numbered stages along one `--rule-edge` rule, each marked by a 32px × 3px `--text-primary` tick sitting on the rule. No boxes. Used for the pipeline.
@@ -300,18 +318,30 @@ No JavaScript: `.disc-figure` is already a `.reveal`, so `.in` arrives on scroll
 
 **Worth knowing for a future pass:** the note under this figure claims *"The only difference is which side is spending propellant."* The schematic actually differs in three places, since the marker colours and the labels differ too. The animation now foregrounds the one difference the note names, but the copy and the drawing still disagree slightly, and the honest fix is a copy change rather than more motion.
 
-### The response figure
-Promoted out of ledger row 06 (defensive maneuver response) by the same rule that promoted the discriminator out of row 03, and it now closes the capabilities section: detection, discrimination, response, in that order. It is deliberately **one overlaid chart, not a second side-by-side pair**, so the section does not run the discriminator's primitive twice in a row: a shaded keep-out band (the one region on the chart that is a state, in `--status-threat` at low alpha), the do-nothing range curve diving inside it in threat, and the post-burn curve holding at the boundary in nominal. The burn is a diamond in `--status-watch`, the same Δv mark with the same meaning it carries on the hero orbit track and in the residual trace. Labels ride the existing `.disc-label` reveal, which the `<noscript>` override already releases; the only new CSS is the `.resp-chart` panel frame. Its note carries the corpus denominators (three labelled-synthetic campaigns, two benign controls) because the ledger row's figures rest on them.
+### Removed: the response figure and the capability demos
 
-### The capability demos
-The learned engines, running. `#engine-demos` is **one tabbed figure**, not three stacked charts, for the same reason the response figure is one chart: three near-identical schematics in a row would flatten the section. The tab row is the ledger's disclosure interaction in another form, a selector on a schematic, so it is not a new primitive; the SVG is built by `scripts/capability-demos.js`.
+Two figures used to sit below the discriminator in `#capabilities`: an overlaid range chart for defensive maneuver response, and `#engine-demos`, a tabbed figure replaying real exported output from the pattern-of-life, sensor-tasking and telemetry engines. **Both are cut.** They are recorded here rather than deleted silently, because each was individually well argued and the failure was not in either one.
 
-**It replays REAL output, not a fabricated animation, which is the whole reason it is allowed.** §Imagery bans anything that looks like product output but is not. These SVGs are the actual values the pattern-of-life, sensor-tasking, and telemetry engines returned on their held-out splits, exported by the console's `npm run export:demos` into `assets/demos.js` and rendered here; the input is labelled-synthetic and the header says so (`SCHEMATIC · learned engines running on labelled-synthetic data`). This is the same reasoning as embedding `/demo/`: real engine output in a more honest medium, not a second copy that can drift. The three tabs are the pattern-of-life longitude track with its detected drift/re-station nodes and the propulsion-type read (nominal green vs the rules' threat-red misread), the three tasking uncertainty curves (trained and greedy hugging, naive above, with the worst-object numbers annotated), and a telemetry trace with the detector's `CLEAR`/`FLAGGED` verdict and a segment selector.
+**What went wrong was cumulative, and no rule in this file was watching for it.** Each figure was admitted on a *local* test. The response chart was defended as "one overlaid chart, not a second side-by-side pair, so the section does not run the discriminator's primitive twice in a row." The demos were defended as "one tabbed figure, not three stacked charts." Both arguments are about **not repeating a primitive**, both were correct on their own terms, and both passed. Nothing measured the total.
 
-**Progressive enhancement, and the honesty rule, both land on the fallback.** The figure ships a `.demo-fallback` text summary as its default DOM: the same three headline results in prose. `capability-demos.js` hides it and builds the interactive figure only when the data and the container are both present (fail closed); with no script or no data, the honest numbers still stand, so nothing is lost and nothing is a placeholder. The wipe animation is a further layer, skipped under `prefers-reduced-motion` (markers set to `opacity:1` immediately). Every colour is a token used for its declared meaning: nominal for correct/healthy, threat for the rules' error and the flagged anomaly, watch for the greedy baseline, faint for naive. No figure in this block puts a synthetic score where it could read as an absolute real-world claim; each caption states the comparison and names the public evaluator (SPLID, OPS-SAT).
+Measured before the cut:
+
+| | height | share |
+|---|---|---|
+| `#capabilities` | 3580px · 4.01 screens | 41% of a 9.8-screen page |
+| next largest section | 1439px · 1.61 screens | `#platform` |
+| the three figures | 1966px | more than the ledger they illustrated (1046px) |
+
+The section had reached **2.5× the next largest** and every other section on the page was about one screen. It got there in three commits, going 5 ledger rows and 1 figure to 8 rows and 3 figures without any single step looking unreasonable.
+
+After the cut, with the discriminator moved to `#assurance`: capabilities 1422px (1.63 screens), assurance 1466px (1.68), page total **8.0 screens**. The three body sections now sit within 0.05 screens of each other.
+
+**The claims did not go with the figures.** Ledger rows 06, 07 and 08 stay, with their prose and their mono sub-labels; row 06 lost only the trailing "shown in the figure below". The demos' headline results were already stated in that figure's own text fallback and in the rows themselves, so nothing that was checkable became unstated. Nothing here was removed for being untrue, and the corpus denominators still travel with row 06 where the figures rest on them.
+
+**What this cost, honestly.** The engine demos were the newest and most impressive work on the page, and they were real output rather than a drawing, which is the highest evidentiary standard this file recognises. Losing them is a real loss of proof. `assets/demos.js` and `scripts/capability-demos.js` are left in the repository unreferenced rather than deleted, because `demos.js` is the only copy of that exported data and the `npm run export:demos` script it names does not exist in the engine repo. **If the demos come back, they need a home that is not `#capabilities`, and the budget rule in §Section separation has to be satisfied before they land.**
 
 ### Explanatory schematic
-Inline SVG, hairline strokes, mono labels, status colors where a state is being shown. Always labelled as a schematic and never given console chrome that could read as product output. Two exist: the residual trace in the hero (physics subtracted, Δv marked in `--status-watch`) and the one-sidedness discriminator in orbital compute (benign vs shadowing, identical geometry, the only difference being the Δv).
+Inline SVG, hairline strokes, mono labels, status colors where a state is being shown. Always labelled as a schematic and never given console chrome that could read as product output. Two exist: the residual trace in the hero (physics subtracted, Δv marked in `--status-watch`) and the one-sidedness discriminator, which opens `#assurance` (benign vs shadowing, identical geometry, the only difference being the Δv). It is the only figure of its kind left on the page; the two that briefly joined it are recorded under §Removed.
 
 ### Hero spacecraft
 The one drawing in the system that moves. A wireframe spacecraft on an orbit track, rendered to `<canvas>` by `scripts/hero-satellite.js`, sitting in the hero's framed figure. It is line work under the same rules as the SVG schematics, and it is governed by them, not exempted from them:

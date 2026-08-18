@@ -290,6 +290,13 @@
   .ledger .idx{font-family:var(--font-mono);font-size:var(--text-body-sm);color:var(--text-faint);padding-top:11px}
   .ledger h3{font-weight:var(--font-weight-semibold);color:var(--text-primary);font-size:19px;letter-spacing:-.01em;margin:0}
   .ledger p{color:var(--text-body);font-size:var(--text-body-md);max-width:64ch;margin-top:var(--spacing-12)}
+  /* Row 03 points at the discriminator, which now lives in #assurance rather
+     than directly below the ledger. Same treatment as .statement-link one tier
+     down: a hairline underline that lifts on hover, enough to read as a link
+     without breaking the sentence it sits in. Scoped, so it cannot leak into
+     other prose. */
+  .ledger p a{color:var(--text-primary);border-bottom:1px solid var(--rule-hairline);transition:border-color var(--motion-fast) var(--motion-ease-out)}
+  .ledger p a:hover,.ledger p a:focus-visible{border-bottom-color:var(--text-primary)}
 
   /* ---------- LEDGER DISCLOSURE ----------
      Descriptions collapse behind their own capability name so the ledger can
@@ -427,12 +434,22 @@
   .shot-stage.live iframe{opacity:1}
 
   /* ---------- ONE-SIDEDNESS DISCRIMINATOR ----------
-     Promoted out of ledger row 03. This is the discriminator the whole
-     proximity claim rests on, so it gets its own figure; the response figure
-     below it now closes the section. Labelled as a schematic and deliberately
-     given no console chrome: per the system rule, anything that looks like
-     product output must be product output. */
+     Promoted out of ledger row 03, and since moved out of #capabilities
+     entirely: it now opens #assurance, where it is the evidence for one call
+     standing above the gate that is the evidence for every release. Labelled
+     as a schematic and deliberately given no console chrome: per the system
+     rule, anything that looks like product output must be product output.
+
+     It is the only .disc-figure left on the page. The response chart and the
+     engine-demo figure used the same scaffolding and were removed; see
+     design.md for why the section could not carry three of these. */
   .disc-figure{margin-top:var(--spacing-64);padding-top:var(--spacing-40);border-top:1px solid var(--rule-edge)}
+  /* In #assurance it is the first block under the sec-head, so it drops the
+     top rule and the padding that went with it: the eyebrow's own 26px rule
+     sits ~100px above, and two rules that close together read as clutter
+     rather than structure. The margin below it separates it from the gate
+     panel, which carries its own perimeter and does not need a rule. */
+  .assurance-figure{margin-top:var(--spacing-48);margin-bottom:var(--spacing-64);padding-top:0;border-top:0}
   .disc-lead{display:inline-flex;align-items:center;gap:var(--spacing-8);font-family:var(--font-mono);font-size:var(--text-caption);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint);margin-bottom:var(--spacing-24)}
   .disc{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24)}
   .disc-case{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);padding:var(--spacing-24)}
@@ -454,50 +471,6 @@
   .disc-figure.in .disc-wipe{width:42px;transition:width 420ms linear 260ms}
   .disc-label{opacity:0}
   .disc-figure.in .disc-label{opacity:1;transition:opacity 260ms var(--motion-ease-out) 720ms}
-
-  /* ---------- RESPONSE FIGURE ----------
-     Promoted out of ledger row 06 to close the capabilities section, the same
-     rule that promoted the discriminator out of row 03. Deliberately a single
-     wide chart rather than a second side-by-side pair, so the section does not
-     repeat the discriminator's primitive back to back. Shares the figure
-     scaffolding (.disc-figure border, lead, note) and the .disc-label reveal,
-     which the <noscript> override already releases. */
-  .resp-chart{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);padding:var(--spacing-24)}
-  .resp-chart svg{display:block;width:100%;height:auto}
-
-  /* ---------- CAPABILITY DEMOS ----------
-     The learned engines running, replaying real exported output. One tabbed
-     figure rather than three stacked ones, so the section does not end in a run
-     of near-identical charts. The tab row is the ledger's disclosure interaction
-     in another form (a selector on a schematic), not a new primitive. Everything
-     is drawn from tokens; the SVG itself is built by scripts/capability-demos.js.
-     Default state is the text fallback, which is what a no-script visitor keeps. */
-  .demo-tabs{display:flex;flex-wrap:wrap;gap:var(--spacing-8);margin-bottom:var(--spacing-16)}
-  .demo-tab{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-xs);
-    padding:8px 14px;min-height:44px;font-family:var(--font-sans);font-size:var(--text-body-sm);
-    color:var(--text-muted);cursor:pointer;transition:color var(--motion-fast) var(--motion-ease-out),border-color var(--motion-fast) var(--motion-ease-out)}
-  .demo-tab:hover{color:var(--text-body);border-color:var(--rule-hairline)}
-  .demo-tab.is-active{color:var(--text-primary);border-color:rgba(255,255,255,.42)}
-  .demo-stage{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);padding:var(--spacing-20)}
-  .demo-svg{display:block;width:100%;height:auto}
-  /* markers and labels fade in once the wipe that reveals the trace completes */
-  .demo-svg .demo-mk{opacity:0}
-  .demo-svg.demo-done .demo-mk{opacity:1;transition:opacity 260ms var(--motion-ease-out)}
-  .demo-chips{display:flex;flex-wrap:wrap;gap:var(--spacing-8);margin-top:var(--spacing-12)}
-  .demo-chip{background:transparent;border:1px solid var(--rule-hairline);border-radius:var(--radius-xs);
-    padding:4px 10px;min-height:44px;font-family:var(--font-mono);font-size:var(--text-micro);
-    text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);cursor:pointer;
-    transition:color var(--motion-fast) var(--motion-ease-out),border-color var(--motion-fast) var(--motion-ease-out)}
-  .demo-chip:hover{color:var(--text-muted)}
-  .demo-chip.is-active{color:var(--text-body);border-color:var(--rule-edge)}
-  .demo-note{margin-top:var(--spacing-16)}
-  /* the no-script fallback: honest numbers, no figure */
-  .demo-fallback{background:var(--surface-panel);border:1px solid var(--rule-edge);border-radius:var(--radius-sm);padding:var(--spacing-24)}
-  .demo-fallback p{color:var(--text-body);font-size:var(--text-body-sm);margin-bottom:var(--spacing-12)}
-  .demo-fallback ul{list-style:none;display:grid;gap:var(--spacing-12)}
-  .demo-fallback li{color:var(--text-muted);font-size:var(--text-body-sm);padding-left:var(--spacing-16);border-left:1px solid var(--rule-hairline)}
-  .demo-fallback b{color:var(--text-body);font-weight:var(--font-weight-semibold)}
-  @media(prefers-reduced-motion:reduce){.demo-svg .demo-mk{opacity:1}}
 
   /* ---------- MISSION CARDS (the only card grid on the page) ---------- */
   .dom-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24)}
@@ -598,7 +571,7 @@
       <div class="navlinks" id="primary-nav">
         <a href="#platform">Platform</a>
         <a href="#capabilities">Capabilities</a>
-        <a href="#assurance">Assurance</a>
+        <a href="#assurance">Evidence</a>
         <a href="#segments">Who it's for</a>
         <a class="nav-viz" href="visualization/">Orbit map</a>
         <a class="nav-contact" href="contact/">Request a briefing</a>
@@ -845,7 +818,7 @@
               <h3>Proximity and rendezvous watch (RPO)</h3>
               <span class="disclose" aria-hidden="true"></span>
             </summary>
-            <p>Tells you whether something is deliberately shadowing one of your assets, or merely passing close. It separates a purchased geometry from an incidental pass and from a benign co-orbiting formation. One-sidedness is the discriminator, shown below.</p>
+            <p>Tells you whether something is deliberately shadowing one of your assets, or merely passing close. It separates a purchased geometry from an incidental pass and from a benign co-orbiting formation. One-sidedness is the discriminator, shown under <a href="#assurance">Evidence</a>.</p>
           </details>
           <div class="metric"><span class="val">100%</span><span class="key">seeded shadowing<br>scenarios</span></div>
         </li>
@@ -878,7 +851,7 @@
               <h3>Defensive maneuver response</h3>
               <span class="disclose" aria-hidden="true"></span>
             </summary>
-            <p>Tells you what to do about it: the smallest engine burn that keeps a threatened asset outside its keep-out volume, within the propellant it actually has left. The solver blocks an approach before it enters the volume, or opens the range when the intruder is already inside, and a pass that already clears draws no recommendation at all. Every dodge carries its burn direction, execution time, fuel cost, and the miss distance it buys, shown in the figure below. Scored on the replayed reconstruction corpus: three labelled-synthetic campaigns and two benign controls.</p>
+            <p>Tells you what to do about it: the smallest engine burn that keeps a threatened asset outside its keep-out volume, within the propellant it actually has left. The solver blocks an approach before it enters the volume, or opens the range when the intruder is already inside, and a pass that already clears draws no recommendation at all. Every dodge carries its burn direction, execution time, fuel cost, and the miss distance it buys. Scored on the replayed reconstruction corpus: three labelled-synthetic campaigns and two benign controls.</p>
           </details>
           <div class="metric"><span class="val">0.15 m/s</span><span class="key">median dodge Δv<br>2/2 neutralized · 0 spurious</span></div>
         </li>
@@ -906,7 +879,29 @@
         </li>
       </ol>
 
-      <div class="disc-figure reveal">
+    </div>
+  </section>
+
+  <!-- ASSURANCE -->
+  <section class="sec sec-wide band" id="assurance">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Evidence</span>
+        <h2>Assurance is the product.</h2>
+        <p>Anyone can publish a detection. The question a defense buyer actually has is whether it survives being checked, so Vantage shows what separated the call from the benign case, then grades itself in public and ships the receipt.</p>
+      </div>
+
+      <!-- The discriminator, moved here from #capabilities. It is evidence for
+           one call; the gate below it is evidence for every release. That pair
+           is what the section is now named for, and it is why this sits above
+           the panel rather than below it: specific to general, ending on the
+           seal, which is still the page's focal moment.
+
+           It carries no top rule in this position. In #capabilities the rule
+           separated it from the ledger; here the sec-head is directly above
+           and the eyebrow's own 26px rule is ~100px up, so a second full-bleed
+           rule between them would be clutter rather than structure. -->
+      <div class="disc-figure assurance-figure reveal">
         <span class="disc-lead">Schematic · one-sidedness discriminator</span>
         <div class="disc">
           <div class="disc-case">
@@ -956,68 +951,6 @@
         <p class="disc-note">Same geometry in both cases, same separation, same closing rate. The only difference is which side is spending propellant to be there, and on the seeded scenarios that difference alone carries the call at 100%.</p>
       </div>
 
-      <!-- The payoff of the row above it: detection separates the shadower,
-           and this is what the system says to do about one. One overlaid chart
-           rather than a second side-by-side pair, so the section does not run
-           the discriminator's primitive twice in a row. The diamond is the
-           same Δv mark, in the same watch color, that the hero orbit track and
-           the residual trace already use. -->
-      <div class="disc-figure resp-figure reveal">
-        <span class="disc-lead">Schematic · defensive maneuver response</span>
-        <div class="resp-chart">
-          <svg viewBox="0 0 560 200" role="img" aria-label="Range between a protected asset and a closing object over 24 hours, shown twice on one chart. Left alone, the range dips to 3 kilometers, deep inside a shaded 25 kilometer keep-out band. After a 1.3 meter-per-second retrograde burn ten minutes in, the range holds at the keep-out boundary instead.">
-            <!-- keep-out volume: the one region on the chart that is a state -->
-            <rect x="16" y="122" width="528" height="50" fill="rgba(255,107,95,.06)"/>
-            <line x1="16" y1="122" x2="544" y2="122" stroke="#ff6b5f" stroke-opacity=".55" stroke-width="1" stroke-dasharray="4 3"/>
-            <text x="22" y="136" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10">KEEP-OUT · 25 KM</text>
-            <!-- time axis -->
-            <line x1="16" y1="172" x2="544" y2="172" stroke="#3d4552" stroke-width="1"/>
-            <text x="16" y="188" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10">0 h</text>
-            <text x="240" y="188" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="middle">T+6 h</text>
-            <text x="544" y="188" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">24 h</text>
-            <!-- do nothing: the violating trajectory -->
-            <path d="M16 40 Q140 62 240 164 Q340 62 544 30" fill="none" stroke="#ff6b5f" stroke-width="1.6"/>
-            <circle cx="240" cy="164" r="3.5" fill="none" stroke="#ff6b5f" stroke-width="1.4"/>
-            <text class="disc-label" x="254" y="168" fill="#ff6b5f" font-family="IBM Plex Mono, monospace" font-size="10">3 KM</text>
-            <text class="disc-label" x="540" y="22" fill="#ff6b5f" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">DO NOTHING</text>
-            <!-- the recommended burn, and the trajectory it buys -->
-            <path d="M70 49 L76 55 L70 61 L64 55 Z" fill="#ffca16"/>
-            <text class="disc-label" x="84" y="44" fill="#878c95" font-family="IBM Plex Mono, monospace" font-size="10">1.3 M/S RETROGRADE · T+10 MIN</text>
-            <path d="M70 55 Q200 76 320 90 Q440 104 544 118" fill="none" stroke="#3ad389" stroke-width="1.6"/>
-            <text class="disc-label" x="540" y="96" fill="#3ad389" font-family="IBM Plex Mono, monospace" font-size="10" text-anchor="end">AFTER THE BURN</text>
-          </svg>
-        </div>
-        <p class="disc-note">One synthetic encounter, computed by the same solver the console runs: left alone the pass reaches 3 km at T+6 h, and a 1.3 m/s retrograde burn ten minutes in holds it at the 25 km boundary. Replayed across the reconstruction corpus (three labelled-synthetic campaigns, two benign controls), the responder neutralized both keep-out breaches inside their truth windows at a median 0.15 m/s, spent nothing on the campaign that parked outside the volume, and recommended zero burns on the controls with it armed across their entire span.</p>
-      </div>
-
-      <!-- The learned engines, running. scripts/capability-demos.js replaces the
-           text fallback below with an interactive figure that replays the REAL
-           output the engines produced on their held-out splits (exported by the
-           console's `npm run export:demos` into assets/demos.js). No script, or
-           no data, and the honest headline numbers still stand in the fallback. -->
-      <div class="disc-figure demo-figure reveal" id="engine-demos">
-        <span class="disc-lead">Schematic · learned engines running on labelled-synthetic data</span>
-        <div class="demo-fallback">
-          <p>Three of the learned engines, on their held-out splits:</p>
-          <ul>
-            <li><b>Pattern of life</b> reads a satellite's drift and re-station and the electric propulsion type the fixed rules misread, scoring F<sub>2</sub> 1.00 versus 0.00 on the sampled object under the public SPLID evaluator.</li>
-            <li><b>Sensor tasking</b> matches the strong greedy scheduler across the catalogue and both beat naive tasking, while holding the worst-tracked object 15% tighter than greedy (13.7 vs 16.0 km).</li>
-            <li><b>Health monitoring</b>, fit only on healthy telemetry, scores the healthy segment below its threshold and every anomalous one well above it, in the shape of the public OPS-SAT benchmark.</li>
-          </ul>
-        </div>
-        <p class="disc-note">Real engine output, replayed. Every marker, curve, and score is a value an engine returned on data it was not trained on, exported from the console and rendered here; the input is labelled-synthetic, the same data the benchmarks score.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ASSURANCE -->
-  <section class="sec sec-wide band" id="assurance">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <span class="eyebrow">Assurance</span>
-        <h2>Assurance is the product.</h2>
-        <p>Anyone can publish a detection. The question a defense buyer actually has is whether the number survives being checked, so Vantage grades itself in public and ships the receipt.</p>
-      </div>
       <div class="assure reveal">
         <div class="assure-head">
           <span>Assurance gate</span>
@@ -1139,7 +1072,7 @@
         <h5>Platform</h5>
         <a href="#platform">Platform</a>
         <a href="#capabilities">Capabilities</a>
-        <a href="#assurance">Assurance</a>
+        <a href="#assurance">Evidence</a>
         <a href="demo/">Live demo</a>
         <a href="visualization/">Orbit map</a>
       </div>
@@ -1174,10 +1107,5 @@
 <script src="scripts/site.js" defer></script>
 <script src="scripts/hero-satellite.js" defer></script>
 <script src="scripts/console-preview.js" defer></script>
-<!-- Real engine output for the capability demos, exported by the console's
-     `npm run export:demos`. Deferred data + renderer; the figure ships a text
-     fallback so no-script visitors keep the honest numbers. -->
-<script src="assets/demos.js" defer></script>
-<script src="scripts/capability-demos.js" defer></script>
 </body>
 </html>
