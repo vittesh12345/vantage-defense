@@ -840,7 +840,7 @@
               <h3>Pattern of life</h3>
               <span class="disclose" aria-hidden="true"></span>
             </summary>
-            <p>Tells you when an object breaks its own routine, judged against itself rather than a fleet average. Each one is baselined on its own history (activity class, maneuver cadence, burn size) and new behavior is scored against the prior that existed before it. Dormant-then-active is the classic early warning. The behavioral model is now learned rather than hand-tuned: fit from labelled data and scored by an exact port of the public SPLID benchmark's official evaluator, where on held-out data it more than quadruples the F<sub>2</sub> of the fixed-rule baseline it replaces.</p>
+            <p>Tells you when an object breaks its own routine, judged against its own prior history rather than a fleet average. Dormant-then-active is the classic early warning. The model is learned rather than hand-tuned: scored on held-out data by an exact port of the public SPLID evaluator, it more than quadruples the F<sub>2</sub> of the fixed-rule baseline it replaces.</p>
           </details>
           <div class="metric"><span class="val">1,039</span><span class="key">baselines<br>scored pre-event</span></div>
         </li>
@@ -851,7 +851,7 @@
               <h3>Defensive maneuver response</h3>
               <span class="disclose" aria-hidden="true"></span>
             </summary>
-            <p>Tells you what to do about it: the smallest engine burn that keeps a threatened asset outside its keep-out volume, within the propellant it actually has left. The solver blocks an approach before it enters the volume, or opens the range when the intruder is already inside, and a pass that already clears draws no recommendation at all. Every dodge carries its burn direction, execution time, fuel cost, and the miss distance it buys. Scored on the replayed reconstruction corpus: three labelled-synthetic campaigns and two benign controls.</p>
+            <p>Tells you what to do about it: the smallest burn that keeps a threatened asset outside its keep-out volume, within the propellant it has left, and no recommendation at all for a pass that already clears. Each carries its direction, timing, fuel cost, and the miss it buys. Scored on three labelled-synthetic campaigns and two benign controls.</p>
           </details>
           <div class="metric"><span class="val">0.15 m/s</span><span class="key">median dodge Δv<br>2/2 neutralized · 0 spurious</span></div>
         </li>
@@ -862,7 +862,7 @@
               <h3>Sensor tasking</h3>
               <span class="disclose" aria-hidden="true"></span>
             </summary>
-            <p>Turns the warning queue into a schedule: which object each sensor should look at next, so a network spends its scarce minutes where the uncertainty and the threat are, not on whatever happens to be overhead. The scheduler is trained against a myopic baseline on held-out scenarios built with real visibility geometry, and its corrections are legible: it breaks from the greedy pick to catch a closing pass, or an object about to set, that the myopic choice would strand. This is the kill-chain gap the government keeps naming, tasking the right thing at the right time.</p>
+            <p>Turns the warning queue into a schedule: which object each sensor looks at next, so a network spends its scarce minutes where the uncertainty and the threat are, not on whatever is overhead. Trained on held-out scenarios with real visibility geometry, it breaks from the greedy pick to catch a closing pass that would otherwise be stranded. This is the kill-chain gap the government keeps naming.</p>
           </details>
           <div class="metric"><span class="key">trained scheduler<br>beats myopic + random</span></div>
         </li>
@@ -873,7 +873,7 @@
               <h3>Spacecraft health monitoring</h3>
               <span class="disclose" aria-hidden="true"></span>
             </summary>
-            <p>The same discipline pointed inward, at a satellite's own telemetry: flag the segment where a channel breaks its nominal pattern, a spike, a stuck sensor, a slow drift, before an operator would catch it by eye. It is built and scored in the shape of the public OPS-SAT anomaly benchmark, with a detector fit only on healthy history so it needs no catalogue of past failures to recognize a new one. This is the commercial edge of the same machinery, for fleet operators as much as for defense.</p>
+            <p>The same discipline pointed inward, at a satellite's own telemetry: flag the segment where a channel breaks its nominal pattern, a spike, a stuck sensor, a slow drift, before an operator sees it. The detector is fit only on healthy history, so it needs no catalogue of past failures to recognize a new one, and it is scored in the shape of the public OPS-SAT benchmark.</p>
           </details>
           <div class="metric"><span class="key">OPS-SAT benchmark<br>anomaly detection</span></div>
         </li>
