@@ -74,7 +74,25 @@
   --text-body-lg: 19px;   /* lede, mission copy                               */
 
   /* Fluid display sizes. Hierarchy comes from scale and tracking, not weight. */
-  --text-display: clamp(38px, 6vw,   72px);
+  /* Used by exactly one element, the hero h1, which is set in --font-mono.
+     Re-derived for that face: IBM Plex Mono advances 0.6em per character
+     against Space Grotesk's ~0.5em average, so the old 38/6vw/72 overflowed
+     its column by a whole line. The hero headline declares one sentence per
+     line and its longest sentence is 21 characters, so the ceiling is the
+     largest size at which 21ch clears the 551px hero column:
+       551 / (21 x 0.58em)  =  45px
+     0.58em, not 0.6em, because the headline carries -0.02em tracking.
+     3.6vw tracks the same ratio down through the two-column range and holds
+     the break to 900px. If the headline copy changes, re-derive from the new
+     longest sentence: this ceiling is not a taste value.
+
+     The 27px floor is measured, not chosen. It is the largest floor at which
+     21ch still clears the gutters on a 390px viewport, and it buys 375px as
+     well: at 28px the headline goes to three lines on a 390px phone, at 29px
+     on a 375px one. Below 360px it goes to three lines regardless, and that
+     is accepted: the declared break means the third line is the tail of the
+     second sentence, never a sentence boundary landing mid-line.            */
+  --text-display: clamp(27px, 3.6vw, 45px);
   --text-h2:      clamp(28px, 3.6vw, 44px);
   --text-h2-lg:   clamp(30px, 4.4vw, 50px);
   --text-statement: clamp(23px, 2.9vw, 34px);

@@ -4,7 +4,7 @@
 
 **Theme:** dark only
 
-Vantage runs on a pure-black canvas (`#000000`) with content lifted onto three progressively lighter near-black surfaces. Hierarchy comes from scale, tracking, and surface level, never from drop shadows or fills. Space Grotesk carries prose at weights 500 and 600; IBM Plex Mono carries everything the engine says, which means every figure, label, timestamp, hash, and status readout. Buttons are ghost outlines without exception. Radii stop at 4px. The single decorative liberty in the system is color, and it is rationed: green, amber, and red appear only where they carry a real state.
+Vantage runs on a pure-black canvas (`#000000`) with content lifted onto three progressively lighter near-black surfaces. Hierarchy comes from scale, tracking, and surface level, never from drop shadows or fills. Space Grotesk carries prose at weights 500 and 600; IBM Plex Mono carries everything the engine says, which means every figure, label, timestamp, hash, and status readout, and one deliberate exception: the hero headline, the only display-tier type on the site. Buttons are ghost outlines without exception. Radii stop at 4px. The single decorative liberty in the system is color, and it is rationed: green, amber, and red appear only where they carry a real state.
 
 The reference point is a mission console, not an agency site. When a choice is between "expressive" and "legible under scrutiny," the system picks legible.
 
@@ -66,16 +66,26 @@ The previous palette carried `--color-signal-blue` and `--color-iris-violet`, ea
 ### Space Grotesk: prose
 `--font-sans` · weights 400 / 500 / 600. Only 500 and 600 have tokens (`--font-weight-medium` / `-semibold`); 400 is the body default and is never set explicitly, so it has none.
 
-Headings sit at 500 and sub-headings at 600. Display sizes carry `-0.03em` tracking; nothing above 20px is left at default tracking. Nothing is set in 700.
+Headings sit at 500 and sub-headings at 600. `--tracking-display` (`-0.03em`) carries the h2 tier; nothing above 20px is left at default tracking. Nothing is set in 700. The hero headline is mono and tracks `-0.02em` locally rather than from the token, because `-0.03em` on a fixed-advance face closes the counters too far, and because that token is shared with four headings that stay Space Grotesk.
 
-It replaced Inter, which is the default face of nearly every scaffolded startup page and read as a template no matter what surrounded it. Space Grotesk is wider, has a larger x-height, and reads technical rather than institutional, which is the register this product wants. **It sets optically larger than Inter at the same px**, so the display sizes and the negative tracking were re-checked against it rather than inherited; if the scale changes again, re-check line wrapping at 390px, where the hero headline is closest to breaking.
+It replaced Inter, which is the default face of nearly every scaffolded startup page and read as a template no matter what surrounded it. Space Grotesk is wider, has a larger x-height, and reads technical rather than institutional, which is the register this product wants. **It sets optically larger than Inter at the same px**, so the h2 tier and the negative tracking were re-checked against it rather than inherited. It no longer carries the display tier; that moved to mono, and the 390px wrapping check moved with it.
 
 Overtly sci-fi faces (Orbitron, Michroma, Rajdhani) were rejected on purpose. They read as game HUD or crypto project and work directly against a product whose pitch is auditable evidence for defense buyers. Futurism here comes from proportion, not from styling.
 
 ### IBM Plex Mono: machine voice
 `--font-mono` · weights 400 / 500 / 600
 
-Everything the system *reports* is mono: figures, eyebrows, section labels, tags, timestamps, the assurance readout, hashes, diagram labels, the contact address. Prose is never mono. This split is the strongest single carrier of the brand.
+Everything the system *reports* is mono: figures, eyebrows, section labels, tags, timestamps, the assurance readout, hashes, diagram labels, the contact address. This split is the strongest single carrier of the brand.
+
+**The rule was "prose is never mono", and it now has exactly one exception: the display tier.** The hero `h1` is set in IBM Plex Mono. The reasoning is worth keeping, because the old rule was defensible and the exception has to earn its place against it.
+
+The headline was the largest element on the page and the only one participating in *neither* half of the split that carries the brand. Every figure, label and readout spoke machine; every paragraph spoke prose; and the one thing a visitor's eye lands on first spoke neither, in a face (Space Grotesk at 500) that has since become the default display grotesk of scaffolded AI and startup pages. That is the same charge this file levelled at Inter when it replaced it, and the reasoning had simply caught up with the replacement. The brand was peaking in the footnotes.
+
+**The line is the tier, not the element.** `--text-display` is machine voice; `--text-h2` and everything below it stays Space Grotesk. That is a real line rather than a special case, and it is enforced by the token: `--text-display` is used by exactly one selector, `.hero h1`. Every other heading on the site (`.sec-head h2`, `.cta h2`, and the `h1`s on `/contact/`, `/visualization/` and `404.html`) is sized from `--text-h2` or `--text-h2-lg` and is unaffected.
+
+**What this costs, and why it was accepted anyway.** Mono at display size compresses the contrast that makes the small labels feel special: the headline at 45px and the metric-rail figures at 32px are now the same family, one tier apart. The separation now rests on scale, position and the rule the rail hangs from rather than on family. That is a genuine loss and it is the first thing to look at if the page ever starts reading as uniformly mono. **If a second element is ever proposed for the display tier, that is the point at which this stops being an exception and the whole split has to be re-argued.**
+
+Two things that did *not* change, and should not: the nav, the buttons and all body copy stay Space Grotesk. Mono-ifying those would spend the remaining contrast for nothing, which is the failure this exception is one step away from.
 
 **Not Space Mono**, the superfamily sibling of the prose face. Space Mono is slab-ish and very wide, which hurts precisely where this system leans on mono hardest: dense timestamps, hashes and the gate readout. Keeping two unrelated families also widens the visible gap between prose and machine voice, which is the point of the split.
 
@@ -92,7 +102,7 @@ Everything the system *reports* is mono: figures, eyebrows, section labels, tags
 | h3 | `--text-h3` | `clamp(24px, 3vw, 34px)` |
 | h2 | `--text-h2` | `clamp(28px, 3.6vw, 44px)` |
 | h2-lg | `--text-h2-lg` | `clamp(30px, 4.4vw, 50px)` |
-| display | `--text-display` | `clamp(38px, 6vw, 72px)` |
+| display | `--text-display` | `clamp(27px, 3.6vw, 45px)` · mono, hero h1 only |
 
 Tracking: `--tracking-display` `-0.03em`, `--tracking-tight` `-0.02em`, `--tracking-label` `0.2em` (uppercase mono eyebrows only).
 
@@ -183,6 +193,17 @@ Transparent fill, 1px `--rule-edge` border, `--radius-sm`, `min-height: 44px`, 1
 **At most one `.btn-primary` is visible at a time.** The landing page previously carried three: the header CTA, the hero CTA, and the closing CTA, with the first two on screen together and pointing at the same destination. When the strongest treatment is the default, it stops being a hierarchy, and the audit read the page as having two co-equal primary actions.
 
 The header CTA is therefore deliberately **not** primary on any page. It keeps its priority from placement, being the only button in a 68px bar, which is the other mechanism this component already relies on. The accepted cost is that the one conversion affordance visible mid-scroll is now the quieter control; demoting the hero CTA instead would have been worse, because the hero is where the choice is actually made. On `/contact/` the same rule hands primary to the form's submit.
+
+### Hero headline
+The only display-tier type on the site, and the one place prose is set in machine voice. Why it is mono at all is argued under §Tokens: Typography; this is how it is built.
+
+**One sentence per line, declared rather than wrapped.** The headline is two sentences, and `.hl` sets each one `display:block`. Left to the natural wrap it breaks as `Know why it / moved. And prove / every call.` at every size that fills the column, which puts the first sentence's period mid-line and reads as an accident rather than a break. There is exactly one size where the wrap happens to land on the sentence boundary (44px, measured), and depending on that is luck, not typography.
+
+**The size ceiling is derived from the longest sentence, not chosen.** Mono advances a fixed 0.58em per character at this tracking, so `And prove every call.` at 21 characters is 12.18em wide, and the hero column is 551px: `551 / 12.18 = 45px`. That is the max of `--text-display`. The 27px floor is the same calculation against a 390px viewport's 350px column. **If the headline copy changes, both ends have to be re-derived from the new longest sentence.** This is the one type value on the site that is arithmetic rather than judgment.
+
+Verified two lines at 1440, 1200, 1040, 950, 900, 768, 560, 430, 390 and 375. At 360px and below it goes to three, and the declared break means the extra line is the tail of the second sentence rather than a boundary landing mid-line, which is why that is accepted rather than fixed.
+
+`.hl` stays `display:block` at every width. A sentence too wide for its column wraps *inside* its own block, so the boundary survives even when the measure does not.
 
 ### Eyebrow
 Mono 12px, uppercase, `0.2em` tracking, `--text-faint`, preceded by a 26px `--rule-edge` rule. This is the canonical section label: whatever the eyebrow says is what the nav link and the footer link say.
@@ -549,6 +570,7 @@ The contact page applies the same principle to its form: the working, script-fre
 /* Text */        #ffffff · #e8eaec · #a1a4a5 · #878c95      (worst pairing 4.61:1)
 /* Status */      #3ad389 nominal · #ffca16 watch · #ff6b5f threat
 /* Type */        Space Grotesk 400/500/600 · IBM Plex Mono 400/500/600
+/* Display */     hero h1 only: mono, clamp(27px, 3.6vw, 45px), -0.02em, one sentence per line
 /* Sections */    96 · 64 · 128, alternating canvas/band, never both the same twice
 /* Radius */      2px · 4px
 /* Primary action */ ghost outline, rgba(255,255,255,.42) border, white label: never filled

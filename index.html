@@ -66,11 +66,34 @@
   /* ---------- HERO ---------- */
   .hero{padding:var(--spacing-144) 0 var(--section-pad)}
   .hero-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:var(--spacing-64);align-items:center}
+  /* The page's one display-tier heading, and the only prose on the site set in
+     the machine voice. The rule it breaks and the reason are recorded in
+     design.md §Typography: the headline was the single largest element on the
+     page and the only one participating in neither half of the prose/mono
+     split that carries the brand.
+
+     Tracking is local rather than --tracking-display. That token is shared
+     with four other headings (.sec-head h2, the contact/viz/404 h1s and
+     .cta h2), all of which stay Space Grotesk, and -0.03em on a fixed-advance
+     face closes the counters too far. */
   .hero h1{
+    font-family:var(--font-mono);
     font-weight:var(--font-weight-medium);color:var(--text-primary);
-    font-size:var(--text-display);line-height:1.03;letter-spacing:var(--tracking-display);
+    font-size:var(--text-display);line-height:1.14;letter-spacing:-.02em;
     margin:var(--spacing-24) 0;
   }
+  /* One sentence per line, declared rather than left to the wrap.
+     The headline is two sentences, and at every size that fits the column,
+     natural wrapping lands the first sentence's period mid-line
+     ("moved. And prove"), which reads as an accident rather than a break.
+     Mono's fixed advance makes the declared break safe: the longest sentence
+     is 21 characters, so --text-display is sized against 21ch and the line
+     can never overflow its column.
+
+     Kept block at every width. Below 560px the second sentence may wrap
+     inside its own block, which costs a line but still never breaks across
+     the sentence boundary. */
+  .hero h1 .hl{display:block}
   .hero p.lede{font-size:var(--text-body-lg);color:var(--text-body);max-width:52ch;margin-bottom:var(--spacing-40)}
 
   .fig-body{padding:var(--spacing-20) var(--spacing-16) var(--spacing-16);position:relative}
@@ -505,7 +528,11 @@
 
   @media(max-width:900px){
     .hero-grid{grid-template-columns:1fr;gap:var(--spacing-48)}
-    .hero h1{max-width:15ch}
+    /* 21ch, the longest sentence, so the declared break still holds once the
+       grid goes single-column. It was 15ch against Space Grotesk, which in a
+       fixed-advance face is narrower than the second sentence and would wrap
+       every line of it. */
+    .hero h1{max-width:21ch}
     .assure-body{grid-template-columns:1fr;gap:var(--spacing-32)}
     .stages{grid-template-columns:1fr 1fr}
     .stages .stage{padding-bottom:var(--spacing-24)}
@@ -596,7 +623,7 @@
       <div class="hero-grid">
         <div class="hero-copy">
           <span class="eyebrow reveal">The intelligence layer for space defense</span>
-          <h1 class="reveal">Know why it moved. And prove every call.</h1>
+          <h1 class="reveal"><span class="hl">Know why it moved.</span> <span class="hl">And prove every call.</span></h1>
           <p class="lede reveal">Vantage reads satellite behavior from public orbital data. No telescopes, no radar.</p>
           <div class="cta-row reveal">
             <a href="contact/" class="btn btn-primary">Request a briefing →</a>
