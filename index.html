@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vantage · Assured Space Intelligence</title>
+<meta name="description" content="Today's operators know where satellites are. Vantage understands what they're doing: maneuver detection, intent inference, and surveillance-and-shadowing warning from public orbital data, with sealed, tamper-evident evidence behind every release." />
+<meta name="keywords" content="Vantage, Vantage AI, Vantage Tech, Vantage Industries, Vantage space intelligence, space situational awareness, satellite intelligence, orbital analytics, satellite maneuver detection, space domain awareness, ORBWATCH, RPO detection" />
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
+<meta name="author" content="Vantage" />
+<meta name="theme-color" content="#0e0f12" />
+<link rel="canonical" href="https://vantage.industries/" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Vantage" />
+<meta property="og:title" content="Vantage · Assured Space Intelligence" />
+<meta property="og:description" content="Vantage understands what satellites are doing: maneuver detection, intent inference, and surveillance-and-shadowing warnings from public orbital data." />
+<meta property="og:url" content="https://vantage.industries/" />
+<meta property="og:image" content="https://vantage.industries/assets/og-card.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Earth's limb seen from orbit, with the Vantage wordmark." />
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Vantage · Assured Space Intelligence" />
+<meta name="twitter:description" content="Vantage understands what satellites are doing: maneuver detection, intent inference, and surveillance-and-shadowing warnings from public orbital data." />
+<meta name="twitter:image" content="https://vantage.industries/assets/og-card.jpg" />
+<meta name="twitter:image:alt" content="Earth's limb seen from orbit, with the Vantage wordmark." />
+<!-- Structured data -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Vantage","alternateName":["Vantage Industries","Vantage AI","Vantage Space Intelligence"],"url":"https://vantage.industries/","description":"Vantage delivers assured space intelligence: satellite maneuver detection, intent inference, and surveillance-and-shadowing warnings from public orbital data.","knowsAbout":["Space Situational Awareness","Satellite Intelligence","Orbital Analytics","Space Domain Awareness","Artificial Intelligence"],"contactPoint":{"@type":"ContactPoint","email":"contact@vantage.industries","contactType":"General","url":"https://vantage.industries/contact/"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Vantage","url":"https://vantage.industries/"}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/site.css">
+<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+<style>
+  /* ---------- HERO (dark) ----------
+     Centred statement over the product, the reference's opening move. The
+     console sits in a browser frame below the headline; console-preview.js
+     lays the live /demo/ over the still once the frame is being looked at. */
+  .hero{padding:calc(var(--header-inset) + var(--header-height) + clamp(56px,11vw,132px)) 0 var(--section-pad-lg);text-align:center}
+  .hero .eyebrow{justify-content:center}
+  .hero h1{font-weight:600;color:var(--fg);font-size:var(--text-h1);line-height:1.02;letter-spacing:var(--tracking-display);margin:var(--spacing-24) auto var(--spacing-20);max-width:18ch}
+  .hero h1 .hl{display:block}
+  .hero .lede{font-size:var(--text-lede);color:var(--fg-muted);max-width:52ch;margin:0 auto var(--spacing-32)}
+  .hero .cta-row{justify-content:center;margin-bottom:clamp(48px,7vw,80px)}
+
+  .hero-frame{max-width:1120px;margin:0 auto;text-align:left}
+  .hero-frame .frame-bar .url{font-family:var(--font-mono);letter-spacing:.02em}
+  .shot-stage{position:relative;aspect-ratio:1584/928;overflow:hidden;background:#05070b}
+  .shot-stage img{width:100%;height:auto}
+  .shot-stage iframe{position:absolute;left:0;top:0;width:1584px;height:928px;border:0;transform-origin:0 0;transform:scale(var(--shot-scale,1));pointer-events:none;opacity:0;transition:opacity var(--motion-reveal) var(--motion-ease-out)}
+  .shot-stage.live iframe{opacity:1}
+
+  /* Metric rail: the page's one piece of real-world evidence, kept in the hero
+     because it is the fastest answer to "working system or a deck". */
+  .rail{max-width:1120px;margin:var(--spacing-48) auto 0;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule)}
+  .rail .cell{padding:var(--spacing-24) var(--spacing-24) 0 0}
+  .rail .cell + .cell{border-left:1px solid var(--rule);padding-left:var(--spacing-24)}
+  .rail .num{font-family:var(--font-mono);font-size:clamp(23px,2.3vw,31px);font-weight:500;color:var(--fg);line-height:1.1}
+  .rail .lbl{font-size:14px;color:var(--fg-muted);margin-top:var(--spacing-8);max-width:32ch}
+  .rail-note{max-width:1120px;margin:var(--spacing-20) auto 0;font-family:var(--font-mono);font-size:12px;color:var(--fg-faint);line-height:1.6}
+
+  /* ---------- STATEMENT (light) ---------- */
+  .statement p{font-weight:600;color:var(--fg);font-size:var(--text-statement);line-height:1.1;letter-spacing:var(--tracking-display);max-width:24ch}
+  .statement .dim{color:var(--fg-faint)}
+  .statement em{font-style:italic}
+  .statement a{color:var(--fg);border-bottom:2px solid var(--rule-strong);transition:border-color var(--motion-fast) var(--motion-ease-out)}
+  .statement a:hover{border-bottom-color:var(--fg)}
+  .statement .sub{margin-top:var(--spacing-32);font-family:var(--font-mono);font-size:13px;color:var(--fg-muted);max-width:60ch}
+
+  /* ---------- CAPABILITIES (dark) ---------- */
+  .cap-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--spacing-24);flex-wrap:wrap;margin-bottom:var(--spacing-40)}
+  .cap-head h2{font-weight:600;font-size:var(--text-h2);letter-spacing:var(--tracking-display);line-height:1.03;max-width:20ch}
+  .cap-head .count{font-family:var(--font-mono);font-size:13px;color:var(--fg-faint)}
+
+  /* ---------- PLATFORM (light) ---------- */
+  .stages{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--spacing-32);margin-top:var(--spacing-48);border-top:1px solid var(--rule-strong);padding-top:var(--spacing-32)}
+  .stage{position:relative}
+  .stage::before{content:"";position:absolute;top:calc(-1px - var(--spacing-32));left:0;width:36px;height:3px;background:var(--fg)}
+  .stage .sn{font-family:var(--font-mono);font-size:12px;letter-spacing:.05em;color:var(--fg-faint)}
+  .stage h4{font-weight:600;color:var(--fg);font-size:var(--text-body-lg);margin:var(--spacing-12) 0 var(--spacing-8)}
+  .stage p{color:var(--fg-muted);font-size:14px;line-height:1.55}
+
+  /* ---------- EVIDENCE (dark) ---------- */
+  .disc-figure{margin:var(--spacing-48) 0 var(--spacing-64)}
+  .disc-lead{display:inline-flex;align-items:center;gap:var(--spacing-8);font-family:var(--font-mono);font-size:12px;letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--fg-faint);margin-bottom:var(--spacing-24)}
+  .disc{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24)}
+  .disc-case{background:var(--panel);border:1px solid var(--rule-strong);border-radius:var(--radius-sm);padding:var(--spacing-24)}
+  .disc-case svg{width:100%;height:auto;margin:var(--spacing-20) 0}
+  .disc-case p{color:var(--fg-muted);font-size:14px}
+  .disc-note{margin-top:var(--spacing-20);font-family:var(--font-mono);font-size:12px;color:var(--fg-faint);line-height:1.6;max-width:78ch}
+
+  .assure{background:var(--panel);border:1px solid var(--rule-strong);border-radius:var(--radius-sm);overflow:hidden}
+  .assure-head{display:flex;align-items:center;gap:var(--spacing-16);flex-wrap:wrap;padding:var(--spacing-16) var(--spacing-24);background:var(--bg-2);border-bottom:1px solid var(--rule);font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-faint)}
+  .assure-head .grow{margin-left:auto;text-transform:none;letter-spacing:0}
+  .assure-body{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-40);padding:var(--spacing-40) var(--spacing-24)}
+  .assure-body h3{font-weight:600;color:var(--fg);font-size:var(--text-h3);letter-spacing:var(--tracking-tight);line-height:1.15;margin-bottom:var(--spacing-12)}
+  .assure-body .sub{font-family:var(--font-mono);font-size:14px;color:var(--fg-muted)}
+  .assure-body p{color:var(--fg-muted);font-size:14px}
+  .gate{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule);margin-top:var(--spacing-24)}
+  .gate .g{padding:var(--spacing-16) var(--spacing-8) 0 0}
+  .gate .g + .g{border-left:1px solid var(--rule);padding-left:var(--spacing-12)}
+  .gate .gv{font-family:var(--font-mono);font-size:24px;color:var(--fg-faint);line-height:1.1}
+  .gate .gk{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-faint);margin-top:var(--spacing-4)}
+  .gate .pass .gv{color:var(--status-nominal)}
+  .gate .monitor .gv{color:var(--status-watch)}
+  .seal{margin-top:var(--spacing-24);padding-top:var(--spacing-16);border-top:1px solid var(--rule);font-family:var(--font-mono);font-size:12px;color:var(--fg-muted)}
+  .seal b{color:var(--fg);font-weight:500}
+  .seal-link{display:inline-flex;flex-direction:column;gap:var(--spacing-4);margin-top:var(--spacing-12);min-height:44px;justify-content:center;font-family:var(--font-mono);font-size:12px;color:var(--fg);transition:color var(--motion-fast) var(--motion-ease-out)}
+  .seal-link:hover{color:var(--fg)}
+  .seal-link span:first-child{border-bottom:1px solid var(--rule-strong);padding-bottom:2px;align-self:flex-start}
+  .seal-caveat{color:var(--fg-faint);font-size:11px}
+
+  /* ---------- WHO IT'S FOR (dark blueprint) ---------- */
+  .blueprint{margin:var(--spacing-48) 0 var(--spacing-64)}
+  .blueprint svg{width:100%;height:auto;color:var(--fg)}
+  .seg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--spacing-40);border-top:1px solid var(--rule);padding-top:var(--spacing-40)}
+  .seg .k{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-faint)}
+  .seg h3{font-weight:600;color:var(--fg);font-size:var(--text-body-lg);letter-spacing:var(--tracking-tight);line-height:1.2;margin:var(--spacing-12) 0}
+  .seg p{color:var(--fg-muted);font-size:14px}
+  .seg .more{display:inline-flex;align-items:center;min-height:44px;margin-top:var(--spacing-12);font-size:14px;color:var(--fg);border-bottom:1px solid var(--rule-strong);transition:border-color var(--motion-fast)}
+  .seg .more:hover{border-bottom-color:var(--fg)}
+
+  /* ---------- CLOSING CTA (light) ---------- */
+  .cta-head{max-width:60ch;margin-bottom:var(--spacing-40)}
+  .cta-head h2{font-weight:600;color:var(--fg);font-size:var(--text-h2);letter-spacing:var(--tracking-display);line-height:1.05;margin:var(--spacing-20) 0 var(--spacing-16)}
+  .cta-head p{color:var(--fg-muted);font-size:var(--text-lede);max-width:52ch}
+
+  @media(max-width:820px){
+    .disc,.assure-body,.seg-grid{grid-template-columns:1fr}
+    .assure-body{gap:var(--spacing-24)}
+    .stages{grid-template-columns:1fr 1fr;gap:var(--spacing-24) var(--spacing-32)}
+    .stage::before{position:static;display:block;margin-bottom:var(--spacing-12)}
+    .rail{grid-template-columns:1fr}
+    .rail .cell + .cell{border-left:0;border-top:1px solid var(--rule);padding-left:0;margin-top:var(--spacing-16);padding-top:var(--spacing-16)}
+    .seg-grid{gap:var(--spacing-32)}
+  }
+  @media(max-width:560px){
+    .stages{grid-template-columns:1fr}
+    .gate{grid-template-columns:1fr 1fr}
+    .gate .g:nth-child(3){border-left:0;padding-left:0}
+  }
+</style>
+</head>
+<body class="has-dark-hero">
+
+<a class="skip-link" href="#main">Skip to main content</a>
+<header id="hdr">
+  <div class="wrap">
+    <nav class="nav-pill">
+      <a class="brand" href="#top">
+        <span class="mark">
+          <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+            <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
+            <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
+            <polygon points="29.0,66.9 50.0,80.9 71.0,67.1 57.0,68.9 50.0,73.5 43.0,68.9"/>
+            <circle cx="50" cy="49.8" r="6.3"/>
+          </svg>
+        </span>
+        VANTAGE
+      </a>
+      <div class="navlinks" id="primary-nav">
+        <a href="#capabilities">Capabilities</a>
+        <a href="#platform">Platform</a>
+        <a href="#assurance">Evidence</a>
+        <a href="#segments">Who it's for</a>
+        <a class="nav-extra" href="visualization/">Orbit map</a>
+        <a class="nav-extra" href="contact/">Request a briefing</a>
+      </div>
+      <div class="nav-right">
+        <a href="contact/" class="nav-cta"><span>Request a briefing</span></a>
+        <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-nav">
+          <svg viewBox="0 0 24 24" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- HERO -->
+  <section class="hero tone-dark" id="top">
+    <div class="wrap">
+      <span class="eyebrow reveal">The intelligence layer for space defense</span>
+      <h1 class="reveal"><span class="hl">Know why it moved.</span> <span class="hl">And prove every call.</span></h1>
+      <p class="lede reveal">Vantage reads satellite behavior from public orbital data. No telescopes, no radar.</p>
+      <div class="cta-row reveal">
+        <a href="contact/" class="btn btn-solid">Request a briefing →</a>
+        <a href="demo/" class="btn">Open the live demo →</a>
+      </div>
+
+      <a class="frame hero-frame reveal" href="demo/">
+        <div class="frame-bar">
+          <span class="frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="url">vantage.industries/demo</span>
+          <span class="grow">Open live demo ↗</span>
+        </div>
+        <div class="shot-stage" id="shot-stage">
+          <img src="assets/demo-console.png" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage mission console: a live LEO feed flags a foreign inspector maneuvering to shadow an orbital AI data center, with the evidence panel showing the signals behind the call, the one-sidedness discriminator, and a sealed assurance PASS." />
+        </div>
+      </a>
+
+      <div class="rail reveal">
+        <div class="cell"><div class="num">under 15 km</div><div class="lbl">Russian inspector holding station beside Intelsat 39, recomputed daily</div></div>
+        <div class="cell"><div class="num">0.73°</div><div class="lbl">Five Kosmos satellites plane-matched to a commercial radar satellite</div></div>
+        <div class="cell"><div class="num">162,634</div><div class="lbl">ESA close-approach reports used for calibration</div></div>
+      </div>
+      <p class="rail-note reveal">Computed by Vantage from public CelesTrak element sets. No sensors, no credentials, reproducible.</p>
+    </div>
+  </section>
+
+  <!-- STATEMENT -->
+  <section class="sec sec-wide statement tone-light">
+    <div class="wrap">
+      <p class="reveal"><span class="dim">Everyone can see <em>that</em> a satellite moved. <a href="visualization/">The tracking data is public.</a></span> Vantage is the layer that tells you <em>why</em>.</p>
+      <p class="sub reveal">Subtract what nature does to an orbit, the equatorial bulge and atmospheric drag, and whatever is left is somebody's engine. That residual is the whole product.</p>
+    </div>
+  </section>
+
+  <!-- CAPABILITIES -->
+  <section class="sec sec-wide tone-dark" id="capabilities">
+    <div class="wrap">
+      <div class="cap-head reveal">
+        <div>
+          <span class="eyebrow">Capabilities</span>
+          <h2>What it did, why, and whether it's a threat.</h2>
+        </div>
+        <span class="count">/ 08 models</span>
+      </div>
+
+      <ol class="cap-list">
+        <li class="cap reveal">
+          <details>
+            <summary>
+              <span class="cap-idx">/0.1</span>
+              <span class="cap-name">Maneuver detection</span>
+              <span class="cap-metric"><span class="big">84%</span>caught · 0 false alarms</span>
+              <span class="cap-plus" aria-hidden="true"></span>
+            </summary>
+            <div class="cap-body"><p>Tells you that an object fired its engine, when, and how hard, without tasking a sensor. It works by subtracting the drift physics explains, the Earth's equatorial bulge (J2) and atmospheric drag, from the object's public element-set history. Whatever residual Δv is left is somebody's engine.</p></div>
+          </details>
+        </li>
+        <li class="cap reveal">
+          <details>
+            <summary>
+              <span class="cap-idx">/0.2</span>
+              <span class="cap-name">Intent classification</span>
+              <span class="cap-metric">rule-based<br>fully auditable</span>
+              <span class="cap-plus" aria-hidden="true"></span>
+            </summary>
+            <div class="cap-body"><p>Tells you what the burn was for: station-keeping, an orbit raise or lower, a rendezvous, or collision-avoidance. Each call carries a confidence band and a written rationale from a rule-based model, so an analyst can check the reasoning rather than take it on faith. No black box to trust.</p></div>
+          </details>
+        </li>
+        <li class="cap reveal">
+          <details>
+            <summary>
+              <span class="cap-idx">/0.3</span>
+              <span class="cap-name">Proximity &amp; rendezvous watch</span>
+              <span class="cap-metric"><span class="big">100%</span>seeded shadowing</span>
+              <span class="cap-plus" aria-hidden="true"></span>
+            </summary>
+            <div class="cap-body"><p>Tells you whether something is deliberately shadowing one of your assets, or merely passing close. It separates a purchased geometry from an incidental pass and from a benign co-orbiting formation. One-sidedness is the discriminator, shown under <a href="#assurance">Evidence</a>.</p></div>
+          </details>
+        </li>
+        <li class="cap reveal">
+          <details>
+            <summary>
+              <span class="cap-idx">/0.4</span>
+              <span class="cap-name">Collision risk screening</span>
+              <span class="cap-metric"><span class="big">0.963</span>ROC-AUC · Brier 0.010</span>
+              <span class="cap-plus" aria-hidden="true"></span>
+            </summary>
+            <div class="cap-body"><p>Tells you which close approaches are worth an analyst's morning, ranked. Screening is calibrated against 162,634 ESA close-approach reports, scoring 0.963 ROC-AUC and 0.010 Brier on that set. Public element sets carry no covariance, so this is a labeled screening prior, not an operational probability of collision.</p></div>
+          </details>
+        </li>
+        <li class="cap reveal">
+          <details>
+            <summary>
+              <span class="cap-idx">/0.5</span>
+              <span class="cap-name">Pattern of life</span>
+              <span class="cap-metric"><span class="big">1,039</span>baselines pre-event</span>
+              <span class="cap-plus" aria-hidden="true"></span>
+            </summary>
+            <div class="cap-body"><p>Tells you when an object breaks its own routine, judged against its own prior history rather than a fleet average. Dormant-then-active is the classic early warning. The model is learned rather than hand-tuned: scored on held-out data by an exact port of the public SPLID evaluator, it more than quadruples the F<sub>2</sub> of the fixed-rule baseline it replaces.</p></div>
+          </details>
+        </li>
+        <li class="cap reveal">
+          <details>
+            <summary>
+              <span class="cap-idx">/0.6</span>
+              <span class="cap-name">Defensive maneuver response</span>
+              <span class="cap-metric"><span class="big">0.15 m/s</span>median dodge Δv</span>
+              <span class="cap-plus" aria-hidden="true"></span>
+            </summary>
+            <div class="cap-body"><p>Tells you what to do about it: the smallest burn that keeps a threatened asset outside its keep-out volume, within the propellant it has left, and no recommendation at all for a pass that already clears. Each carries its direction, timing, fuel cost, and the miss it buys. Scored on three labelled-synthetic campaigns and two benign controls.</p></div>
+          </details>
+        </li>
+        <li class="cap reveal">
+          <details>
+            <summary>
+              <span class="cap-idx">/0.7</span>
+              <span class="cap-name">Sensor tasking</span>
+              <span class="cap-metric">trained scheduler<br>beats myopic + random</span>
+              <span class="cap-plus" aria-hidden="true"></span>
+            </summary>
+            <div class="cap-body"><p>Turns the warning queue into a schedule: which object each sensor looks at next, so a network spends its scarce minutes where the uncertainty and the threat are, not on whatever is overhead. Trained on held-out scenarios with real visibility geometry, it breaks from the greedy pick to catch a closing pass that would otherwise be stranded. This is the kill-chain gap the government keeps naming.</p></div>
+          </details>
+        </li>
+        <li class="cap reveal">
+          <details>
+            <summary>
+              <span class="cap-idx">/0.8</span>
+              <span class="cap-name">Spacecraft health monitoring</span>
+              <span class="cap-metric">OPS-SAT benchmark<br>anomaly detection</span>
+              <span class="cap-plus" aria-hidden="true"></span>
+            </summary>
+            <div class="cap-body"><p>The same discipline pointed inward, at a satellite's own telemetry: flag the segment where a channel breaks its nominal pattern, a spike, a stuck sensor, a slow drift, before an operator sees it. The detector is fit only on healthy history, so it needs no catalogue of past failures to recognize a new one, and it is scored in the shape of the public OPS-SAT benchmark.</p></div>
+          </details>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- PLATFORM -->
+  <section class="sec sec-wide tone-light" id="platform">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Platform</span>
+        <h2>From a new element set to an assessed event.</h2>
+        <p>Open catalogs in; a ranked, assessed event out, with the signals behind it attached. One pass, no sensors of our own.</p>
+      </div>
+
+      <div class="stages reveal" data-stagger="130">
+        <div class="stage"><span class="sn">01 · Ingest</span><h4>Public catalogs in</h4><p>Open connectors normalize public catalogs (CelesTrak, Space-Track) and five-year element-set histories into one data fabric.</p></div>
+        <div class="stage"><span class="sn">02 · Detect</span><h4>Subtract physics</h4><p>Remove J2 oblateness and atmospheric drag; the residual is thrust, detected, measured, timestamped. 519 maneuvers on a 1,039-object catalog in 6.0 s.</p></div>
+        <div class="stage"><span class="sn">03 · Assess</span><h4>Name the behavior</h4><p>Six models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life.</p></div>
+        <div class="stage"><span class="sn">04 · Report</span><h4>Into the analyst queue</h4><p>The event arrives with the signals behind it attached, ranked so the calls that need a human get one first.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVIDENCE -->
+  <section class="sec sec-wide tone-dark" id="assurance">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Evidence</span>
+        <h2>Assurance is the product.</h2>
+        <p>Anyone can publish a detection. The question a defense buyer actually has is whether it survives being checked, so Vantage shows what separated the call from the benign case, then grades itself in public and ships the receipt.</p>
+      </div>
+
+      <div class="disc-figure reveal">
+        <span class="disc-lead">Schematic · one-sidedness discriminator</span>
+        <div class="disc">
+          <div class="disc-case">
+            <span class="chip chip-nominal">Benign formation</span>
+            <svg viewBox="0 44 260 96" role="img" aria-label="Two co-orbiting nodes shown as markers on a shared orbit arc, with no thrust vector on either one.">
+              <path d="M20 118 Q135 38 250 118" fill="none" stroke="#4a515c" stroke-width="1.4"/>
+              <circle cx="112" cy="80" r="6" fill="none" stroke="#3ad389" stroke-width="1.8"/>
+              <circle cx="163" cy="80" r="6" fill="none" stroke="#3ad389" stroke-width="1.8"/>
+              <path d="M118 80 H157" stroke="#4a515c" stroke-width="1" stroke-dasharray="3 3"/>
+              <text x="135" y="128" fill="#3ad389" font-family="Geist Mono, monospace" font-size="11" text-anchor="middle">no Δv on either side</text>
+            </svg>
+            <p>Two nodes in the same formation hold their spacing because orbital mechanics puts them there. Neither one spends propellant to stay.</p>
+          </div>
+          <div class="disc-case">
+            <span class="chip chip-threat">Shadowing</span>
+            <svg viewBox="0 44 260 96" role="img" aria-label="Two nodes on a shared orbit arc. The trailing node carries a thrust vector aimed at the leading node, which carries none.">
+              <path d="M20 118 Q135 38 250 118" fill="none" stroke="#4a515c" stroke-width="1.4"/>
+              <circle cx="112" cy="80" r="6" fill="#ff6b5f"/>
+              <circle cx="163" cy="80" r="6" fill="none" stroke="#e8eaec" stroke-width="1.8"/>
+              <path d="M122 78 H150" stroke="#ff6b5f" stroke-width="1.8"/>
+              <path d="M144 73 L152 78 L144 83" fill="none" stroke="#ff6b5f" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+              <text x="135" y="128" fill="#ff6b5f" font-family="Geist Mono, monospace" font-size="11" text-anchor="middle">Δv on one side only</text>
+            </svg>
+            <p>One party maneuvers to hold station next to another that never agreed to it. That asymmetry is what separates a shadower from a neighbor.</p>
+          </div>
+        </div>
+        <p class="disc-note">Same geometry in both cases, same separation, same closing rate. The only difference is which side is spending propellant to be there, and on the seeded scenarios that difference alone carries the call at 100%.</p>
+      </div>
+
+      <div class="assure reveal">
+        <div class="assure-head">
+          <span>Assurance gate</span>
+          <span>policy vantage-ssa-v1</span>
+          <span class="grow"><span class="chip chip-nominal">Verdict: pass</span></span>
+        </div>
+        <div class="assure-body">
+          <div>
+            <h3>Receipts, not claims.</h3>
+            <p class="sub">Change one number and the seal breaks.</p>
+            <div class="gate">
+              <div class="g pass"><div class="gv">14</div><div class="gk">Pass</div></div>
+              <div class="g"><div class="gv">0</div><div class="gk">Fail</div></div>
+              <div class="g"><div class="gv">1</div><div class="gk">Skip</div></div>
+              <div class="g monitor"><div class="gv">2</div><div class="gk">Monitor</div></div>
+            </div>
+          </div>
+          <div>
+            <p>Every model behind the feed is graded on every release against explicit, versioned acceptance floors: detection recall, false-alarm rate, collision calibration, shadower recall. The result is sealed into a tamper-evident bundle, so a reviewer can re-check the claim instead of trusting it. The collision floor is calibrated against 162,634 real ESA close-approach reports, and the 1 SKIP is the real-data check itself: credential-gated, disclosed, never silently passed.</p>
+            <p class="seal">sealed <b>sha256:<span class="digest">732c19</span>…</b></p>
+            <a class="seal-link" href="demo/#assure"><span>Open this gate running in the console →</span><span class="seal-caveat">synthetic scenario, real engine output</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO IT'S FOR -->
+  <section class="sec sec-wide tone-dark divider" id="segments">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow">Who it's for</span>
+        <h2>Three mission sets. One standard of evidence.</h2>
+        <p>Each one gets its own acceptance policy: floors on recall, false alarms, and calibration tuned to which failure is unforgivable.</p>
+      </div>
+
+      <div class="blueprint reveal" aria-hidden="true">
+        <svg viewBox="0 0 1000 300" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
+          <!-- Earth limb -->
+          <path d="M-20 300 Q500 150 1020 300" stroke-opacity=".35"/>
+          <!-- orbit -->
+          <path d="M40 176 Q500 44 960 176" stroke-dasharray="5 4" stroke-opacity=".55"/>
+          <!-- node A: proximity / defense -->
+          <g transform="translate(190,150)">
+            <circle cx="0" cy="0" r="9"/>
+            <circle cx="34" cy="6" r="6" stroke-opacity=".85"/>
+            <path d="M26 4 L12 1" stroke-width="1.6"/>
+            <path d="M16 -2 L11 1 L15 5"/>
+            <path d="M0 -9 V-56" stroke-opacity=".5"/>
+            <circle cx="0" cy="0" r="16" stroke-opacity=".25"/>
+          </g>
+          <text x="190" y="80" fill="currentColor" font-family="Geist Mono, monospace" font-size="12" letter-spacing="1.5" text-anchor="middle" stroke="none">DEFENSE</text>
+          <!-- node B: pattern of life / operators -->
+          <g transform="translate(500,116)">
+            <circle cx="0" cy="0" r="9"/>
+            <path d="M-22 26 H-10 L-6 14 L0 34 L6 8 L12 26 H22" stroke-width="1.4" stroke-opacity=".9"/>
+            <path d="M0 -9 V-40" stroke-opacity=".5"/>
+          </g>
+          <text x="500" y="58" fill="currentColor" font-family="Geist Mono, monospace" font-size="12" letter-spacing="1.5" text-anchor="middle" stroke="none">OPERATORS</text>
+          <!-- node C: orbital compute -->
+          <g transform="translate(810,150)">
+            <rect x="-16" y="-13" width="32" height="26" rx="1.5"/>
+            <path d="M-16 -4 H16 M-16 4 H16"/>
+            <path d="M-40 0 H-16 M16 0 H40" stroke-opacity=".6"/>
+            <path d="M-40 -8 V8 M40 -8 V8" stroke-opacity=".6"/>
+            <path d="M0 -13 V-56" stroke-opacity=".5"/>
+          </g>
+          <text x="810" y="80" fill="currentColor" font-family="Geist Mono, monospace" font-size="12" letter-spacing="1.5" text-anchor="middle" stroke="none">ORBITAL COMPUTE</text>
+        </svg>
+      </div>
+
+      <div class="seg-grid">
+        <div class="seg reveal" id="defense">
+          <span class="k">Defense &amp; intelligence</span>
+          <h3>A satellite you don't control just maneuvered next to one you do.</h3>
+          <p>You have to call it, routine or a threat worth acting on, and defend that call to leadership. Vantage names what the object did and why, tells a deliberate shadow from an incidental pass, and runs on your own servers, even air-gapped.</p>
+          <a class="more" href="contact/?mission=defense">Talk to us about protected-asset watch →</a>
+        </div>
+        <div class="seg reveal" id="operators">
+          <span class="k">Satellite operators</span>
+          <h3>Something in your fleet just broke its own routine.</h3>
+          <p>Was that a normal station-keep, the first sign a bus is failing, or someone parking alongside? Vantage baselines every satellite against its own pattern of life and flags what breaks it, calibrated to keep false alarms off your on-call rotation.</p>
+          <a class="more" href="contact/?mission=operators">Talk to us about fleet watch →</a>
+        </div>
+        <div class="seg reveal" id="orbital-compute">
+          <span class="k">Orbital compute &amp; AI infrastructure</span>
+          <h3>Someone is parking next to your data center.</h3>
+          <p>Orbital compute nodes combine high-value hardware, limited propellant, and long replacement timelines. Operators need to distinguish a deliberate approach from ordinary formation geometry before committing to a response.</p>
+          <a class="more" href="contact/?mission=orbital">Talk to us about orbital infrastructure →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CLOSING CTA -->
+  <section class="sec sec-wide tone-light" id="contact">
+    <div class="wrap">
+      <div class="cta-head reveal">
+        <span class="eyebrow">Request a briefing</span>
+        <h2>See what assured space intelligence looks like for your mission.</h2>
+        <p>Book a technical briefing with the Vantage team. We'll walk your mission set and run a live detection-to-evidence loop end-to-end.</p>
+      </div>
+      <div class="cta-blocks reveal">
+        <a class="cta-block cta-block--grey" href="contact/">Request a briefing <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="cta-block cta-block--ink" href="demo/">Open the live demo <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a class="brand" href="#top">
+          <span class="mark">
+            <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+              <polygon points="45.6,19.1 2.6,48.1 19.0,58.8 34.9,53.8 18.8,46.6 45.6,26.3"/>
+              <polygon points="54.4,19.1 97.4,48.1 81.0,58.8 65.1,53.8 81.2,46.6 54.4,26.3"/>
+              <polygon points="29.0,66.9 50.0,80.9 71.0,67.1 57.0,68.9 50.0,73.5 43.0,68.9"/>
+              <circle cx="50" cy="49.8" r="6.3"/>
+            </svg>
+          </span>
+          VANTAGE
+        </a>
+        <p>The intelligence layer for space defense: understand what a satellite is doing, and what it's trying to accomplish, from public orbital data, with sealed evidence behind every release. Runs on your own servers, even offline.</p>
+        <div class="social-row">
+          <span class="social">Assured</span>
+          <span class="social">Auditable</span>
+          <span class="social">Air-gappable</span>
+        </div>
+      </div>
+      <div class="foot-col">
+        <h5>Platform</h5>
+        <a href="#platform">Platform</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#assurance">Evidence</a>
+        <a href="demo/">Live demo</a>
+        <a href="visualization/">Orbit map</a>
+      </div>
+      <div class="foot-col">
+        <h5>Who it's for</h5>
+        <a href="#defense">Defense &amp; intelligence</a>
+        <a href="#operators">Satellite operators</a>
+        <a href="#orbital-compute">Orbital compute</a>
+      </div>
+      <div class="foot-col">
+        <h5>Contact</h5>
+        <a href="contact/">Request a briefing</a>
+        <span class="plain">contact@vantage.industries</span>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <p>© 2026 Vantage · Assured Space Intelligence</p>
+      <span class="region"><span>SEALED EVIDENCE</span><span>HUMAN-ON-THE-LOOP</span></span>
+    </div>
+  </div>
+</footer>
+
+<script src="scripts/site.js" defer></script>
+<script src="scripts/console-preview.js" defer></script>
+</body>
+</html>
