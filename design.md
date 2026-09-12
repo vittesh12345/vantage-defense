@@ -134,3 +134,18 @@ Warm-grey (`--bg-2`), four columns (brand + statement + link columns), a row of 
 - Never write an em dash. Use a comma, colon, period, or restructure.
 - Never let a marketing band go tone-less: it must declare `.tone-light` or `.tone-dark`.
 - Never fabricate a readout on a schematic; anything that looks like product output must be product output (`/demo/` embedded live).
+
+## Naming: the product lexicon (added 2026-09-17)
+
+The eight models now sit under a two-product umbrella. Names, scopes, and set forms:
+
+| Name | Set form | Scope |
+|---|---|---|
+| THE COMMAND CENTER | mono, uppercase in labels; "the Command Center" in prose | The operating surface, formerly "Mission Console". Every link to `/demo/` reads "Open the Command Center"; the URL stays `/demo/`. |
+| ORBWATCH | mono, uppercase, bare word, never compounded | Read the sky. Five models: maneuver detection, intent classification, pattern of life, proximity and rendezvous watch, collision risk screening. Anchor `#orbwatch`. |
+| GUARDIAN | mono, uppercase, bare word, never compounded | Guard the fleet. Three models: defensive maneuver response, sensor tasking, spacecraft health monitoring. Anchor `#guardian`. |
+
+Pipeline attribution: Ingest is platform substrate, Detect and Assess belong to ORBWATCH, Report lands in the Command Center. GUARDIAN and the fleet-health watch ride as a footnote line under the rail; no fifth stage is invented.
+
+Rules. The section id stays `#capabilities` (inbound links keep working; the nav label is "Products"). Product names are always the bare uppercase word so a rename is a global case-sensitive find and replace. A product never claims a surface the console does not have; models are presented with benchmark metrics, not UI claims.
+

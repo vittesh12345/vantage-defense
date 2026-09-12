@@ -4,8 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Vantage · Assured Space Intelligence</title>
-<meta name="description" content="Today's operators know where satellites are. Vantage understands what they're doing: maneuver detection, intent inference, and surveillance-and-shadowing warning from public orbital data, with sealed, tamper-evident evidence behind every release." />
-<meta name="keywords" content="Vantage, Vantage AI, Vantage Tech, Vantage Industries, Vantage space intelligence, space situational awareness, satellite intelligence, orbital analytics, satellite maneuver detection, space domain awareness, ORBWATCH, RPO detection" />
+<meta name="description" content="Two products in one command center. ORBWATCH reads what a satellite is doing from public orbital data; GUARDIAN answers it, from the smallest dodge to sensor tasking. Sealed, tamper-evident evidence behind every release." />
+<meta name="keywords" content="Vantage, Vantage AI, Vantage Tech, Vantage Industries, Vantage Command Center, Vantage space intelligence, space situational awareness, satellite intelligence, orbital analytics, satellite maneuver detection, space domain awareness, ORBWATCH, GUARDIAN, RPO detection" />
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
 <meta name="author" content="Vantage" />
 <meta name="theme-color" content="#0e0f12" />
@@ -15,7 +15,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Vantage" />
 <meta property="og:title" content="Vantage · Assured Space Intelligence" />
-<meta property="og:description" content="Vantage understands what satellites are doing: maneuver detection, intent inference, and surveillance-and-shadowing warnings from public orbital data." />
+<meta property="og:description" content="Two products in one command center: ORBWATCH reads what satellites are doing from public orbital data; GUARDIAN answers it." />
 <meta property="og:url" content="https://vantage.industries/" />
 <meta property="og:image" content="https://vantage.industries/assets/og-card.jpg" />
 <meta property="og:image:width" content="1200" />
@@ -24,12 +24,12 @@
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Vantage · Assured Space Intelligence" />
-<meta name="twitter:description" content="Vantage understands what satellites are doing: maneuver detection, intent inference, and surveillance-and-shadowing warnings from public orbital data." />
+<meta name="twitter:description" content="Two products in one command center: ORBWATCH reads what satellites are doing from public orbital data; GUARDIAN answers it." />
 <meta name="twitter:image" content="https://vantage.industries/assets/og-card.jpg" />
 <meta name="twitter:image:alt" content="Earth's limb seen from orbit, with the Vantage wordmark." />
 <!-- Structured data -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Vantage","alternateName":["Vantage Industries","Vantage AI","Vantage Space Intelligence"],"url":"https://vantage.industries/","description":"Vantage delivers assured space intelligence: satellite maneuver detection, intent inference, and surveillance-and-shadowing warnings from public orbital data.","knowsAbout":["Space Situational Awareness","Satellite Intelligence","Orbital Analytics","Space Domain Awareness","Artificial Intelligence"],"contactPoint":{"@type":"ContactPoint","email":"contact@vantage.industries","contactType":"General","url":"https://vantage.industries/contact/"}}
+{"@context":"https://schema.org","@type":"Organization","name":"Vantage","alternateName":["Vantage Industries","Vantage AI","Vantage Space Intelligence"],"url":"https://vantage.industries/","description":"Vantage delivers assured space intelligence through two products in one command center: ORBWATCH reads satellite behavior from public orbital data; GUARDIAN answers it with defensive maneuvers, sensor tasking, and fleet health.","knowsAbout":["Space Situational Awareness","Satellite Intelligence","Orbital Analytics","Space Domain Awareness","Artificial Intelligence"],"contactPoint":{"@type":"ContactPoint","email":"contact@vantage.industries","contactType":"General","url":"https://vantage.industries/contact/"}}
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebSite","name":"Vantage","url":"https://vantage.industries/"}
@@ -76,18 +76,31 @@
   .statement a:hover{border-bottom-color:var(--fg)}
   .statement .sub{margin-top:var(--spacing-32);font-family:var(--font-mono);font-size:13px;color:var(--fg-muted);max-width:60ch}
 
-  /* ---------- CAPABILITIES (dark) ---------- */
+  /* ---------- PRODUCTS (dark) ---------- */
   .cap-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--spacing-24);flex-wrap:wrap;margin-bottom:var(--spacing-40)}
   .cap-head h2{font-weight:600;font-size:var(--text-h2);letter-spacing:var(--tracking-display);line-height:1.03;max-width:20ch}
   .cap-head .count{font-family:var(--font-mono);font-size:13px;color:var(--fg-faint)}
+
+  /* Product chapters: two named products over the same eight-model ledger. The
+     chapter rule replaces the list's own border-top so the head is the divider. */
+  .chapter{margin-top:var(--spacing-48)}
+  .chapter + .chapter{margin-top:var(--spacing-64)}
+  .chap-head{display:flex;align-items:baseline;gap:var(--spacing-24);flex-wrap:wrap;border-top:1px solid var(--rule-strong);padding-top:var(--spacing-24)}
+  .chap-designator{font-family:var(--font-mono);font-size:13px;letter-spacing:var(--tracking-label);color:var(--fg)}
+  .chap-role{font-weight:600;color:var(--fg);font-size:var(--text-h3);letter-spacing:var(--tracking-tight);line-height:1.15;margin:0}
+  .chap-count{margin-left:auto;font-family:var(--font-mono);font-size:12px;color:var(--fg-faint)}
+  .chap-lede{color:var(--fg-muted);font-size:14px;max-width:72ch;margin-top:var(--spacing-12)}
+  .chapter .cap-list{border-top:0;margin-top:var(--spacing-24)}
 
   /* ---------- PLATFORM (light) ---------- */
   .stages{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--spacing-32);margin-top:var(--spacing-48);border-top:1px solid var(--rule-strong);padding-top:var(--spacing-32)}
   .stage{position:relative}
   .stage::before{content:"";position:absolute;top:calc(-1px - var(--spacing-32));left:0;width:36px;height:3px;background:var(--fg)}
   .stage .sn{font-family:var(--font-mono);font-size:12px;letter-spacing:.05em;color:var(--fg-faint)}
+  .stage .who{display:block;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-faint);margin-top:var(--spacing-8)}
   .stage h4{font-weight:600;color:var(--fg);font-size:var(--text-body-lg);margin:var(--spacing-12) 0 var(--spacing-8)}
   .stage p{color:var(--fg-muted);font-size:14px;line-height:1.55}
+  .stage-note{margin-top:var(--spacing-32);font-family:var(--font-mono);font-size:12px;color:var(--fg-faint);line-height:1.6;max-width:78ch}
 
   /* ---------- EVIDENCE (dark) ---------- */
   .disc-figure{margin:var(--spacing-48) 0 var(--spacing-64)}
@@ -168,7 +181,7 @@
         VANTAGE
       </a>
       <div class="navlinks" id="primary-nav">
-        <a href="#capabilities">Capabilities</a>
+        <a href="#capabilities">Products</a>
         <a href="#platform">Platform</a>
         <a href="#assurance">Evidence</a>
         <a href="#segments">Who it's for</a>
@@ -190,22 +203,22 @@
   <!-- HERO -->
   <section class="hero tone-dark" id="top">
     <div class="wrap">
-      <span class="eyebrow reveal">The intelligence layer for space defense</span>
+      <span class="eyebrow reveal">Watch the sky. Guard the fleet. One command center.</span>
       <h1 class="reveal"><span class="hl">Know why it moved.</span> <span class="hl">And prove every call.</span></h1>
-      <p class="lede reveal">Vantage reads satellite behavior from public orbital data. No telescopes, no radar.</p>
+      <p class="lede reveal">Vantage reads satellite behavior from public orbital data. No telescopes, no radar. Two products, ORBWATCH and GUARDIAN, put every call in the Command Center with sealed evidence behind it.</p>
       <div class="cta-row reveal">
         <a href="contact/" class="btn btn-solid">Request a briefing →</a>
-        <a href="demo/" class="btn">Open the live demo →</a>
+        <a href="demo/" class="btn">Open the Command Center →</a>
       </div>
 
       <a class="frame hero-frame reveal" href="demo/">
         <div class="frame-bar">
           <span class="frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
           <span class="url">vantage.industries/demo</span>
-          <span class="grow">Open live demo ↗</span>
+          <span class="grow">Open the Command Center ↗</span>
         </div>
         <div class="shot-stage" id="shot-stage">
-          <img src="assets/demo-console.png" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage mission console: a live LEO feed flags a foreign inspector maneuvering to shadow an orbital AI data center, with the evidence panel showing the signals behind the call, the one-sidedness discriminator, and a sealed assurance PASS." />
+          <img src="assets/demo-console.png" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage Command Center: a live LEO feed flags a foreign inspector maneuvering to shadow an orbital AI data center, with the evidence panel showing the signals behind the call, the one-sidedness discriminator, and a sealed assurance PASS." />
         </div>
       </a>
 
@@ -226,18 +239,25 @@
     </div>
   </section>
 
-  <!-- CAPABILITIES -->
+  <!-- PRODUCTS -->
   <section class="sec sec-wide tone-dark" id="capabilities">
     <div class="wrap">
       <div class="cap-head reveal">
         <div>
-          <span class="eyebrow">Capabilities</span>
-          <h2>What it did, why, and whether it's a threat.</h2>
+          <span class="eyebrow">Products</span>
+          <h2>Two products. Eight models. One command center.</h2>
         </div>
-        <span class="count">/ 08 models</span>
+        <span class="count">/ 02 products / 08 models</span>
       </div>
 
-      <ol class="cap-list">
+      <div class="chapter" id="orbwatch">
+        <div class="chap-head reveal">
+          <span class="chap-designator">P/01 ORBWATCH</span>
+          <h3 class="chap-role">Read the sky.</h3>
+          <span class="chap-count">05 models</span>
+        </div>
+        <p class="chap-lede reveal">The intelligence layer: five models that read what an object did, why, and whether it is a threat, from public element sets alone.</p>
+        <ol class="cap-list">
         <li class="cap reveal">
           <details>
             <summary>
@@ -257,42 +277,53 @@
               <span class="cap-metric">rule-based<br>fully auditable</span>
               <span class="cap-plus" aria-hidden="true"></span>
             </summary>
-            <div class="cap-body"><p>Tells you what the burn was for: station-keeping, an orbit raise or lower, a rendezvous, or collision-avoidance. Each call carries a confidence band and a written rationale from a rule-based model, so an analyst can check the reasoning rather than take it on faith. No black box to trust.</p></div>
+            <div class="cap-body"><p>Names what the burn was for: station-keeping, an orbit raise or lower, a rendezvous, or collision-avoidance. Each call carries a confidence band and a written rationale from a rule-based model, so an analyst can check the reasoning rather than take it on faith. No black box to trust.</p></div>
           </details>
         </li>
         <li class="cap reveal">
           <details>
             <summary>
               <span class="cap-idx">/0.3</span>
-              <span class="cap-name">Proximity &amp; rendezvous watch</span>
-              <span class="cap-metric"><span class="big">100%</span>seeded shadowing</span>
+              <span class="cap-name">Pattern of life</span>
+              <span class="cap-metric"><span class="big">1,039</span>baselines pre-event</span>
               <span class="cap-plus" aria-hidden="true"></span>
             </summary>
-            <div class="cap-body"><p>Tells you whether something is deliberately shadowing one of your assets, or merely passing close. It separates a purchased geometry from an incidental pass and from a benign co-orbiting formation. One-sidedness is the discriminator, shown under <a href="#assurance">Evidence</a>.</p></div>
+            <div class="cap-body"><p>Flags an object the moment it breaks its own routine, judged against its own prior history rather than a fleet average. Dormant-then-active is the classic early warning. The model is learned rather than hand-tuned: scored on held-out data by an exact port of the public SPLID evaluator, it more than quadruples the F<sub>2</sub> of the fixed-rule baseline it replaces.</p></div>
           </details>
         </li>
         <li class="cap reveal">
           <details>
             <summary>
               <span class="cap-idx">/0.4</span>
-              <span class="cap-name">Collision risk screening</span>
-              <span class="cap-metric"><span class="big">0.963</span>ROC-AUC · Brier 0.010</span>
+              <span class="cap-name">Proximity &amp; rendezvous watch</span>
+              <span class="cap-metric"><span class="big">100%</span>seeded shadowing</span>
               <span class="cap-plus" aria-hidden="true"></span>
             </summary>
-            <div class="cap-body"><p>Tells you which close approaches are worth an analyst's morning, ranked. Screening is calibrated against 162,634 ESA close-approach reports, scoring 0.963 ROC-AUC and 0.010 Brier on that set. Public element sets carry no covariance, so this is a labeled screening prior, not an operational probability of collision.</p></div>
+            <div class="cap-body"><p>Watches for something deliberately holding station beside one of your assets. It separates a purchased geometry from an incidental pass and from a benign co-orbiting formation. One-sidedness is the discriminator, shown under <a href="#assurance">Evidence</a>.</p></div>
           </details>
         </li>
         <li class="cap reveal">
           <details>
             <summary>
               <span class="cap-idx">/0.5</span>
-              <span class="cap-name">Pattern of life</span>
-              <span class="cap-metric"><span class="big">1,039</span>baselines pre-event</span>
+              <span class="cap-name">Collision risk screening</span>
+              <span class="cap-metric"><span class="big">0.963</span>ROC-AUC · Brier 0.010</span>
               <span class="cap-plus" aria-hidden="true"></span>
             </summary>
-            <div class="cap-body"><p>Tells you when an object breaks its own routine, judged against its own prior history rather than a fleet average. Dormant-then-active is the classic early warning. The model is learned rather than hand-tuned: scored on held-out data by an exact port of the public SPLID evaluator, it more than quadruples the F<sub>2</sub> of the fixed-rule baseline it replaces.</p></div>
+            <div class="cap-body"><p>Ranks which close approaches are worth an analyst's morning. Screening is calibrated against 162,634 ESA close-approach reports, scoring 0.963 ROC-AUC and 0.010 Brier on that set. Public element sets carry no covariance, so this is a labeled screening prior, not an operational probability of collision.</p></div>
           </details>
         </li>
+      </ol>
+      </div>
+
+      <div class="chapter" id="guardian">
+        <div class="chap-head reveal">
+          <span class="chap-designator">P/02 GUARDIAN</span>
+          <h3 class="chap-role">Guard the fleet.</h3>
+          <span class="chap-count">03 models</span>
+        </div>
+        <p class="chap-lede reveal">The response layer: what to do about it, from the smallest dodge that answers a threat to where your sensors look next, and the same watch pointed at your own telemetry. No breach, no burn.</p>
+        <ol class="cap-list">
         <li class="cap reveal">
           <details>
             <summary>
@@ -301,7 +332,7 @@
               <span class="cap-metric"><span class="big">0.15 m/s</span>median dodge Δv</span>
               <span class="cap-plus" aria-hidden="true"></span>
             </summary>
-            <div class="cap-body"><p>Tells you what to do about it: the smallest burn that keeps a threatened asset outside its keep-out volume, within the propellant it has left, and no recommendation at all for a pass that already clears. Each carries its direction, timing, fuel cost, and the miss it buys. Scored on three labelled-synthetic campaigns and two benign controls.</p></div>
+            <div class="cap-body"><p>Recommends the smallest burn that answers a warning: it keeps a threatened asset outside its keep-out volume, within the propellant it has left, and makes no recommendation at all for a pass that already clears. Each carries its direction, timing, fuel cost, and the miss it buys. Scored on three labelled-synthetic campaigns and two benign controls.</p></div>
           </details>
         </li>
         <li class="cap reveal">
@@ -327,6 +358,7 @@
           </details>
         </li>
       </ol>
+      </div>
     </div>
   </section>
 
@@ -335,16 +367,17 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="eyebrow">Platform</span>
-        <h2>From a new element set to an assessed event.</h2>
+        <h2>From a new element set to an event in the Command Center.</h2>
         <p>Open catalogs in; a ranked, assessed event out, with the signals behind it attached. One pass, no sensors of our own.</p>
       </div>
 
       <div class="stages reveal" data-stagger="130">
-        <div class="stage"><span class="sn">01 · Ingest</span><h4>Public catalogs in</h4><p>Open connectors normalize public catalogs (CelesTrak, Space-Track) and five-year element-set histories into one data fabric.</p></div>
-        <div class="stage"><span class="sn">02 · Detect</span><h4>Subtract physics</h4><p>Remove J2 oblateness and atmospheric drag; the residual is thrust, detected, measured, timestamped. 519 maneuvers on a 1,039-object catalog in 6.0 s.</p></div>
-        <div class="stage"><span class="sn">03 · Assess</span><h4>Name the behavior</h4><p>Six models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life.</p></div>
-        <div class="stage"><span class="sn">04 · Report</span><h4>Into the analyst queue</h4><p>The event arrives with the signals behind it attached, ranked so the calls that need a human get one first.</p></div>
+        <div class="stage"><span class="sn">01 · Ingest</span><span class="who">Platform</span><h4>Public catalogs in</h4><p>Open connectors normalize public catalogs (CelesTrak, Space-Track) and five-year element-set histories into one data fabric.</p></div>
+        <div class="stage"><span class="sn">02 · Detect</span><span class="who">Orbwatch</span><h4>Subtract physics</h4><p>Remove J2 oblateness and atmospheric drag; the residual is thrust, detected, measured, timestamped. 519 maneuvers on a 1,039-object catalog in 6.0 s.</p></div>
+        <div class="stage"><span class="sn">03 · Assess</span><span class="who">Orbwatch</span><h4>Name the behavior</h4><p>Four models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life.</p></div>
+        <div class="stage"><span class="sn">04 · Report</span><span class="who">The Command Center</span><h4>Into the analyst queue</h4><p>The event lands in the Command Center with the signals behind it attached, ranked so the calls that need a human get one first.</p></div>
       </div>
+      <p class="stage-note reveal">GUARDIAN attaches a response to any event that threatens a protected asset, and runs the same watch inward against your own fleet's telemetry.</p>
     </div>
   </section>
 
@@ -407,7 +440,7 @@
           <div>
             <p>Every model behind the feed is graded on every release against explicit, versioned acceptance floors: detection recall, false-alarm rate, collision calibration, shadower recall. The result is sealed into a tamper-evident bundle, so a reviewer can re-check the claim instead of trusting it. The collision floor is calibrated against 162,634 real ESA close-approach reports, and the 1 SKIP is the real-data check itself: credential-gated, disclosed, never silently passed.</p>
             <p class="seal">sealed <b>sha256:<span class="digest">732c19</span>…</b></p>
-            <a class="seal-link" href="demo/#assure"><span>Open this gate running in the console →</span><span class="seal-caveat">synthetic scenario, real engine output</span></a>
+            <a class="seal-link" href="demo/#assure"><span>Open this gate running in the Command Center →</span><span class="seal-caveat">synthetic scenario, real engine output</span></a>
           </div>
         </div>
       </div>
@@ -486,12 +519,12 @@
     <div class="wrap">
       <div class="cta-head reveal">
         <span class="eyebrow">Request a briefing</span>
-        <h2>See what assured space intelligence looks like for your mission.</h2>
+        <h2>Bring us a mission set. We will run the loop against it.</h2>
         <p>Book a technical briefing with the Vantage team. We'll walk your mission set and run a live detection-to-evidence loop end-to-end.</p>
       </div>
       <div class="cta-blocks reveal">
         <a class="cta-block cta-block--grey" href="contact/">Request a briefing <span class="arrow" aria-hidden="true">→</span></a>
-        <a class="cta-block cta-block--ink" href="demo/">Open the live demo <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="cta-block cta-block--ink" href="demo/">Open the Command Center <span class="arrow" aria-hidden="true">→</span></a>
       </div>
     </div>
   </section>
@@ -513,7 +546,7 @@
           </span>
           VANTAGE
         </a>
-        <p>The intelligence layer for space defense: understand what a satellite is doing, and what it's trying to accomplish, from public orbital data, with sealed evidence behind every release. Runs on your own servers, even offline.</p>
+        <p>Watch the sky, guard the fleet: ORBWATCH reads what a satellite is doing from public orbital data, GUARDIAN answers it, and every call lands in one command center with sealed evidence behind it. Runs on your own servers, even offline.</p>
         <div class="social-row">
           <span class="social">Assured</span>
           <span class="social">Auditable</span>
@@ -522,10 +555,11 @@
       </div>
       <div class="foot-col">
         <h5>Platform</h5>
+        <a href="#orbwatch">ORBWATCH</a>
+        <a href="#guardian">GUARDIAN</a>
         <a href="#platform">Platform</a>
-        <a href="#capabilities">Capabilities</a>
         <a href="#assurance">Evidence</a>
-        <a href="demo/">Live demo</a>
+        <a href="demo/">The Command Center</a>
         <a href="visualization/">Orbit map</a>
       </div>
       <div class="foot-col">

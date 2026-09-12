@@ -1,6 +1,6 @@
 /* Vantage platform-section console preview
    ==========================================================================
-   The platform section shows the mission console. It showed it as a still
+   The platform section shows the Command Center. It showed it as a still
    PNG; this plays the real one instead.
 
    The important decision here is what it does NOT do. It does not rebuild the
