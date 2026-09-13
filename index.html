@@ -107,7 +107,7 @@
   .disc-lead{display:inline-flex;align-items:center;gap:var(--spacing-8);font-family:var(--font-mono);font-size:12px;letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--fg-faint);margin-bottom:var(--spacing-24)}
   .disc{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24)}
   .disc-case{background:var(--panel);border:1px solid var(--rule-strong);border-radius:var(--radius-sm);padding:var(--spacing-24)}
-  .disc-case svg{width:100%;height:auto;margin:var(--spacing-20) 0}
+  .disc-case svg,.disc-case img{width:100%;height:auto;margin:var(--spacing-20) 0}
   .disc-case p{color:var(--fg-muted);font-size:14px}
   .disc-note{margin-top:var(--spacing-20);font-family:var(--font-mono);font-size:12px;color:var(--fg-faint);line-height:1.6;max-width:78ch}
 
@@ -132,9 +132,10 @@
   .seal-link span:first-child{border-bottom:1px solid var(--rule-strong);padding-bottom:2px;align-self:flex-start}
   .seal-caveat{color:var(--fg-faint);font-size:11px}
 
-  /* ---------- WHO IT'S FOR (dark blueprint) ---------- */
-  .blueprint{margin:var(--spacing-48) 0 var(--spacing-64)}
-  .blueprint svg{width:100%;height:auto;color:var(--fg)}
+  /* ---------- WHO IT'S FOR (dark, real photograph) ---------- */
+  .photo-figure{margin:var(--spacing-48) 0 var(--spacing-64)}
+  .photo-figure img{display:block;width:100%;height:auto;border:1px solid var(--rule)}
+  .photo-figure figcaption{margin-top:var(--spacing-12);font-family:var(--font-mono);font-size:12px;color:var(--fg-faint);line-height:1.6}
   .seg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--spacing-40);border-top:1px solid var(--rule);padding-top:var(--spacing-40)}
   .seg .k{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-faint)}
   .seg h3{font-weight:600;color:var(--fg);font-size:var(--text-body-lg);letter-spacing:var(--tracking-tight);line-height:1.2;margin:var(--spacing-12) 0}
@@ -391,33 +392,20 @@
       </div>
 
       <div class="disc-figure reveal">
-        <span class="disc-lead">Schematic · one-sidedness discriminator</span>
+        <span class="disc-lead">Product output · one-sidedness discriminator</span>
         <div class="disc">
           <div class="disc-case">
             <span class="chip chip-nominal">Benign formation</span>
-            <svg viewBox="0 44 260 96" role="img" aria-label="Two co-orbiting nodes shown as markers on a shared orbit arc, with no thrust vector on either one.">
-              <path d="M20 118 Q135 38 250 118" fill="none" stroke="#4a515c" stroke-width="1.4"/>
-              <circle cx="112" cy="80" r="6" fill="none" stroke="#3ad389" stroke-width="1.8"/>
-              <circle cx="163" cy="80" r="6" fill="none" stroke="#3ad389" stroke-width="1.8"/>
-              <path d="M118 80 H157" stroke="#4a515c" stroke-width="1" stroke-dasharray="3 3"/>
-              <text x="135" y="128" fill="#3ad389" font-family="Geist Mono, monospace" font-size="11" text-anchor="middle">no Δv on either side</text>
-            </svg>
-            <p>Two nodes in the same formation hold their spacing because orbital mechanics puts them there. Neither one spends propellant to stay.</p>
+            <img src="assets/figures/disc-benign.svg" width="960" height="560" loading="lazy" decoding="async" alt="Engine output for GRACE-FO 1 and 2, computed from real public element sets: a steady relative-range track near 175 kilometers over 24 hours, both spacecraft passive, classified incidental with no threat signals fired." />
+            <p>Real pair, real elements: GRACE-FO 1 and 2 hold their spacing because orbital mechanics puts them there. Neither one spends propellant to stay, and the engine reads it that way.</p>
           </div>
           <div class="disc-case">
             <span class="chip chip-threat">Shadowing</span>
-            <svg viewBox="0 44 260 96" role="img" aria-label="Two nodes on a shared orbit arc. The trailing node carries a thrust vector aimed at the leading node, which carries none.">
-              <path d="M20 118 Q135 38 250 118" fill="none" stroke="#4a515c" stroke-width="1.4"/>
-              <circle cx="112" cy="80" r="6" fill="#ff6b5f"/>
-              <circle cx="163" cy="80" r="6" fill="none" stroke="#e8eaec" stroke-width="1.8"/>
-              <path d="M122 78 H150" stroke="#ff6b5f" stroke-width="1.8"/>
-              <path d="M144 73 L152 78 L144 83" fill="none" stroke="#ff6b5f" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-              <text x="135" y="128" fill="#ff6b5f" font-family="Geist Mono, monospace" font-size="11" text-anchor="middle">Δv on one side only</text>
-            </svg>
-            <p>One party maneuvers to hold station next to another that never agreed to it. That asymmetry is what separates a shadower from a neighbor.</p>
+            <img src="assets/figures/disc-shadowing.svg" width="960" height="560" loading="lazy" decoding="async" alt="Engine output for the seeded shadowing scenario: a relative-range track pinned near 3 kilometers for the whole window, deep inside the 50 kilometer proximity radius, with the burn ledger showing the chaser maneuvering and the target passive: one-sided." />
+            <p>One party maneuvers to hold station next to another that never agreed to it. The burn ledger carries the asymmetry that separates a shadower from a neighbor.</p>
           </div>
         </div>
-        <p class="disc-note">Same geometry in both cases, same separation, same closing rate. The only difference is which side is spending propellant to be there, and on the seeded scenarios that difference alone carries the call at 100%.</p>
+        <p class="disc-note">Both charts are engine output, same discriminator. The benign case is real, GRACE-FO 1/2 from public CelesTrak element sets. The shadowing case is the seeded scenario, where the one-sidedness alone carries the call at 100%.</p>
       </div>
 
       <div class="assure reveal">
@@ -456,40 +444,14 @@
         <p>Each one gets its own acceptance policy: floors on recall, false alarms, and calibration tuned to which failure is unforgivable.</p>
       </div>
 
-      <div class="blueprint reveal" aria-hidden="true">
-        <svg viewBox="0 0 1000 300" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round">
-          <!-- Earth limb -->
-          <path d="M-20 300 Q500 150 1020 300" stroke-opacity=".35"/>
-          <!-- orbit -->
-          <path d="M40 176 Q500 44 960 176" stroke-dasharray="5 4" stroke-opacity=".55"/>
-          <!-- node A: proximity / defense -->
-          <g transform="translate(190,150)">
-            <circle cx="0" cy="0" r="9"/>
-            <circle cx="34" cy="6" r="6" stroke-opacity=".85"/>
-            <path d="M26 4 L12 1" stroke-width="1.6"/>
-            <path d="M16 -2 L11 1 L15 5"/>
-            <path d="M0 -9 V-56" stroke-opacity=".5"/>
-            <circle cx="0" cy="0" r="16" stroke-opacity=".25"/>
-          </g>
-          <text x="190" y="80" fill="currentColor" font-family="Geist Mono, monospace" font-size="12" letter-spacing="1.5" text-anchor="middle" stroke="none">DEFENSE</text>
-          <!-- node B: pattern of life / operators -->
-          <g transform="translate(500,116)">
-            <circle cx="0" cy="0" r="9"/>
-            <path d="M-22 26 H-10 L-6 14 L0 34 L6 8 L12 26 H22" stroke-width="1.4" stroke-opacity=".9"/>
-            <path d="M0 -9 V-40" stroke-opacity=".5"/>
-          </g>
-          <text x="500" y="58" fill="currentColor" font-family="Geist Mono, monospace" font-size="12" letter-spacing="1.5" text-anchor="middle" stroke="none">OPERATORS</text>
-          <!-- node C: orbital compute -->
-          <g transform="translate(810,150)">
-            <rect x="-16" y="-13" width="32" height="26" rx="1.5"/>
-            <path d="M-16 -4 H16 M-16 4 H16"/>
-            <path d="M-40 0 H-16 M16 0 H40" stroke-opacity=".6"/>
-            <path d="M-40 -8 V8 M40 -8 V8" stroke-opacity=".6"/>
-            <path d="M0 -13 V-56" stroke-opacity=".5"/>
-          </g>
-          <text x="810" y="80" fill="currentColor" font-family="Geist Mono, monospace" font-size="12" letter-spacing="1.5" text-anchor="middle" stroke="none">ORBITAL COMPUTE</text>
-        </svg>
-      </div>
+      <figure class="photo-figure reveal">
+        <img src="assets/segments-approach.webp"
+             srcset="assets/segments-approach-1000.webp 1000w, assets/segments-approach.webp 2000w"
+             sizes="(max-width: 1240px) 100vw, 1192px"
+             width="2000" height="600" loading="lazy" decoding="async"
+             alt="Northrop Grumman's Cygnus XL cargo spacecraft against black space, orange solar arrays deployed, on final approach to the International Space Station." />
+        <figcaption>Cargo vehicle on final approach to the International Space Station, photographed from the station. Photograph: NASA, iss073e0703405.</figcaption>
+      </figure>
 
       <div class="seg-grid">
         <div class="seg reveal" id="defense">

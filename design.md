@@ -97,6 +97,14 @@ The centrepiece of `#capabilities`: a stack of big names on a shared `--rule`, e
 ### Blueprint figure
 Line-art drawn in `currentColor` (so it inverts with its band), labelled in Geist Mono, in the reference's schematic style: an orbit line with three marked nodes (proximity, pattern-of-life, orbital-compute) and leader labels. Decorative-but-honest; the real audience copy sits in the `.seg-grid` below it.
 
+**Superseded (2026-09-17).** The blueprint and both discriminator schematics are retired under the no-computer-designed-imagery mandate. Their replacements, and the rules that now govern imagery:
+
+### Photography
+Real photographs only, and only as context, never as evidence: a product claim still requires product output. Source order: NASA (public domain, credit with mission and photo ID in the mono caption tier) first; ESA (CC BY-SA, attribution in caption) only when NASA has no usable subject. Natural color, at most a subtle darken to seat into a dark band, no duotone, no filter that makes a photograph read as an illustration. The `#segments` figure is `.photo-figure`: NASA iss073e0703405, Cygnus XL on ISS approach, cropped 10:3, webp with srcset. Never use a render, a computer-designed model, or AI-generated imagery where a photograph or product output can stand.
+
+### Product-output figures
+The discriminator charts are exported by the engine (themed copies land in `assets/figures/`). Each figure carries its provenance inside the artwork: engine version, data source, scenario id, and the seeded-vs-real distinction. The benign case is real (GRACE-FO 1/2 from public element sets); the figure lead reads "Product output", never "Schematic". Regenerate by re-running the exporter; never edit an exported SVG by hand.
+
 ### Framed figure (browser chrome)
 `.frame` + `.frame-bar` with three dots and a URL, wrapping the console screenshot (hero) and the orbit-map iframe. `console-preview.js` lays the live `/demo/` over the still once the frame is centred in view; `#shot-stage` scales the 1584×928 demo into the column via `--shot-scale`.
 
