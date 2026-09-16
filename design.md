@@ -157,3 +157,17 @@ Pipeline attribution: Ingest is platform substrate, Detect and Assess belong to 
 
 Rules. The section id stays `#capabilities` (inbound links keep working; the nav label is "Products"). Product names are always the bare uppercase word so a rename is a global case-sensitive find and replace. A product never claims a surface the console does not have; models are presented with benchmark metrics, not UI claims.
 
+## Motion: scroll-driven enhancement (added 2026-09-17)
+
+Progressive on three levels: CSS scroll-driven animations behind `@supports (animation-timeline: view())`, the IntersectionObserver reveal as the universal fallback, and everything except the clock dead under `prefers-reduced-motion`. Every new held-back state is released in the page's `<noscript>` block. Zero dependencies, as before.
+
+New primitives and rules:
+
+- **Rule-draw**: a chapter head's top hairline draws `scaleX(0)` to `scaleX(1)` over 560ms linear, riding the element's own `.in`. Ported from the sibling build's stage rail, which remains the reference implementation.
+- **Wipe-reveal**: photographs and product-output figures arrive as a left-to-right `clip-path` sweep, 900ms `--motion-ease-out`, riding the figure's `.in`. Never applied to text.
+- **Terminator crossings**: each band boundary carries a 1px `currentColor` rule whose opacity peaks as the boundary crosses the viewport's entry band. `@supports`-gated CSS only; browsers without scroll-driven animations simply have no terminator. That is the whole band-flip treatment; anything more is costume.
+- **UTC clock** (`#utc` in the pill, wide viewports): real system UTC, updated only while the tab is visible. The rule it establishes: **the only time displayed anywhere on a marketing page is real UTC.** A clock is information, so it ticks under reduced motion.
+- **Scrollspy rail** (`.rail-spy`, 1440px and up): `S/0x` designators for every top-level section, driven by the same top-band observer logic as the nav scrollspy, `aria-hidden` because the nav already announces position. It takes `.on-dark` from the current section's tone. Below 1440px it does not exist.
+- **Sticky chapter heads** (1240px and up): a product chapter's head holds under the pill while its models scroll. The tracking-readout feel comes from position, not animation.
+- **Digit-resolve scope** widened to the products counter and the chapter designators. Prose headlines never resolve: instrument, not game HUD.
+- **The gate stays still.** Sequential PASS stamping was proposed for the 2026-09 redesign and refused: the gate is a tally of one run, and revealing it in sequence asserts an ordering that does not exist. The existing simultaneous digit-resolve is the ceiling.

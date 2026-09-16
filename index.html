@@ -39,7 +39,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles/tokens.css">
 <link rel="stylesheet" href="styles/site.css">
-<noscript><style>.reveal{opacity:1;transform:none}</style></noscript>
+<noscript><style>.reveal{opacity:1;transform:none}.chap-head::before,.stages::after,.stage::before{transform:none}.disc-figure img,.photo-figure img{clip-path:none}</style></noscript>
 <style>
   /* ---------- HERO (dark) ----------
      Centred statement over the product, the reference's opening move. The
@@ -92,10 +92,15 @@
   .chap-lede{color:var(--fg-muted);font-size:14px;max-width:72ch;margin-top:var(--spacing-12)}
   .chapter .cap-list{border-top:0;margin-top:var(--spacing-24)}
 
-  /* ---------- PLATFORM (light) ---------- */
-  .stages{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--spacing-32);margin-top:var(--spacing-48);border-top:1px solid var(--rule-strong);padding-top:var(--spacing-32)}
+  /* ---------- PLATFORM (light) ----------
+     The rail sweeps in left to right and each stage's tick snaps on as the
+     stagger reaches it (ported from the sibling build's stage rail). */
+  .stages{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--spacing-32);margin-top:var(--spacing-48);position:relative;padding-top:var(--spacing-32)}
+  .stages::after{content:"";position:absolute;top:0;left:0;width:100%;height:1px;background:var(--rule-strong);transform:scaleX(0);transform-origin:0 50%;transition:transform 560ms linear}
+  .stages.in::after{transform:scaleX(1)}
   .stage{position:relative}
-  .stage::before{content:"";position:absolute;top:calc(-1px - var(--spacing-32));left:0;width:36px;height:3px;background:var(--fg)}
+  .stage::before{content:"";position:absolute;top:calc(-1px - var(--spacing-32));left:0;width:36px;height:3px;background:var(--fg);transform:scaleX(0);transform-origin:0 50%;transition:transform var(--motion-fast) var(--motion-ease-out)}
+  .stage.in::before{transform:scaleX(1)}
   .stage .sn{font-family:var(--font-mono);font-size:12px;letter-spacing:.05em;color:var(--fg-faint)}
   .stage .who{display:block;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-faint);margin-top:var(--spacing-8)}
   .stage h4{font-weight:600;color:var(--fg);font-size:var(--text-body-lg);margin:var(--spacing-12) 0 var(--spacing-8)}
@@ -190,6 +195,7 @@
         <a class="nav-extra" href="contact/">Request a briefing</a>
       </div>
       <div class="nav-right">
+        <time class="nav-clock" id="utc" aria-hidden="true"></time>
         <a href="contact/" class="nav-cta"><span>Request a briefing</span></a>
         <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-nav">
           <svg viewBox="0 0 24 24" stroke-width="1.6" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
@@ -373,10 +379,10 @@
       </div>
 
       <div class="stages reveal" data-stagger="130">
-        <div class="stage"><span class="sn">01 · Ingest</span><span class="who">Platform</span><h4>Public catalogs in</h4><p>Open connectors normalize public catalogs (CelesTrak, Space-Track) and five-year element-set histories into one data fabric.</p></div>
-        <div class="stage"><span class="sn">02 · Detect</span><span class="who">Orbwatch</span><h4>Subtract physics</h4><p>Remove J2 oblateness and atmospheric drag; the residual is thrust, detected, measured, timestamped. 519 maneuvers on a 1,039-object catalog in 6.0 s.</p></div>
-        <div class="stage"><span class="sn">03 · Assess</span><span class="who">Orbwatch</span><h4>Name the behavior</h4><p>Four models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life.</p></div>
-        <div class="stage"><span class="sn">04 · Report</span><span class="who">The Command Center</span><h4>Into the analyst queue</h4><p>The event lands in the Command Center with the signals behind it attached, ranked so the calls that need a human get one first.</p></div>
+        <div class="stage reveal"><span class="sn">01 · Ingest</span><span class="who">Platform</span><h4>Public catalogs in</h4><p>Open connectors normalize public catalogs (CelesTrak, Space-Track) and five-year element-set histories into one data fabric.</p></div>
+        <div class="stage reveal"><span class="sn">02 · Detect</span><span class="who">Orbwatch</span><h4>Subtract physics</h4><p>Remove J2 oblateness and atmospheric drag; the residual is thrust, detected, measured, timestamped. 519 maneuvers on a 1,039-object catalog in 6.0 s.</p></div>
+        <div class="stage reveal"><span class="sn">03 · Assess</span><span class="who">Orbwatch</span><h4>Name the behavior</h4><p>Four models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life.</p></div>
+        <div class="stage reveal"><span class="sn">04 · Report</span><span class="who">The Command Center</span><h4>Into the analyst queue</h4><p>The event lands in the Command Center with the signals behind it attached, ranked so the calls that need a human get one first.</p></div>
       </div>
       <p class="stage-note reveal">GUARDIAN attaches a response to any event that threatens a protected asset, and runs the same watch inward against your own fleet's telemetry.</p>
     </div>

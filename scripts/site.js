@@ -131,6 +131,73 @@
     }, { passive: true });
   })();
 
+  /* --- UTC clock ----------------------------------------------------------
+     Real system UTC in the pill: the only time displayed anywhere on the
+     marketing pages, and it is never fabricated. The interval runs only
+     while the tab is visible; a hidden tab's clock costs nothing and shows
+     to nobody. Not gated on reduced motion: a clock is information. */
+  (function () {
+    var el = document.getElementById('utc');
+    if (!el) return;
+    var pad = function (n) { return String(n).padStart(2, '0'); };
+    var render = function () {
+      var d = new Date();
+      el.textContent = pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes()) + ':' + pad(d.getUTCSeconds()) + 'Z';
+      el.setAttribute('datetime', d.toISOString());
+    };
+    var timer = null;
+    var start = function () { if (timer === null) { render(); timer = setInterval(render, 1000); } };
+    var stop = function () { if (timer !== null) { clearInterval(timer); timer = null; } };
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') start(); else stop();
+    });
+    if (document.visibilityState === 'visible') start();
+  })();
+
+  /* --- Scrollspy rail (wide viewports) ------------------------------------
+     S/0x designators in the left margin: the same top-band logic as the nav
+     scrollspy, pointed at every top-level section instead of only the linked
+     ones, so the page reads like a numbered tracking readout. Presentational
+     only (the nav announces position), so the whole rail is aria-hidden, and
+     it also fails closed without IntersectionObserver. The rail takes the
+     tone of the current section so it never dissolves into a band. */
+  (function () {
+    if (!('IntersectionObserver' in window)) return;
+    var sections = document.querySelectorAll('main > section');
+    if (sections.length < 3) return;
+
+    var rail = document.createElement('div');
+    rail.className = 'rail-spy';
+    rail.setAttribute('aria-hidden', 'true');
+    var marks = [];
+    sections.forEach(function (sec, i) {
+      var s = document.createElement('span');
+      s.textContent = 'S/' + String(i + 1).padStart(2, '0');
+      rail.appendChild(s);
+      marks.push({ el: s, sec: sec });
+    });
+    document.body.appendChild(rail);
+
+    var offset = parseInt(getComputedStyle(document.documentElement)
+      .getPropertyValue('--anchor-offset'), 10) || 108;
+    var visible = [];
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var at = visible.indexOf(entry.target);
+        if (entry.isIntersecting) { if (at === -1) visible.push(entry.target); }
+        else if (at !== -1) visible.splice(at, 1);
+      });
+      if (!visible.length) return;
+      var cur = visible.slice().sort(function (a, b) {
+        return Array.prototype.indexOf.call(sections, a) - Array.prototype.indexOf.call(sections, b);
+      }).pop();
+      marks.forEach(function (m) { m.el.classList.toggle('cur', m.sec === cur); });
+      rail.classList.toggle('on-dark', cur.classList.contains('tone-dark'));
+    }, { rootMargin: (-offset) + 'px 0px -60% 0px', threshold: 0 });
+
+    sections.forEach(function (sec) { io.observe(sec); });
+  })();
+
   /* --- Figures resolve on entry -------------------------------------------
      Headline figures arrive as an unresolved readout and lock on, digit by
      digit, left to right: `-.---` becomes `0.963`.
@@ -157,7 +224,9 @@
      then restores it. So no-script and reduced-motion visitors never see a
      placeholder, and the DOM's settled truth is always the number. */
   (function () {
-    var figures = document.querySelectorAll('.cap-metric .big, .gate .gv, .seal .digest');
+    /* Counters and chapter designators joined the scope with the two-product
+       restructure; prose headlines never do (instrument, not game HUD). */
+    var figures = document.querySelectorAll('.cap-metric .big, .gate .gv, .seal .digest, .cap-head .count, .chap-designator, .chap-count');
     if (!figures.length || !('IntersectionObserver' in window)) return;
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 

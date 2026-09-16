@@ -217,7 +217,59 @@ footer{background:var(--bg-2);color:var(--fg);border-top:1px solid var(--rule);p
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .reveal{opacity:1;transform:none;transition:none}
+  .chap-head::before,.stages::after,.stage::before{transform:none;transition:none}
+  .disc-figure img,.photo-figure img{clip-path:none;transition:none}
 }
+
+/* --- Scroll-driven enhancement (2026-09) ----------------------------------
+   Progressive on three levels: CSS scroll-driven animations behind @supports,
+   the IntersectionObserver reveal as the universal fallback, and everything
+   except the clock (which is information, not motion) dead under reduced
+   motion. New held-back states are released in each page's <noscript>. */
+
+/* UTC clock in the pill: real system time, the only time on the page. */
+.nav-clock{display:none;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--fg-faint);font-variant-numeric:tabular-nums}
+@media(min-width:1040.02px){.nav-clock:not(:empty){display:inline}}
+
+/* Scrollspy rail: S/0x designators in the left margin, wide viewports only.
+   Presentational (the nav announces position); JS marks it aria-hidden and
+   flips .on-dark from the current section's tone so it never vanishes into
+   a band. Fixed hexes on purpose: the rail floats over both tones. */
+.rail-spy{display:none}
+@media(min-width:1440px){
+  .rail-spy{display:flex;flex-direction:column;gap:10px;position:fixed;left:28px;top:50%;transform:translateY(-50%);z-index:5;font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;pointer-events:none}
+  .rail-spy span{color:#83878f;opacity:.55;transition:opacity var(--motion-fast) var(--motion-ease-out),color var(--motion-fast) var(--motion-ease-out)}
+  .rail-spy span.cur{opacity:1;color:#16181c}
+  .rail-spy.on-dark span{color:#787d86}
+  .rail-spy.on-dark span.cur{color:#f4f4f2}
+}
+
+/* Rule-draw: a chapter's top hairline draws itself in with the reveal. */
+.chap-head{position:relative;border-top:0}
+.chap-head::before{content:"";position:absolute;top:0;left:0;width:100%;height:1px;background:var(--rule-strong);transform:scaleX(0);transform-origin:0 50%;transition:transform 560ms linear}
+.chap-head.in::before{transform:scaleX(1)}
+
+/* Tracking-readout chapters: the head holds under the pill while its models
+   scroll past. Wide viewports only; below that it reads as clutter. */
+@media(min-width:1240px){
+  .chapter .chap-head{position:sticky;top:calc(var(--header-inset) + var(--header-height) + 10px);z-index:2;background:var(--bg);padding-bottom:var(--spacing-8)}
+}
+
+/* Wipe-reveal: real photographs and product-output figures arrive as a
+   left-to-right declassifying sweep, riding the figure's own .in. */
+.disc-figure img,.photo-figure img{clip-path:inset(0 100% 0 0);transition:clip-path 900ms var(--motion-ease-out) 120ms}
+.disc-figure.in img,.photo-figure.in img{clip-path:inset(0 0 0 0)}
+
+/* Terminator crossings: each band boundary carries a 1px rule that brightens
+   as it crosses the entry band of the viewport and fades as it leaves. CSS
+   scroll-driven only; browsers without it simply have no terminator. */
+@supports (animation-timeline: view()){
+  @media (prefers-reduced-motion: no-preference){
+    main > .sec{position:relative}
+    main > .sec::after{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:currentColor;opacity:0;pointer-events:none;animation:terminator linear both;animation-timeline:view();animation-range:entry 0% cover 30%}
+  }
+}
+@keyframes terminator{0%{opacity:0}55%{opacity:.4}100%{opacity:0}}
 
 /* --- Responsive shell ----------------------------------------------------- */
 @media(max-width:1040px){
