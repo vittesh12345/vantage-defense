@@ -271,6 +271,22 @@ footer{background:var(--bg-2);color:var(--fg);border-top:1px solid var(--rule);p
 }
 @keyframes terminator{0%{opacity:0}55%{opacity:.4}100%{opacity:0}}
 
+/* --- Entry approach overlay (scripts/entry-approach.js) --------------------
+   Additive over a fully rendered page: fixed, above the pill, removed on
+   every exit path. Colors are fixed dark values: the overlay is the orbit
+   map's night side regardless of band tones. */
+.approach-overlay{position:fixed;inset:0;z-index:400;background:#05070b;opacity:0;transition:opacity 200ms ease-out;cursor:default}
+.approach-overlay.show{opacity:1}
+.approach-overlay.hide{opacity:0;transition:opacity 250ms ease-out}
+.approach-overlay .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.approach-overlay canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 250ms ease-out}
+.approach-overlay.live canvas{opacity:1}
+.approach-cap{position:absolute;left:24px;bottom:20px;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:#f4f4f2}
+.approach-cap .sub{margin-top:4px;font-size:11px;color:#787d86}
+.approach-skip{position:absolute;right:24px;bottom:20px;font-family:var(--font-mono);font-size:11px;color:#787d86}
+.approach-dtg{position:absolute;right:24px;top:20px;font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:#878c95}
+.approach-defense::after{content:"";position:absolute;inset:16px;border:1px solid #3d4552;pointer-events:none}
+
 /* --- Responsive shell ----------------------------------------------------- */
 @media(max-width:1040px){
   .nav-toggle{display:inline-flex}

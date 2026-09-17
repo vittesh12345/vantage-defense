@@ -124,6 +124,8 @@ Warm-grey (`--bg-2`), four columns (brand + statement + link columns), a row of 
 
 **Dropped from the original on purpose:** the hero intro flight, the star field, and the animated wireframe spacecraft. The product screenshot in a browser frame is more faithful to the reference and simpler. `scripts/hero-satellite.js` and `capability-demos.js` are not carried into this folder.
 
+*(2026-09-17: an entry experience returned, in a different form that keeps every reason the old one was dropped. See "Entry: the orbit approach" below — real instrument output instead of a drawn spacecraft, overlay-only instead of a veil that could strand a visitor, two seconds instead of a flight sequence.)*
+
 ---
 
 ## Do's and Don'ts
@@ -171,3 +173,15 @@ New primitives and rules:
 - **Sticky chapter heads** (1240px and up): a product chapter's head holds under the pill while its models scroll. The tracking-readout feel comes from position, not animation.
 - **Digit-resolve scope** widened to the products counter and the chapter designators. Prose headlines never resolve: instrument, not game HUD.
 - **The gate stays still.** Sequential PASS stamping was proposed for the 2026-09 redesign and refused: the gate is a tally of one run, and revealing it in sequence asserts an ordering that does not exist. The existing simultaneous digit-resolve is the ceiling.
+
+## Entry: the orbit approach (added 2026-09-17)
+
+A 2.0-second camera flight from the full Earth into COSMOS 2570, rendered live by the orbit map's own scene, catalog and textures. It is product output, not a video, and not a drawn model: the same `createViz()` that renders `/visualization/`, flown for two seconds.
+
+**The architecture makes blocking impossible.** The page paints completely before the loader (`scripts/entry-approach.js`, a module script old browsers skip natively) even runs. The approach is an additive overlay: nothing beneath it moves, hides, or scroll-locks, so every failure path degrades to the page exactly as it already was. There is no veil state; either the finished overlay fades in over its poster (`assets/leo-visualization.jpg`, the map's own real screenshot) or nothing appears at all.
+
+**The guard gauntlet, all mandatory:** once per session, and the flag is set only when the intro is SEEN, never when it was merely attempted, so a timed-out first visit can still play warm later; no reduced motion; no save-data or 2g; tab visible; page at the top; viewport at least 700px; WebGL present. A 2500ms ready budget covers import, the 1k earth texture (`img/earth-blue-marble-1k.webp`, a quarter of the full sheet's bytes; `/visualization/` keeps the 4k), and the catalog; expiry aborts silently.
+
+**Timing, fixed:** 200ms fade-in overlapping the flight, 1600ms flight (the settle is the hold), 200ms handoff fade: 2.0 seconds visible, total. Any input skips in 250ms. An unconditional 4-second backstop is armed the moment the overlay attaches and never cleared until teardown. A tab going hidden tears down instantly with no fade: nobody is watching.
+
+**The caption is catalog facts only:** name, NORAD id, inclination, plus the map's own standing caveat line ("Synthetic catalog · assessments simulated"). No acquisition vocabulary, no sweeps, no fabricated readouts; those refusals are the sibling build's and they bind here.

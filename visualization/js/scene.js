@@ -1043,6 +1043,7 @@ export function createViz({ canvas, textures, objects, sensorSites }) {
   return {
     renderer, scene, camera, controls, objects,
     setTime, render, resize, pick, pickMulti, project, select, flyTo, sensorScreenPos,
+    objectScenePos,
     get selected() { return selected; },
     get simMs() { return simMs; },
     get tracking() { return !!(trackAnim && trackAnim.phase === 'lock'); },
