@@ -219,6 +219,9 @@ footer{background:var(--bg-2);color:var(--fg);border-top:1px solid var(--rule);p
   .reveal{opacity:1;transform:none;transition:none}
   .chap-head::before,.stages::after,.stage::before{transform:none;transition:none}
   .disc-figure img,.photo-figure img{clip-path:none;transition:none}
+  /* The backdrop still mounts and still renders one real frame; it just
+     arrives instead of fading in, and the flight never runs at all. */
+  .approach-stage,.approach-ui,.approach-note .rest,.approach-note .open,.approach-cap,.approach-skip,.hero .wrap,#hdr{transition:none}
 }
 
 /* --- Scroll-driven enhancement (2026-09) ----------------------------------
@@ -271,21 +274,68 @@ footer{background:var(--bg-2);color:var(--fg);border-top:1px solid var(--rule);p
 }
 @keyframes terminator{0%{opacity:0}55%{opacity:.4}100%{opacity:0}}
 
-/* --- Entry approach overlay (scripts/entry-approach.js) --------------------
-   Additive over a fully rendered page: fixed, above the pill, removed on
-   every exit path. Colors are fixed dark values: the overlay is the orbit
-   map's night side regardless of band tones. */
-.approach-overlay{position:fixed;inset:0;z-index:400;background:#05070b;opacity:0;transition:opacity 200ms ease-out;cursor:default}
-.approach-overlay.show{opacity:1}
-.approach-overlay.hide{opacity:0;transition:opacity 250ms ease-out}
-.approach-overlay .poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.approach-overlay canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 250ms ease-out}
-.approach-overlay.live canvas{opacity:1}
-.approach-cap{position:absolute;left:24px;bottom:20px;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:#f4f4f2}
+/* --- Entry stage and hero backdrop (scripts/entry-approach.js) -------------
+   One fixed canvas, mounted once. It attaches at z-index 400, which is the
+   black screen the entry flight plays on, and drops to z-index 0 when the
+   flight settles. That single change is the whole handoff: from then on every
+   band paints over it and only the hero, made transparent by .bg-live, lets
+   it through. Colors are fixed dark values: this is the orbit map's own night
+   regardless of band tones.
+
+   The bands need to be positioned for z-index 0 to mean "behind the page".
+   1 is free: the pill is 50, the skip link 100, the scrollspy rail 5, the
+   sticky chapter heads 2. Scoped to .bg-live, which is set at the same
+   moment the stage drops behind, so a visitor who never gets a backdrop
+   never gets the restacking either. */
+body.bg-live main > section,body.bg-live footer{position:relative;z-index:1}
+body.bg-live .hero{background:transparent}
+
+.approach-stage{position:fixed;inset:0;z-index:400;background:#05070b;opacity:0;transition:opacity 200ms ease-out;pointer-events:none}
+.approach-stage.show{opacity:1}
+.approach-stage.settled{z-index:0;transition:none}
+.approach-stage canvas{position:absolute;inset:0;width:100%;height:100%}
+.approach-cap{position:absolute;left:24px;bottom:20px;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:#f4f4f2;transition:opacity 250ms ease-out}
 .approach-cap .sub{margin-top:4px;font-size:11px;color:#787d86}
-.approach-skip{position:absolute;right:24px;bottom:20px;font-family:var(--font-mono);font-size:11px;color:#787d86}
+.approach-skip{position:absolute;right:24px;bottom:20px;font-family:var(--font-mono);font-size:11px;color:#787d86;transition:opacity 250ms ease-out}
+.approach-cap.gone,.approach-skip.gone{opacity:0}
 .approach-dtg{position:absolute;right:24px;top:20px;font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:#878c95}
 .approach-defense::after{content:"";position:absolute;inset:16px;border:1px solid #3d4552;pointer-events:none}
+/* The parked globe is a door, and its affordance is its own layer ABOVE the
+   page rather than part of the stage. The canvas has to stay behind the hero's
+   content, and anything under `.hero .wrap` can never be clicked or hovered:
+   the wrap is a full-width block and wins hit-testing over the globe even
+   where it is entirely transparent. So the canvas sits at 0 and this sits at
+   2, over the hero and under the pill.
+
+   Live only at the top of the page: scrolled, the hero's content slides under
+   the pinned globe and would cut the label in half, and this layer would take
+   the clicks that belong to the console frame beneath it. */
+.approach-ui{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity 240ms ease-out}
+.approach-ui.live{opacity:1;transition:opacity 500ms var(--motion-ease-out) 200ms}
+.approach-ui.live .approach-hit,.approach-ui.live .approach-note{pointer-events:auto}
+
+/* The circle is the disc's own hit area, sized in JS from the same numbers
+   that place the globe; border-radius keeps the corners of empty sky
+   unclickable so a stray click never navigates. */
+.approach-hit{position:absolute;border-radius:50%;cursor:pointer;-webkit-tap-highlight-color:transparent}
+
+/* The map's standing caveat, placed under the parked globe by the same
+   constants that place the globe, and turning into the invitation on hover.
+   The two spans are stacked, not swapped, so the line never reflows. */
+.approach-note{position:absolute;right:0;top:0;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;color:#787d86;white-space:nowrap;cursor:pointer}
+.approach-note .rest,.approach-note .open{display:block;transition:opacity var(--motion-fast) var(--motion-ease-out)}
+.approach-note .open{position:absolute;right:0;top:0;opacity:0;color:#f4f4f2}
+/* Hovering either the disc or the label swaps the text. */
+.approach-hit:hover ~ .approach-note .rest,.approach-note:hover .rest{opacity:0}
+.approach-hit:hover ~ .approach-note .open,.approach-note:hover .open{opacity:1}
+
+/* The one held-back state that is not a scroll reveal: the hero's content is
+   hidden while the opaque stage covers it, so that it can come on as the
+   globe retreats instead of snapping in when the stage drops behind. It is
+   applied only once the stage is fully opaque and released on every exit
+   path, including the 4s backstop. */
+.hero .wrap,#hdr{transition:opacity 640ms var(--motion-ease-out)}
+body.approach-veiled .hero .wrap,body.approach-veiled #hdr{opacity:0}
 
 /* --- Responsive shell ----------------------------------------------------- */
 @media(max-width:1040px){
