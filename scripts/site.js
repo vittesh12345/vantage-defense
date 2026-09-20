@@ -213,7 +213,10 @@
      tiers are set in IBM Plex Mono, which means the mask is exactly as wide
      as the value and nothing moves as it resolves.
 
-     Scope is `.ledger .val` and `.gate .gv`, not every figure on the page.
+     Scope is the model metrics and the counters, not every figure on the page.
+     (`.gate .gv` and `.seal .digest` were in scope until the assurance panel
+     was retired from the marketing pages on 2026-09-22; nothing matches them
+     now, and `/demo/` does not load this file.)
      The hero metric rail is excluded on two counts that agree: one of its
      three figures is "under 15 km", which has nothing to resolve, and the
      rail sits above the fold, where this would fire during the intro and
@@ -226,7 +229,12 @@
   (function () {
     /* Counters and chapter designators joined the scope with the two-product
        restructure; prose headlines never do (instrument, not game HUD). */
-    var figures = document.querySelectorAll('.cap-metric .big, .gate .gv, .seal .digest, .cap-head .count, .chap-designator, .chap-count');
+    /* The metric rail joined the scope when it moved out of the hero. The rule
+       above excluded it for one reason, that it sat above the fold and would
+       fire during the intro; under the product boxes it is scrolled to like
+       everything else. "under 15 km" has no digits and resolve() already
+       returns on a figure with nothing to mask. */
+    var figures = document.querySelectorAll('.cap-metric .big, .cap-head .count, .chap-designator, .chap-count, .rail .num');
     if (!figures.length || !('IntersectionObserver' in window)) return;
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 

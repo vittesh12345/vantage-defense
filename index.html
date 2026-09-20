@@ -42,31 +42,39 @@
 <noscript><style>.reveal{opacity:1;transform:none}.chap-head::before,.stages::after,.stage::before{transform:none}.disc-figure img,.photo-figure img{clip-path:none}.hero .wrap,#hdr{opacity:1}</style></noscript>
 <style>
   /* ---------- HERO (dark) ----------
-     Centred statement over the product, the reference's opening move. The
-     console sits in a browser frame below the headline; console-preview.js
-     lays the live /demo/ over the still once the frame is being looked at. */
-  .hero{padding:calc(var(--header-inset) + var(--header-height) + clamp(56px,11vw,132px)) 0 var(--section-pad-lg);text-align:center}
+     Centred statement, and nothing else. The console preview and the metric
+     rail both left: the console went back to the Platform section, where the
+     pipeline it illustrates ends, and the rail went under the two product
+     boxes, which is what it is evidence for.
+
+     min-height is load-bearing, not decoration. Without the frame and the
+     rail the hero is about 730px, so the light Statement band would push into
+     the first screen and the night-sky backdrop, which is only visible
+     through this band, would be cut down with the pinned globe sitting near
+     its edge. The first screen has to stay the hero's.
+
+     And once the band is a full screen with only four elements in it, the
+     block has to be centred IN that screen: left in normal flow it sits at
+     the top over 300px of dead space, which is what reads as uncentred. The
+     padding is symmetric and clears the fixed pill, so the centring is of the
+     space below the pill rather than of the viewport. */
+  .hero{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:calc(var(--header-inset) + var(--header-height) + var(--spacing-40)) 0;text-align:center}
   .hero .eyebrow{justify-content:center}
   .hero h1{font-weight:600;color:var(--fg);font-size:var(--text-h1);line-height:1.02;letter-spacing:var(--tracking-display);margin:var(--spacing-24) auto var(--spacing-20);max-width:18ch}
   .hero h1 .hl{display:block}
   .hero .lede{font-size:var(--text-lede);color:var(--fg-muted);max-width:52ch;margin:0 auto var(--spacing-32)}
-  .hero .cta-row{justify-content:center;margin-bottom:clamp(48px,7vw,80px)}
+  .hero .cta-row{justify-content:center}
 
-  .hero-frame{max-width:1120px;margin:0 auto;text-align:left}
-  .hero-frame .frame-bar .url{font-family:var(--font-mono);letter-spacing:.02em}
+  /* The Command Center, in a browser frame at the end of the pipeline.
+     console-preview.js lays the live /demo/ over the still once the frame is
+     being looked at; it finds the stage by id, so this markup moved sections
+     without the script changing at all. */
+  .demo-frame{max-width:1120px;margin:var(--spacing-48) auto 0;text-align:left}
+  .demo-frame .frame-bar .url{font-family:var(--font-mono);letter-spacing:.02em}
   .shot-stage{position:relative;aspect-ratio:1584/928;overflow:hidden;background:#05070b}
   .shot-stage img{width:100%;height:auto}
   .shot-stage iframe{position:absolute;left:0;top:0;width:1584px;height:928px;border:0;transform-origin:0 0;transform:scale(var(--shot-scale,1));pointer-events:none;opacity:0;transition:opacity var(--motion-reveal) var(--motion-ease-out)}
   .shot-stage.live iframe{opacity:1}
-
-  /* Metric rail: the page's one piece of real-world evidence, kept in the hero
-     because it is the fastest answer to "working system or a deck". */
-  .rail{max-width:1120px;margin:var(--spacing-48) auto 0;display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule)}
-  .rail .cell{padding:var(--spacing-24) var(--spacing-24) 0 0}
-  .rail .cell + .cell{border-left:1px solid var(--rule);padding-left:var(--spacing-24)}
-  .rail .num{font-family:var(--font-mono);font-size:clamp(23px,2.3vw,31px);font-weight:500;color:var(--fg);line-height:1.1}
-  .rail .lbl{font-size:14px;color:var(--fg-muted);margin-top:var(--spacing-8);max-width:32ch}
-  .rail-note{max-width:1120px;margin:var(--spacing-20) auto 0;font-family:var(--font-mono);font-size:12px;color:var(--fg-faint);line-height:1.6}
 
   /* ---------- STATEMENT (light) ---------- */
   .statement p{font-weight:600;color:var(--fg);font-size:var(--text-statement);line-height:1.1;letter-spacing:var(--tracking-display);max-width:24ch}
@@ -76,21 +84,13 @@
   .statement a:hover{border-bottom-color:var(--fg)}
   .statement .sub{margin-top:var(--spacing-32);font-family:var(--font-mono);font-size:13px;color:var(--fg-muted);max-width:60ch}
 
-  /* ---------- PRODUCTS (dark) ---------- */
+  /* ---------- PRODUCTS (dark) ----------
+     The section head only. Its body is the two product boxes and the metric
+     rail, both shared components in site.css; the eight models themselves now
+     live on /orbwatch/ and /guardian/. */
   .cap-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--spacing-24);flex-wrap:wrap;margin-bottom:var(--spacing-40)}
   .cap-head h2{font-weight:600;font-size:var(--text-h2);letter-spacing:var(--tracking-display);line-height:1.03;max-width:20ch}
   .cap-head .count{font-family:var(--font-mono);font-size:13px;color:var(--fg-faint)}
-
-  /* Product chapters: two named products over the same eight-model ledger. The
-     chapter rule replaces the list's own border-top so the head is the divider. */
-  .chapter{margin-top:var(--spacing-48)}
-  .chapter + .chapter{margin-top:var(--spacing-64)}
-  .chap-head{display:flex;align-items:baseline;gap:var(--spacing-24);flex-wrap:wrap;border-top:1px solid var(--rule-strong);padding-top:var(--spacing-24)}
-  .chap-designator{font-family:var(--font-mono);font-size:13px;letter-spacing:var(--tracking-label);color:var(--fg)}
-  .chap-role{font-weight:600;color:var(--fg);font-size:var(--text-h3);letter-spacing:var(--tracking-tight);line-height:1.15;margin:0}
-  .chap-count{margin-left:auto;font-family:var(--font-mono);font-size:12px;color:var(--fg-faint)}
-  .chap-lede{color:var(--fg-muted);font-size:14px;max-width:72ch;margin-top:var(--spacing-12)}
-  .chapter .cap-list{border-top:0;margin-top:var(--spacing-24)}
 
   /* ---------- PLATFORM (light) ----------
      The rail sweeps in left to right and each stage's tick snaps on as the
@@ -104,38 +104,10 @@
   .stage .sn{font-family:var(--font-mono);font-size:12px;letter-spacing:.05em;color:var(--fg-faint)}
   .stage .who{display:block;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-faint);margin-top:var(--spacing-8)}
   .stage h4{font-weight:600;color:var(--fg);font-size:var(--text-body-lg);margin:var(--spacing-12) 0 var(--spacing-8)}
-  .stage p{color:var(--fg-muted);font-size:14px;line-height:1.55}
-  .stage-note{margin-top:var(--spacing-32);font-family:var(--font-mono);font-size:12px;color:var(--fg-faint);line-height:1.6;max-width:78ch}
 
-  /* ---------- EVIDENCE (dark) ---------- */
-  .disc-figure{margin:var(--spacing-48) 0 var(--spacing-64)}
-  .disc-lead{display:inline-flex;align-items:center;gap:var(--spacing-8);font-family:var(--font-mono);font-size:12px;letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--fg-faint);margin-bottom:var(--spacing-24)}
-  .disc{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-24)}
-  .disc-case{background:var(--panel);border:1px solid var(--rule-strong);border-radius:var(--radius-sm);padding:var(--spacing-24)}
-  .disc-case svg,.disc-case img{width:100%;height:auto;margin:var(--spacing-20) 0}
-  .disc-case p{color:var(--fg-muted);font-size:14px}
-  .disc-note{margin-top:var(--spacing-20);font-family:var(--font-mono);font-size:12px;color:var(--fg-faint);line-height:1.6;max-width:78ch}
-
-  .assure{background:var(--panel);border:1px solid var(--rule-strong);border-radius:var(--radius-sm);overflow:hidden}
-  .assure-head{display:flex;align-items:center;gap:var(--spacing-16);flex-wrap:wrap;padding:var(--spacing-16) var(--spacing-24);background:var(--bg-2);border-bottom:1px solid var(--rule);font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-faint)}
-  .assure-head .grow{margin-left:auto;text-transform:none;letter-spacing:0}
-  .assure-body{display:grid;grid-template-columns:1fr 1fr;gap:var(--spacing-40);padding:var(--spacing-40) var(--spacing-24)}
-  .assure-body h3{font-weight:600;color:var(--fg);font-size:var(--text-h3);letter-spacing:var(--tracking-tight);line-height:1.15;margin-bottom:var(--spacing-12)}
-  .assure-body .sub{font-family:var(--font-mono);font-size:14px;color:var(--fg-muted)}
-  .assure-body p{color:var(--fg-muted);font-size:14px}
-  .gate{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule);margin-top:var(--spacing-24)}
-  .gate .g{padding:var(--spacing-16) var(--spacing-8) 0 0}
-  .gate .g + .g{border-left:1px solid var(--rule);padding-left:var(--spacing-12)}
-  .gate .gv{font-family:var(--font-mono);font-size:24px;color:var(--fg-faint);line-height:1.1}
-  .gate .gk{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-faint);margin-top:var(--spacing-4)}
-  .gate .pass .gv{color:var(--status-nominal)}
-  .gate .monitor .gv{color:var(--status-watch)}
-  .seal{margin-top:var(--spacing-24);padding-top:var(--spacing-16);border-top:1px solid var(--rule);font-family:var(--font-mono);font-size:12px;color:var(--fg-muted)}
-  .seal b{color:var(--fg);font-weight:500}
-  .seal-link{display:inline-flex;flex-direction:column;gap:var(--spacing-4);margin-top:var(--spacing-12);min-height:44px;justify-content:center;font-family:var(--font-mono);font-size:12px;color:var(--fg);transition:color var(--motion-fast) var(--motion-ease-out)}
-  .seal-link:hover{color:var(--fg)}
-  .seal-link span:first-child{border-bottom:1px solid var(--rule-strong);padding-bottom:2px;align-self:flex-start}
-  .seal-caveat{color:var(--fg-faint);font-size:11px}
+  /* ---------- EVIDENCE (dark) ----------
+     The discriminator figure styles moved to site.css: the ORBWATCH page
+     shows the same pair, because it is that product's own proof. */
 
   /* ---------- WHO IT'S FOR (dark, real photograph) ---------- */
   .photo-figure{margin:var(--spacing-48) 0 var(--spacing-64)}
@@ -148,24 +120,13 @@
   .seg .more{display:inline-flex;align-items:center;min-height:44px;margin-top:var(--spacing-12);font-size:14px;color:var(--fg);border-bottom:1px solid var(--rule-strong);transition:border-color var(--motion-fast)}
   .seg .more:hover{border-bottom-color:var(--fg)}
 
-  /* ---------- CLOSING CTA (light) ---------- */
-  .cta-head{max-width:60ch;margin-bottom:var(--spacing-40)}
-  .cta-head h2{font-weight:600;color:var(--fg);font-size:var(--text-h2);letter-spacing:var(--tracking-display);line-height:1.05;margin:var(--spacing-20) 0 var(--spacing-16)}
-  .cta-head p{color:var(--fg-muted);font-size:var(--text-lede);max-width:52ch}
-
   @media(max-width:820px){
-    .disc,.assure-body,.seg-grid{grid-template-columns:1fr}
-    .assure-body{gap:var(--spacing-24)}
     .stages{grid-template-columns:1fr 1fr;gap:var(--spacing-24) var(--spacing-32)}
     .stage::before{position:static;display:block;margin-bottom:var(--spacing-12)}
-    .rail{grid-template-columns:1fr}
-    .rail .cell + .cell{border-left:0;border-top:1px solid var(--rule);padding-left:0;margin-top:var(--spacing-16);padding-top:var(--spacing-16)}
-    .seg-grid{gap:var(--spacing-32)}
+    .seg-grid{grid-template-columns:1fr;gap:var(--spacing-32)}
   }
   @media(max-width:560px){
     .stages{grid-template-columns:1fr}
-    .gate{grid-template-columns:1fr 1fr}
-    .gate .g:nth-child(3){border-left:0;padding-left:0}
   }
 </style>
 </head>
@@ -212,29 +173,11 @@
     <div class="wrap">
       <span class="eyebrow reveal">Watch the sky. Guard the fleet. One command center.</span>
       <h1 class="reveal"><span class="hl">Know why it moved.</span> <span class="hl">And prove every call.</span></h1>
-      <p class="lede reveal">Vantage reads satellite behavior from public orbital data. No telescopes, no radar. Two products, ORBWATCH and GUARDIAN, put every call in the Command Center with sealed evidence behind it.</p>
+      <p class="lede reveal">Vantage reads satellite behavior from public orbital data. No telescopes, no radar.</p>
       <div class="cta-row reveal">
         <a href="contact/" class="btn btn-solid">Request a briefing →</a>
         <a href="demo/" class="btn">Open the Command Center →</a>
       </div>
-
-      <a class="frame hero-frame reveal" href="demo/">
-        <div class="frame-bar">
-          <span class="frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-          <span class="url">vantage.industries/demo</span>
-          <span class="grow">Open the Command Center ↗</span>
-        </div>
-        <div class="shot-stage" id="shot-stage">
-          <img src="assets/demo-console.png" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage Command Center: a live LEO feed flags a foreign inspector maneuvering to shadow an orbital AI data center, with the evidence panel showing the signals behind the call, the one-sidedness discriminator, and a sealed assurance PASS." />
-        </div>
-      </a>
-
-      <div class="rail reveal">
-        <div class="cell"><div class="num">under 15 km</div><div class="lbl">Russian inspector holding station beside Intelsat 39, recomputed daily</div></div>
-        <div class="cell"><div class="num">0.73°</div><div class="lbl">Five Kosmos satellites plane-matched to a commercial radar satellite</div></div>
-        <div class="cell"><div class="num">162,634</div><div class="lbl">ESA close-approach reports used for calibration</div></div>
-      </div>
-      <p class="rail-note reveal">Computed by Vantage from public CelesTrak element sets. No sensors, no credentials, reproducible.</p>
     </div>
   </section>
 
@@ -252,122 +195,54 @@
       <div class="cap-head reveal">
         <div>
           <span class="eyebrow">Products</span>
-          <h2>Two products. Eight models. One command center.</h2>
+          <h2>Two products. Eight models.</h2>
         </div>
         <span class="count">/ 02 products / 08 models</span>
       </div>
 
-      <div class="chapter" id="orbwatch">
-        <div class="chap-head reveal">
-          <span class="chap-designator">P/01 ORBWATCH</span>
-          <h3 class="chap-role">Read the sky.</h3>
-          <span class="chap-count">05 models</span>
-        </div>
-        <p class="chap-lede reveal">The intelligence layer: five models that read what an object did, why, and whether it is a threat, from public element sets alone.</p>
-        <ol class="cap-list">
-        <li class="cap reveal">
-          <details>
-            <summary>
-              <span class="cap-idx">/0.1</span>
-              <span class="cap-name">Maneuver detection</span>
-              <span class="cap-metric"><span class="big">84%</span>caught · 0 false alarms</span>
-              <span class="cap-plus" aria-hidden="true"></span>
-            </summary>
-            <div class="cap-body"><p>Tells you that an object fired its engine, when, and how hard, without tasking a sensor. It works by subtracting the drift physics explains, the Earth's equatorial bulge (J2) and atmospheric drag, from the object's public element-set history. Whatever residual Δv is left is somebody's engine.</p></div>
-          </details>
-        </li>
-        <li class="cap reveal">
-          <details>
-            <summary>
-              <span class="cap-idx">/0.2</span>
-              <span class="cap-name">Intent classification</span>
-              <span class="cap-metric">rule-based<br>fully auditable</span>
-              <span class="cap-plus" aria-hidden="true"></span>
-            </summary>
-            <div class="cap-body"><p>Names what the burn was for: station-keeping, an orbit raise or lower, a rendezvous, or collision-avoidance. Each call carries a confidence band and a written rationale from a rule-based model, so an analyst can check the reasoning rather than take it on faith. No black box to trust.</p></div>
-          </details>
-        </li>
-        <li class="cap reveal">
-          <details>
-            <summary>
-              <span class="cap-idx">/0.3</span>
-              <span class="cap-name">Pattern of life</span>
-              <span class="cap-metric"><span class="big">1,039</span>baselines pre-event</span>
-              <span class="cap-plus" aria-hidden="true"></span>
-            </summary>
-            <div class="cap-body"><p>Flags an object the moment it breaks its own routine, judged against its own prior history rather than a fleet average. Dormant-then-active is the classic early warning. The model is learned rather than hand-tuned: scored on held-out data by an exact port of the public SPLID evaluator, it more than quadruples the F<sub>2</sub> of the fixed-rule baseline it replaces.</p></div>
-          </details>
-        </li>
-        <li class="cap reveal">
-          <details>
-            <summary>
-              <span class="cap-idx">/0.4</span>
-              <span class="cap-name">Proximity &amp; rendezvous watch</span>
-              <span class="cap-metric"><span class="big">100%</span>seeded shadowing</span>
-              <span class="cap-plus" aria-hidden="true"></span>
-            </summary>
-            <div class="cap-body"><p>Watches for something deliberately holding station beside one of your assets. It separates a purchased geometry from an incidental pass and from a benign co-orbiting formation. One-sidedness is the discriminator, shown under <a href="#assurance">Evidence</a>.</p></div>
-          </details>
-        </li>
-        <li class="cap reveal">
-          <details>
-            <summary>
-              <span class="cap-idx">/0.5</span>
-              <span class="cap-name">Collision risk screening</span>
-              <span class="cap-metric"><span class="big">0.963</span>ROC-AUC · Brier 0.010</span>
-              <span class="cap-plus" aria-hidden="true"></span>
-            </summary>
-            <div class="cap-body"><p>Ranks which close approaches are worth an analyst's morning. Screening is calibrated against 162,634 ESA close-approach reports, scoring 0.963 ROC-AUC and 0.010 Brier on that set. Public element sets carry no covariance, so this is a labeled screening prior, not an operational probability of collision.</p></div>
-          </details>
-        </li>
-      </ol>
+      <div class="prod-grid" data-stagger="90">
+        <a class="prod reveal" href="orbwatch/">
+          <span class="prod-top">
+            <span class="prod-designator">P/01 ORBWATCH</span>
+            <span class="prod-count">05 models</span>
+          </span>
+          <h3>Read the sky.</h3>
+          <p>The intelligence layer: five models that read what an object did, why, and whether it is a threat, from public element sets alone.</p>
+          <ul class="prod-models">
+            <li><span class="i">/0.1</span>Maneuver detection</li>
+            <li><span class="i">/0.2</span>Intent classification</li>
+            <li><span class="i">/0.3</span>Pattern of life</li>
+            <li><span class="i">/0.4</span>Proximity &amp; rendezvous watch</li>
+            <li><span class="i">/0.5</span>Collision risk screening</li>
+          </ul>
+          <span class="prod-more">The five models <span class="arrow" aria-hidden="true">→</span></span>
+        </a>
+
+        <a class="prod reveal" href="guardian/">
+          <span class="prod-top">
+            <span class="prod-designator">P/02 GUARDIAN</span>
+            <span class="prod-count">03 models</span>
+          </span>
+          <h3>Guard the fleet.</h3>
+          <p>The response layer: what to do about it, from the smallest dodge that answers a threat to where your sensors look next, and the same watch pointed at your own telemetry.</p>
+          <ul class="prod-models">
+            <li><span class="i">/0.6</span>Defensive maneuver response</li>
+            <li><span class="i">/0.7</span>Sensor tasking</li>
+            <li><span class="i">/0.8</span>Spacecraft health monitoring</li>
+          </ul>
+          <span class="prod-more">The three models <span class="arrow" aria-hidden="true">→</span></span>
+        </a>
       </div>
 
-      <div class="chapter" id="guardian">
-        <div class="chap-head reveal">
-          <span class="chap-designator">P/02 GUARDIAN</span>
-          <h3 class="chap-role">Guard the fleet.</h3>
-          <span class="chap-count">03 models</span>
-        </div>
-        <p class="chap-lede reveal">The response layer: what to do about it, from the smallest dodge that answers a threat to where your sensors look next, and the same watch pointed at your own telemetry. No breach, no burn.</p>
-        <ol class="cap-list">
-        <li class="cap reveal">
-          <details>
-            <summary>
-              <span class="cap-idx">/0.6</span>
-              <span class="cap-name">Defensive maneuver response</span>
-              <span class="cap-metric"><span class="big">0.15 m/s</span>median dodge Δv</span>
-              <span class="cap-plus" aria-hidden="true"></span>
-            </summary>
-            <div class="cap-body"><p>Recommends the smallest burn that answers a warning: it keeps a threatened asset outside its keep-out volume, within the propellant it has left, and makes no recommendation at all for a pass that already clears. Each carries its direction, timing, fuel cost, and the miss it buys. Scored on three labelled-synthetic campaigns and two benign controls.</p></div>
-          </details>
-        </li>
-        <li class="cap reveal">
-          <details>
-            <summary>
-              <span class="cap-idx">/0.7</span>
-              <span class="cap-name">Sensor tasking</span>
-              <span class="cap-metric">trained scheduler<br>beats myopic + random</span>
-              <span class="cap-plus" aria-hidden="true"></span>
-            </summary>
-            <div class="cap-body"><p>Turns the warning queue into a schedule: which object each sensor looks at next, so a network spends its scarce minutes where the uncertainty and the threat are, not on whatever is overhead. Trained on held-out scenarios with real visibility geometry, it breaks from the greedy pick to catch a closing pass that would otherwise be stranded. This is the kill-chain gap the government keeps naming.</p></div>
-          </details>
-        </li>
-        <li class="cap reveal">
-          <details>
-            <summary>
-              <span class="cap-idx">/0.8</span>
-              <span class="cap-name">Spacecraft health monitoring</span>
-              <span class="cap-metric">OPS-SAT benchmark<br>anomaly detection</span>
-              <span class="cap-plus" aria-hidden="true"></span>
-            </summary>
-            <div class="cap-body"><p>The same discipline pointed inward, at a satellite's own telemetry: flag the segment where a channel breaks its nominal pattern, a spike, a stuck sensor, a slow drift, before an operator sees it. The detector is fit only on healthy history, so it needs no catalogue of past failures to recognize a new one, and it is scored in the shape of the public OPS-SAT benchmark.</p></div>
-          </details>
-        </li>
-      </ol>
+      <div class="rail reveal">
+        <div class="cell"><div class="num">under 15 km</div><div class="lbl">Russian inspector holding station beside Intelsat 39, recomputed daily</div></div>
+        <div class="cell"><div class="num">0.73°</div><div class="lbl">Five Kosmos satellites plane-matched to a commercial radar satellite</div></div>
+        <div class="cell"><div class="num">162,634</div><div class="lbl">ESA close-approach reports used for calibration</div></div>
       </div>
+      <p class="rail-note reveal">Computed by Vantage from public CelesTrak element sets. No sensors, no credentials, reproducible.</p>
     </div>
   </section>
+
 
   <!-- PLATFORM -->
   <section class="sec sec-wide tone-light" id="platform">
@@ -378,13 +253,23 @@
         <p>Open catalogs in; a ranked, assessed event out, with the signals behind it attached. One pass, no sensors of our own.</p>
       </div>
 
+      <a class="frame demo-frame reveal" href="demo/">
+        <div class="frame-bar">
+          <span class="frame-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="url">vantage.industries/demo</span>
+          <span class="grow">Open the Command Center ↗</span>
+        </div>
+        <div class="shot-stage" id="shot-stage">
+          <img src="assets/demo-console.png" width="1584" height="928" loading="lazy" decoding="async" alt="Screenshot of the Vantage Command Center: a live LEO feed flags a foreign inspector maneuvering to shadow an orbital AI data center, with the evidence panel showing the signals behind the call, the one-sidedness discriminator, and a sealed assurance PASS." />
+        </div>
+      </a>
+
       <div class="stages reveal" data-stagger="130">
-        <div class="stage reveal"><span class="sn">01 · Ingest</span><span class="who">Platform</span><h4>Public catalogs in</h4><p>Open connectors normalize public catalogs (CelesTrak, Space-Track) and five-year element-set histories into one data fabric.</p></div>
-        <div class="stage reveal"><span class="sn">02 · Detect</span><span class="who">Orbwatch</span><h4>Subtract physics</h4><p>Remove J2 oblateness and atmospheric drag; the residual is thrust, detected, measured, timestamped. 519 maneuvers on a 1,039-object catalog in 6.0 s.</p></div>
-        <div class="stage reveal"><span class="sn">03 · Assess</span><span class="who">Orbwatch</span><h4>Name the behavior</h4><p>Four models name intent, score conjunction and shadowing risk, and check each object against its own pattern of life.</p></div>
-        <div class="stage reveal"><span class="sn">04 · Report</span><span class="who">The Command Center</span><h4>Into the analyst queue</h4><p>The event lands in the Command Center with the signals behind it attached, ranked so the calls that need a human get one first.</p></div>
+        <div class="stage reveal"><span class="sn">01 · Ingest</span><span class="who">Platform</span><h4>Public catalogs in</h4></div>
+        <div class="stage reveal"><span class="sn">02 · Detect</span><span class="who">Orbwatch</span><h4>Subtract physics</h4></div>
+        <div class="stage reveal"><span class="sn">03 · Assess</span><span class="who">Orbwatch</span><h4>Name the behavior</h4></div>
+        <div class="stage reveal"><span class="sn">04 · Report</span><span class="who">The Command Center</span><h4>Into the analyst queue</h4></div>
       </div>
-      <p class="stage-note reveal">GUARDIAN attaches a response to any event that threatens a protected asset, and runs the same watch inward against your own fleet's telemetry.</p>
     </div>
   </section>
 
@@ -394,7 +279,7 @@
       <div class="sec-head reveal">
         <span class="eyebrow">Evidence</span>
         <h2>Assurance is the product.</h2>
-        <p>Anyone can publish a detection. The question a defense buyer actually has is whether it survives being checked, so Vantage shows what separated the call from the benign case, then grades itself in public and ships the receipt.</p>
+        <p>Anyone can publish a detection. The question a defense buyer actually has is whether it survives being checked, so Vantage shows what separated the call from the benign case.</p>
       </div>
 
       <div class="disc-figure reveal">
@@ -412,31 +297,6 @@
           </div>
         </div>
         <p class="disc-note">Both charts are engine output, same discriminator. The benign case is real, GRACE-FO 1/2 from public CelesTrak element sets. The shadowing case is the seeded scenario, where the one-sidedness alone carries the call at 100%.</p>
-      </div>
-
-      <div class="assure reveal">
-        <div class="assure-head">
-          <span>Assurance gate</span>
-          <span>policy vantage-ssa-v1</span>
-          <span class="grow"><span class="chip chip-nominal">Verdict: pass</span></span>
-        </div>
-        <div class="assure-body">
-          <div>
-            <h3>Receipts, not claims.</h3>
-            <p class="sub">Change one number and the seal breaks.</p>
-            <div class="gate">
-              <div class="g pass"><div class="gv">14</div><div class="gk">Pass</div></div>
-              <div class="g"><div class="gv">0</div><div class="gk">Fail</div></div>
-              <div class="g"><div class="gv">1</div><div class="gk">Skip</div></div>
-              <div class="g monitor"><div class="gv">2</div><div class="gk">Monitor</div></div>
-            </div>
-          </div>
-          <div>
-            <p>Every model behind the feed is graded on every release against explicit, versioned acceptance floors: detection recall, false-alarm rate, collision calibration, shadower recall. The result is sealed into a tamper-evident bundle, so a reviewer can re-check the claim instead of trusting it. The collision floor is calibrated against 162,634 real ESA close-approach reports, and the 1 SKIP is the real-data check itself: credential-gated, disclosed, never silently passed.</p>
-            <p class="seal">sealed <b>sha256:<span class="digest">732c19</span>…</b></p>
-            <a class="seal-link" href="demo/#assure"><span>Open this gate running in the Command Center →</span><span class="seal-caveat">synthetic scenario, real engine output</span></a>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -523,8 +383,8 @@
       </div>
       <div class="foot-col">
         <h5>Platform</h5>
-        <a href="#orbwatch">ORBWATCH</a>
-        <a href="#guardian">GUARDIAN</a>
+        <a href="orbwatch/">ORBWATCH</a>
+        <a href="guardian/">GUARDIAN</a>
         <a href="#platform">Platform</a>
         <a href="#assurance">Evidence</a>
         <a href="demo/">The Command Center</a>
